@@ -1,3 +1,5 @@
+## WIP
+
 ### Backend
 Own server (backend server)
 Java + Spring Boot
@@ -14,6 +16,9 @@ Own server (database server)
 SQLite on another server
 
 (Try to use portfolio server to run this too)
+
+### Build tool
+Maven
 
 ### Content
 User can register
