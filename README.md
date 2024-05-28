@@ -40,6 +40,20 @@ Users can send and receive live chats
 Users can delete posts they have made
 
 
+### NOTES
+
+TASKS:
+Test bootstrap  DOING
+
+Get a register page going. Make a submit form that sends a username and a password
+    - Have a `GET /register` endpoint, returns PAGE. Check if the user is logged in, if so, then redirect to `/home`
+    - PAGE will allow you to send a register form to `POST /register`
+    - Whenever we unfocus the username field, send a `GET /user` to see if the user already exists. The return of this request checks a condition needed for the user to be able to send the registration form
+    
+
+
+### Commands:
+Run the server (test) - `mvn spring-boot:run`
 
 
 
