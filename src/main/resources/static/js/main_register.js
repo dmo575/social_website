@@ -13,9 +13,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
         event.preventDefault();
 
-        document.cookie = "username= Testman; expires=Thu, 18 Dec 2025 12:00:00 UTC path=/";
+        document.cookie = "somevalue=hi there; expires=Thu, 18 Dec 2025 12:00:00 UTC path=/;";
+        document.cookie = "somevalue2=dsdsd; expires=Thu, 18 Dec 2025 12:00:00 UTC path=/;";
+        document.cookie = "somevalue3=ggg; expires=Thu, 18 Dec 2025 12:00:00 UTC path=/;";
+        document.cookie = "somevalue=XXXXXX; expires=Thu, 18 Dec 2025 12:00:00 UTC path=/;";
 
-        this.submit();
+        console.log("CLIENT: " + document.cookie);
+
+        //this.submit();
     });
 
 });
