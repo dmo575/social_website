@@ -7,22 +7,15 @@
     <title>Document</title>
 </head>
 <body>
-    <div>
-        <h1>HELLO FROM STATIC INDEX.HTML</h1>
-    </div>
-    <div>
-        <p class="d-inline-flex gap-1">
-            <button type="button" class="btn" data-bs-toggle="button">Toggle button</button>
-            <button type="button" class="btn active" data-bs-toggle="button" aria-pressed="true">Active toggle button</button>
-            <button type="button" class="btn" disabled data-bs-toggle="button">Disabled toggle button</button>
-          </p>
-          <p class="d-inline-flex gap-1">
-            <button type="button" class="btn btn-primary" data-bs-toggle="button">Toggle button</button>
-            <button type="button" class="btn btn-primary active" data-bs-toggle="button" aria-pressed="true">Active toggle button</button>
-            <button type="button" class="btn btn-primary" disabled data-bs-toggle="button">Disabled toggle button</button>
-          </p>
-    </div>
-    <script defer src="js/helloworld.js"></script>
+
+    <form action="/login" method="get">
+        <button type="submit">Log in</button>
+    </form>
+    
+    <form action="/register" method="get">
+        <button type="submit">Register</button>
+    </form>
+
     <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>
