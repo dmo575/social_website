@@ -34,6 +34,7 @@ public class Auth {
     // it sets a session cookie for the given user in the given response servlet.
     public static void setSession(String username, HttpServletResponse res) {
 
+        logger.warn("a");
         // get session ID
         String sessionRandom = RandomStringUtils.randomAlphanumeric(randomSectionLength);
 
@@ -43,17 +44,22 @@ public class Auth {
 
         String sessionId = BCrypt.withDefaults().hashToString(4, sessionIdString.toCharArray());
 
+        logger.warn("B");
+
         //boolean result = BCrypt.verifyer().verify(sessionIdString.toCharArray(), sessionId.toCharArray()).verified;
 
         // get date on HTTP standards
         Date expires = offsetDate(new Date(), sessionExpirationTime);
         String HttpExpires = dateToHTTPDate(expires);
+        logger.warn("C");
 
         // set cookie
         res.addHeader("Set-Cookie", "sessionId=" + sessionId + "; expires=" + HttpExpires + "; path=/");
+        logger.warn("D");
 
         //register a new session
         userDao.setSession(username, sessionId, expires);
+        logger.warn("E");
     }
 
     private static String dateToHTTPDate(Date d) {
@@ -82,18 +88,26 @@ public class Auth {
 
         SessionData sessionData = userDao.getSessionById(sessionId);
 
+        logger.warn("1: " + sessionData);
         // check that the session exists
         if(sessionData == null) { return false; }
         
         // check that the session is not expired
         Date currentTime = new Date();
         Date currentExpiration = sessionData.getExpiration();
+        logger.warn("2");
 
         if(currentExpiration == null) { return false; }
 
-        if(currentTime.compareTo(currentExpiration) < 0) { return false; }
+        logger.warn("3");
+        logger.warn("Current: " + currentTime.toString());
+        logger.warn("Expiration: " + currentExpiration.toString());
 
+        if(currentTime.compareTo(currentExpiration) > 0) { return false; }
+
+        logger.warn("4");
         // update session
+        userDao.removeSession(sessionId);
         setSession(sessionData.getUsername(), res);
 
         return true;

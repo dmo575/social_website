@@ -39,14 +39,11 @@ public class FrontEndController {
 
     // guest home GET
     @GetMapping("/home")
-    public String index(@CookieValue(value="sessionId") String sessionId, HttpServletResponse res){
+    public String index(@CookieValue(value="sessionId", defaultValue="") String sessionId, HttpServletResponse res){
+        
         // if authentication passed, return page
-
-        if(sessionId == null) {
-            throw new InvalidParameterException("Missing sessionId.");
-        }
-
-        if(Auth.authenticateUser(sessionId, res)) {
+        logger.warn("SID: " + sessionId);
+        if(!sessionId.isEmpty() && Auth.authenticateUser(sessionId, res)) {
             res.setStatus(HttpServletResponse.SC_OK);
             return "../static/home.html";
         }
