@@ -1,4 +1,4 @@
-package com.alfredcode.socialWebsite.Models;
+package com.alfredcode.socialWebsite.tools;
 
 public class Check {
     private boolean value = false;

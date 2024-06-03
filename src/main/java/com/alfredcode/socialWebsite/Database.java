@@ -1,33 +1,47 @@
 package com.alfredcode.socialWebsite;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alfredcode.socialWebsite.Controllers.FrontEndController;
-import com.alfredcode.socialWebsite.Models.User;
+import com.alfredcode.socialWebsite.Models.UserModel;
+import com.alfredcode.socialWebsite.tools.SessionData;
 
 public class Database {
-    private static final Logger logger = LoggerFactory.getLogger(FrontEndController.class);
+    private static final Logger logger = LoggerFactory.getLogger(Database.class);
 
     private static Database database = new Database();
-    public List<User> users = new ArrayList<User>();
+    public List<UserModel> users = new ArrayList<UserModel>();
+    public HashMap<String, SessionData> sessions = new HashMap<>();
 
     public static Database getInstance() {
         return database;
     }
 
-    public User getUserByName(String name) {
+    public UserModel getUserByName(String name) {
 
         for(int i = 0; i < users.size(); i++){
-            User cur = (User) users.get(i);
+            UserModel cur = (UserModel) users.get(i);
 
             if(cur.getName().equals(name))
                 return cur;
         }
 
         return null;
+    }
+
+    public boolean addSession(String sessionId, SessionData data) {
+        return sessions.put(sessionId, data) != null;
+    }
+
+    public boolean removeSession(String sessionId) {
+        return sessions.remove(sessionId) != null;
+    }
+
+    public SessionData getSessionData(String sessionId) {
+        return sessions.get(sessionId);
     }
 }

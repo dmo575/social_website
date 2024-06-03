@@ -1,35 +1,44 @@
 package com.alfredcode.socialWebsite.Services;
 
-import com.alfredcode.socialWebsite.Database;
-import com.alfredcode.socialWebsite.Models.Check;
-import com.alfredcode.socialWebsite.Models.User;
+import com.alfredcode.socialWebsite.DAO.UserDAO;
+import com.alfredcode.socialWebsite.Exceptions.UserRegistrationException;
+import com.alfredcode.socialWebsite.Exceptions.UsernameTakenException;
+import com.alfredcode.socialWebsite.Models.UserModel;
 
 public class UserService {
-    private Database db = Database.getInstance();
+    private UserDAO userDao = new UserDAO();
 
-    // returns a Ceck object containing answer to: username exists?
-    public Check check_usernameExists(String username) {
-        return new Check(db.getUserByName(username) != null);
-    }
 
-    // we handle the logic here, we output the results and the controller takes care of what to do with them
-    // rules: username must be 5 characters or longer
-    // password must be 5 characters or longer
-    public User create_user(User u) {
-        final int minUsernameLength = 5;
-        final int minPasswordLength = 5;
+    public UserModel registerUser(UserModel u) {
 
-        String username = u.getName();
-        String password = u.getPassword();
+        // TODO:
+        // double check that what you already checked on the client regarding username and password requirements
+        // you would also want to sanitize the input here before sending it to the DAO
 
-        if(username.length() < minUsernameLength || password.length() < minPasswordLength)
-            return null;
+        // TODO:
+        // after clearing user data, we start using it in our checks:
+        // is username taken? If not:
+        // use DAO (for now all in service layer tho) to CREATE user record, then create a sessionId
+        // send both back
 
-        boolean success = db.users.add(u);
+        // is argument valid
+        if(u == null) {
+            throw new IllegalArgumentException("User not provided.");
+        }
 
-        if(success)
-            return u;
+        // check if username taken
+        if(userDao.getUserByName(u.getName()) != null) {
+            throw new UsernameTakenException("Username already in use. Try another one.");
+        }
+        
+        // TODO: here we will also want to hash the password before storing it
+        // . . .
 
-        return null;
+        // ask DAO to CREATE user.
+        if(!userDao.createUser(u)) {
+            throw new UserRegistrationException("Error when registering user. Please try again.");
+        }
+
+        return u;
     }
 }
