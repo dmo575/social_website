@@ -26,7 +26,7 @@ public class Database {
         for(int i = 0; i < users.size(); i++){
             UserModel cur = (UserModel) users.get(i);
 
-            if(cur.getName().equals(name))
+            if(cur.getUsername().equals(name))
                 return cur;
         }
 

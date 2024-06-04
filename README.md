@@ -1,24 +1,25 @@
 ## WIP
 
-### Backend
-Own server (backend server)
-Java + Spring Boot
-Spring JPA for comms with DB
-RESTful APIs for the front-end to interact with server
+This is what I am working on right now. The README is just self notes. There is no working project here, just stuff in the making. 
 
-Contains front end files to send to client
-Frontend will use bootstrap for UI
+**The objective** is to make a social media website with the following:
 
-(Try to use calc server to run this too)
+### Front end server
+Will serve the front end but will also live alongside the backend server (the one with the APIs).
+Backend tech: Java + Spring Boot + JPA
+Frontend tech: JS/HTML/CSS + Bootstrap
 
-### Database
-Own server (database server)
-SQLite on another server
-
-(Try to use portfolio server to run this too)
+### Database server
+Tech: SQLite
 
 ### Build tool
 Maven
+
+
+
+## NOTES -- SKIP ANYTHING BELOW THIS
+
+Skip the notes below, random.
 
 ### Content
 User can register

@@ -9,24 +9,23 @@ import java.util.TimeZone;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.neo4j.Neo4jProperties.Authentication;
-import org.springframework.http.RequestEntity;
 
-import com.alfredcode.socialWebsite.Controllers.FrontEndController;
 import com.alfredcode.socialWebsite.DAO.UserDAO;
-import com.alfredcode.socialWebsite.Exceptions.AuthenticationFailedException;
+import com.alfredcode.socialWebsite.Exceptions.FailedSessionAuthenticationException;
+import com.alfredcode.socialWebsite.Exceptions.FailedUserAuthenticationException;
 import com.alfredcode.socialWebsite.Models.UserModel;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
 
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+// takes care of setting and authenticating sessions
 public class Auth {
 
-    private static int randomSectionLength = 16;
-    private static int sessionExpirationTime = 5;
+    private static final int randomSectionLength = 16;
+    private static final int sessionExpirationTime = 5;
+    private static final int hashingCost = 4;
+
     private static final Logger logger = LoggerFactory.getLogger(Auth.class);
     private static UserDAO userDao = new UserDAO();
 
@@ -34,7 +33,6 @@ public class Auth {
     // it sets a session cookie for the given user in the given response servlet.
     public static void setSession(String username, HttpServletResponse res) {
 
-        logger.warn("a");
         // get session ID
         String sessionRandom = RandomStringUtils.randomAlphanumeric(randomSectionLength);
 
@@ -42,26 +40,21 @@ public class Auth {
         // it also makes sure that each sessionId is unique since users cannot share the same username
         String sessionIdString = sessionRandom + username;
 
-        String sessionId = BCrypt.withDefaults().hashToString(4, sessionIdString.toCharArray());
-
-        logger.warn("B");
-
-        //boolean result = BCrypt.verifyer().verify(sessionIdString.toCharArray(), sessionId.toCharArray()).verified;
+        // stores the hashes session data
+        String sessionId = BCrypt.withDefaults().hashToString(hashingCost, sessionIdString.toCharArray());
 
         // get date on HTTP standards
         Date expires = offsetDate(new Date(), sessionExpirationTime);
         String HttpExpires = dateToHTTPDate(expires);
-        logger.warn("C");
 
         // set cookie
         res.addHeader("Set-Cookie", "sessionId=" + sessionId + "; expires=" + HttpExpires + "; path=/");
-        logger.warn("D");
 
         //register a new session
         userDao.setSession(username, sessionId, expires);
-        logger.warn("E");
     }
 
+    // given a date object, returns its HTTP counterpart
     private static String dateToHTTPDate(Date d) {
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss ZZZ");
@@ -70,54 +63,69 @@ public class Auth {
         return dateFormat.format(d);
     }
 
+    // given a date and an offset of time in hours, returns new offseted date
     private static Date offsetDate(Date d, int offset) {
+        
         Calendar calendar = Calendar.getInstance();
+
         calendar.setTime(d);
         calendar.add(Calendar.HOUR_OF_DAY, offset);
+
         return calendar.getTime();
     }
 
+    // given an HTTP formated date, returns its Date object counterpart
     private static Date HTTPDateToDate(String d) throws ParseException{
+
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss ZZZ");
 
         return dateFormat.parse(d);
     }
 
+    // authenticates the session and re-issues the sessionId
+    public static void authenticateSession(String sessionId, HttpServletResponse res) {
 
-    public static boolean authenticateUser(String sessionId, HttpServletResponse res) {
-
+        // get session data
         SessionData sessionData = userDao.getSessionById(sessionId);
 
-        logger.warn("1: " + sessionData);
-        // check that the session exists
-        if(sessionData == null) { return false; }
+        // if we cannot find session with provided sessionId, fail authentication
+        if(sessionData == null) throw new FailedSessionAuthenticationException("Invalid session ID");
         
         // check that the session is not expired
         Date currentTime = new Date();
         Date currentExpiration = sessionData.getExpiration();
-        logger.warn("2");
 
-        if(currentExpiration == null) { return false; }
+        // if no expiration data, fail authentication
+        if(currentExpiration == null) throw new FailedSessionAuthenticationException("Invalid session data.");
 
-        logger.warn("3");
-        logger.warn("Current: " + currentTime.toString());
-        logger.warn("Expiration: " + currentExpiration.toString());
+        // if session expired, fail authentication
+        if(currentTime.compareTo(currentExpiration) > 0) throw new FailedSessionAuthenticationException("Session expired.");
 
-        if(currentTime.compareTo(currentExpiration) > 0) { return false; }
-
-        logger.warn("4");
         // update session
         userDao.removeSession(sessionId);
         setSession(sessionData.getUsername(), res);
-
-        return true;
     }
+
+    // authenticates user credentials
+    public void authenticateUser(String username, String password) {
+
+        // QUERY user with DAO
+        UserModel user = userDao.getUserByName(username);
+
+        // validate 
+        if(user == null) throw new FailedUserAuthenticationException("Incorrect username.");
+
+        // authenticate
+        if(!BCrypt.verifyer().verify(password.toCharArray(), user.getPassword().toCharArray()).verified) throw new FailedUserAuthenticationException("Incorrect passwprd.");
+    }
+
 }
 
 
 
 
 
+    // this brainstorm is probably outdated, leaving it to make a post abot it later
         // ways this can go wrong:
         // - someone can use RandomStringUtils.randomAlphanumeric to generate sessionIds,
         // if they know how the generation works, they might be able to reduce the possible ids, they also need to know the length that

@@ -7,13 +7,15 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import com.alfredcode.socialWebsite.Exceptions.AuthenticationFailedException;
+import com.alfredcode.socialWebsite.Exceptions.FailedSessionAuthenticationException;
+import com.alfredcode.socialWebsite.Exceptions.FailedUserAuthenticationException;
 
-/* Holds exception handlers to be used by all controllers */
+import jakarta.servlet.http.HttpServletResponse;
+
+// Holds exception handlers to be used by any endpoint
 @ControllerAdvice
 public class GlobalExceptionsController {
     
-
 
     // Handles an incorrect parameter
     @ExceptionHandler(InvalidParameterException.class)
@@ -22,10 +24,20 @@ public class GlobalExceptionsController {
         return ex.getMessage();
     }
 
-    // Handles a fail in authentication
-    @ExceptionHandler(AuthenticationFailedException.class)
+    // Handles a failure in user authentication
+    @ExceptionHandler(FailedUserAuthenticationException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public String authenticationFailedHandler(AuthenticationFailedException ex){
+    public String failedUserAuthenticationHandler(FailedUserAuthenticationException ex){
         return ex.getMessage();
+    }
+
+    // Handles a failure in session authentication
+    @ExceptionHandler(FailedSessionAuthenticationException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public String failedSessionAuthenticationHandler(FailedSessionAuthenticationException ex, HttpServletResponse res){
+
+        // redirect to registration page
+        res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        return "../static/register.html";
     }
 }
