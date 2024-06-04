@@ -6,7 +6,9 @@ This is what I am working on right now. The README is just self notes. There is 
 
 ### Front end server
 Will serve the front end but will also live alongside the backend server (the one with the APIs).
+
 Backend tech: Java + Spring Boot + JPA
+
 Frontend tech: JS/HTML/CSS + Bootstrap
 
 ### Database server
@@ -15,7 +17,28 @@ Tech: SQLite
 ### Build tool
 Maven
 
+### Current structure:
 
+```
+                              Client
+                         +-------------+
+                         | HTML/CSS/JS |
+                         +-------------+
+
+              Server 1 (Frontend + Backend APIs)
++------------------------------------------------------------------+
+|                     Controllers : HTTP                           |
++--------------------------+---------------------------------------+
+| Service : Business logic | Auth : Authentication & Authorization |
++--------------------------+---------------------------------------+
+|                    DAO : CRUD operations                         |
++------------------------------------------------------------------+
+
+                            Server 2
+                      +-------------------+
+                      | DB : Data storage |
+                      +-------------------+
+```
 
 ## NOTES -- SKIP ANYTHING BELOW THIS
 
@@ -41,11 +64,12 @@ Users can send and receive live chats
 Users can delete posts they have made
 
 
-### NOTES
+### Tasks
 
 TASKS:
 Test bootstrap      DONE
-Make logging work   DOING
+Make logging work   DONE
+
 
 
 
@@ -61,10 +85,6 @@ HOME
 REGISTER
 At register, we prodide credentials
 if registered, redirect to HOME
-
-
-### Commands:
-Run the server (test) - `mvn spring-boot:run`
 
 
 
