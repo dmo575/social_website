@@ -21,22 +21,32 @@ public class UserDAO {
 
     // CREATE - User
     public boolean createUser(UserModel u) {
-        return db.users.add(u);
+
+        boolean success = db.users.add(u);
+
+        if(success) {
+
+            logger.warn("CREATE user: " + u.getUsername() + ", " + u.getPassword() + ". t="+ db.users.size());
+            return true;
+        }
+
+        logger.warn("CREATE user: FAIL");
+        return false;
+        //return db.users.add(u);
     }
 
     // QUERY - User or NULL if not found
     public UserModel getUserByName(String name) {
 
-        UserModel user = null;
-
         for(UserModel u : db.users) {
-            if(u.getUsername() == name) {
-                user = u;
-                break;
+
+            if(u.getUsername().equals(name)) {
+
+                return u;
             }
         }
 
-        return user;
+        return null;
     }
 
     // CREATE/UPDATE - Session
@@ -48,11 +58,13 @@ public class UserDAO {
 
     // QUERY - Session
     public SessionData getSessionById(String sessionId) {
+
         return db.sessions.get(sessionId);
     }
 
     // DELETE - Session
     public void removeSession(String sessionId) {
+        
         db.sessions.remove(sessionId);
     }
 }

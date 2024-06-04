@@ -19,7 +19,8 @@ import at.favre.lib.crypto.bcrypt.BCrypt;
 
 import jakarta.servlet.http.HttpServletResponse;
 
-// takes care of setting and authenticating sessions
+// manages authentication of user and session
+// creates sessions
 public class Auth {
 
     private static final int randomSectionLength = 16;
@@ -83,7 +84,7 @@ public class Auth {
     }
 
     // authenticates the session and re-issues the sessionId
-    public static void authenticateSession(String sessionId, HttpServletResponse res) {
+    public static boolean authenticateSession(String sessionId, HttpServletResponse res) {
 
         // get session data
         SessionData sessionData = userDao.getSessionById(sessionId);
@@ -104,6 +105,8 @@ public class Auth {
         // update session
         userDao.removeSession(sessionId);
         setSession(sessionData.getUsername(), res);
+
+        return true;
     }
 
     // authenticates user credentials
@@ -120,32 +123,3 @@ public class Auth {
     }
 
 }
-
-
-
-
-
-    // this brainstorm is probably outdated, leaving it to make a post abot it later
-        // ways this can go wrong:
-        // - someone can use RandomStringUtils.randomAlphanumeric to generate sessionIds,
-        // if they know how the generation works, they might be able to reduce the possible ids, they also need to know the length that
-        // Im using but that is easy just register and check it out. Since we don't delete expired sessionId records, you could eventually brute force into an account
-        // if that account sits inactive long enough (meaning no refresh of the sessionId so more time to apply the brute force)
-        // attacker must know:
-        // - method to generate the sessionId: RandomStringUtils.randomAlphanumeric
-        // - parameters to method, length in this case: 16
-        // - target username
-        // - knowledge that we don't clear expired sessionIds, we just override on new login
-        // we can however, save both the sessionId and its expiration date. then even if we don't clear them, they wont be of use.
-        // that would make any efforts to try to brute force into an inactive account almost useless. They would only have as much time as the expiration date says to 
-        // come up with the correct sessionId.
-        // we can add a maximun number of requests per IP to prevent the brute force attack on this time spam, we just make sure to allow enough requests so that human
-        // users have no problem with the page.
-        // with brute foce attacks there is also this easy solution: increase the pass length
-        // assuming the pool of possible numbers cannot be reduced by the attachers, then that solution plus limiting the ammount of requests per IP should be definitive wall
-        // There are other things an attacker may try however:
-        // - package pfishing (im writing that wrong); reading the sessionId from an intercepterd HTTP message between client-server, for this HTTPS is recommended over HTTP
-        // - as mentioned already, reducing the pool. This is by cracking the pool generation method we use
-        // - accessing the server and just reading the sessionId stored
-        // - accessing the server and reading the password. This is why we hash them when storing them.
-        // - obtaining the password hash, and the tool we use to hash then, and cracking the tool

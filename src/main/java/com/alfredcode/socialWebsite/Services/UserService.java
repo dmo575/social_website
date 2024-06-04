@@ -11,8 +11,8 @@ public class UserService {
     private UserDAO userDao = new UserDAO();
     private static final int minPasswordLength = 4;
     private static final int minUsernameLength = 4;
-    private static final char[] bannedPasswordChars = {'+', '*', ';'}; // here we could include sensitive DB characters that could be used for SQL injection
-    private static final char[] bannedUsernameChars = {'+', '*', ';'}; // ^
+    private static final char[] illegalPasswordChars = {'+', '*', ';'}; // here we could include sensitive DB characters that could be used for SQL injection
+    private static final char[] illegalUsernameChars = {'+', '*', ';'}; // ^
 
 
     public UserModel registerUser(UserModel u) {
@@ -28,23 +28,33 @@ public class UserService {
         if(username.length() < minUsernameLength) throw new IllegalArgumentException("Username is too short. Must be " + minUsernameLength + " characters or more.");
 
         // data sanitation
-        if(password.contains(bannedPasswordChars.toString())) throw new IllegalArgumentException("Password contains one of the following banned charcters: " + bannedPasswordChars.toString());
-        if(username.contains(bannedUsernameChars.toString())) throw new IllegalArgumentException("Username contains one of the following banned charcters: " + bannedUsernameChars.toString());
+        if(containsChar(password, illegalPasswordChars)) throw new IllegalArgumentException("Password contains one of the following illegal charcters: " + new String(illegalPasswordChars));
+        if(containsChar(username, illegalPasswordChars)) throw new IllegalArgumentException("Username contains one of the following illegal charcters: " + new String(illegalUsernameChars));
 
-        // check if username taken
-        if(userDao.getUserByName(u.getUsername()) != null) {
-            throw new UsernameTakenException("Username already in use. Try another one.");
-        }
+        // check username availability
+        if(userDao.getUserByName(username) != null) throw new UsernameTakenException("Username ["+ username +"] already in use.");
 
         // hash password
         String hashedPassword = BCrypt.withDefaults().hashToString(minPasswordLength, password.toCharArray());
         u.setPassword(hashedPassword);
         
         // ask DAO to CREATE user.
-        if(!userDao.createUser(u)) {
-            throw new UserRegistrationException("Error when registering user. Please try again.");
-        }
+        if(!userDao.createUser(u)) throw new UserRegistrationException("Error when registering user.");
 
         return u;
+    }
+
+    // checks if "str" contains any of "chars" characters
+    private boolean containsChar(String str, char[] chars) {
+
+        for(char sc : str.toCharArray()) {
+
+            for( char c : chars) {
+
+                if( c == sc) return true;
+            }
+        }
+
+        return false;
     }
 }

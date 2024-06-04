@@ -20,12 +20,19 @@ import jakarta.servlet.http.HttpServletResponse;
 public class FrontEndController {
 
     private static final Logger logger = LoggerFactory.getLogger(FrontEndController.class);
+    public static final String pageHome = "../static/home.html";
+    public static final String pageRegister = "../static/register.html";
+
 
 
     // registration page
     @GetMapping("/register")
-    public String getRegiser(){
-        return "../static/register.html";
+    public String getRegiser(@CookieValue(value="sessionId", defaultValue="") String sessionId, HttpServletResponse res){
+
+        // if authentication succeeds, then redirect to /home
+        if(Auth.authenticateSession(sessionId, res)) return pageHome;
+
+        return pageRegister;
     }
 
     // home page
@@ -38,7 +45,7 @@ public class FrontEndController {
         // session authentication (this takes care of redirecting if it fails)
         Auth.authenticateSession(sessionId, res);
 
-        return "../static/home.html";
+        return pageHome;
     }
 
 }

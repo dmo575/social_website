@@ -5,6 +5,7 @@ import java.security.InvalidParameterException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.alfredcode.socialWebsite.Exceptions.FailedSessionAuthenticationException;
@@ -17,16 +18,18 @@ import jakarta.servlet.http.HttpServletResponse;
 public class GlobalExceptionsController {
     
 
-    // Handles an incorrect parameter
-    @ExceptionHandler(InvalidParameterException.class)
+    // Handles an illegal argument
+    @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String nullUserHandler(InvalidParameterException ex){
+    @ResponseBody
+    public String illegalArgumentHandler(IllegalArgumentException ex){
         return ex.getMessage();
     }
 
     // Handles a failure in user authentication
     @ExceptionHandler(FailedUserAuthenticationException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ResponseBody
     public String failedUserAuthenticationHandler(FailedUserAuthenticationException ex){
         return ex.getMessage();
     }
@@ -38,6 +41,6 @@ public class GlobalExceptionsController {
 
         // redirect to registration page
         res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        return "../static/register.html";
+        return FrontEndController.pageRegister;
     }
 }

@@ -37,7 +37,10 @@ public class UserController {
         UserModel user = req.getBody();
         
         // validate model data
-        if(user == null) { throw new InvalidParameterException("User not provided."); }
+        if(user == null) throw new IllegalArgumentException("User not provided.");
+        if(user.getUsername() == null) throw new IllegalArgumentException("Missing JSON parameter: username");
+        if(user.getPassword() == null) throw new IllegalArgumentException("Missing JSON parameter: password");
+
 
         // register user
         userService.registerUser(user);
