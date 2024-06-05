@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.alfredcode.socialWebsite.Exceptions.FailedSessionAuthenticationException;
 import com.alfredcode.socialWebsite.Exceptions.FailedUserAuthenticationException;
+import com.alfredcode.socialWebsite.Exceptions.ForbiddenActionException;
 
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -34,13 +35,26 @@ public class GlobalExceptionsController {
         return ex.getMessage();
     }
 
+
+    // handles requests that are not allowed by the website
+    // ex: trying to register while logged in
+    @ExceptionHandler(ForbiddenActionException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ResponseBody
+    public String forbiddenActionHandler(ForbiddenActionException ex){
+        return ex.getMessage();
+    }
+
+
+    /*
     // Handles a failure in session authentication
     @ExceptionHandler(FailedSessionAuthenticationException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public String failedSessionAuthenticationHandler(FailedSessionAuthenticationException ex, HttpServletResponse res){
-
+      
         // redirect to registration page
         res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        return FrontEndController.pageRegister;
+        return ex.getRedirect();
     }
+    */
 }

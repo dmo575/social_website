@@ -90,17 +90,17 @@ public class Auth {
         SessionData sessionData = userDao.getSessionById(sessionId);
 
         // if we cannot find session with provided sessionId, fail authentication
-        if(sessionData == null) throw new FailedSessionAuthenticationException("Invalid session ID");
+        if(sessionData == null) return false; //throw new FailedSessionAuthenticationException("Invalid session ID");
         
         // check that the session is not expired
         Date currentTime = new Date();
         Date currentExpiration = sessionData.getExpiration();
 
         // if no expiration data, fail authentication
-        if(currentExpiration == null) throw new FailedSessionAuthenticationException("Invalid session data.");
+        if(currentExpiration == null) return false; //throw new FailedSessionAuthenticationException("Invalid session data.");
 
         // if session expired, fail authentication
-        if(currentTime.compareTo(currentExpiration) > 0) throw new FailedSessionAuthenticationException("Session expired.");
+        if(currentTime.compareTo(currentExpiration) > 0) return false; //throw new FailedSessionAuthenticationException("Session expired.");
 
         // update session
         userDao.removeSession(sessionId);
@@ -110,7 +110,7 @@ public class Auth {
     }
 
     // authenticates user credentials
-    public void authenticateUser(String username, String password) {
+    public static void authenticateUser(String username, String password) {
 
         // QUERY user with DAO
         UserModel user = userDao.getUserByName(username);
@@ -121,5 +121,4 @@ public class Auth {
         // authenticate
         if(!BCrypt.verifyer().verify(password.toCharArray(), user.getPassword().toCharArray()).verified) throw new FailedUserAuthenticationException("Incorrect passwprd.");
     }
-
 }

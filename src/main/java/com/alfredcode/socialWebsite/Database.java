@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import com.alfredcode.socialWebsite.Models.UserModel;
 import com.alfredcode.socialWebsite.tools.SessionData;
 
+// mock database class
 public class Database {
     private static final Logger logger = LoggerFactory.getLogger(Database.class);
 
@@ -19,6 +20,11 @@ public class Database {
 
     public static Database getInstance() {
         return database;
+    }
+
+    public void WipeData() {
+        database.users.clear();
+        database.sessions.clear();
     }
 
     public UserModel getUserByName(String name) {

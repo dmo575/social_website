@@ -1,21 +1,14 @@
 ## WIP
 
-This is what I am working on right now. The README is just self notes. There is no working project here, just stuff in the making. 
+Hi! This is what I am working on right now.
 
 **The objective** is to make a social media website with the following:
 
-### Front end server
-Will serve the front end but will also live alongside the backend server (the one with the APIs).
-
-Backend tech: Java + Spring Boot + JPA
-
-Frontend tech: JS/HTML/CSS + Bootstrap
-
-### Database server
-Tech: SQLite
-
-### Build tool
-Maven
+- **Front end server**: Will serve the front end but will also live alongside the backend server (the one with the APIs).
+- **Backend tech**: Java + Spring Boot + JPA
+- **Frontend tech**: JS/HTML/CSS + Bootstrap
+- **Database server**: SQLite
+- **Build tool**: Maven
 
 ### Current structure:
 
@@ -40,14 +33,76 @@ Maven
                       +-------------------+
 ```
 
-## NOTES -- SKIP ANYTHING BELOW THIS
+### Solutions
+- **Hashing**: bcrypt
+- **Random gen**: commons-lang3
 
-Skip the notes below, random.
+### Controllers
 
-### Content
-User can register
-    Prio: WIth user and password
-    Extra: Use emails for users, send out emails to confirm user email and register
+**AccessController:**
+
+These provide the registration and loggin interface.
+
+- /register
+    - GET
+        - if session: redirect to /
+        - no session: serve /register
+    - POST
+        - if session: skip and redirect to /
+        - no session: try to register
+            - if success: 200 OK - return JSON + Location header to /
+            - no success: 40X - return string with error description
+
+- /login
+    - GET
+        - if session: redirect to /
+        - no session: serve /login
+    - POST
+        - if session: skip and redirect to /
+        - no session: try to login
+            - if success: 200 OK - return JSON + Location header to /
+            - no success: 40X - return string with error description
+
+- /
+    - GET
+        - if session: serve /home
+        - no session: serve /welcome
+
+### Sequrity
+I have a couple of things in place but they are basic and I'm not using Spring Security on the project since that's something that I haven't got a chance to learn yet.
+
+These are the basic features I have implemented that I consider security-themed:
+- **Authentication**: I have a class that handles basic authenticationg of users and sessions.
+- **Hasing passwords**: I make sure I just store a hash to a password.
+- **Expirable sessionIds**: Session IDs have an expiration date, so no loggin in once and stayed logged in forever.
+- **Updating sessionIds**: I create a new sessionId on every contact with a user. This opens up a potential for optimization. Maybe have two timers, one for sessionId expiration and another substantially smaller timer to indicate that the sessionId should be refreshed.
+- **Sanitating userame/password characters**: I do some basic sanitation at the service layer, before interacting with the DAO. Right now is just a list of illegal characters that I think should not get to the DAO level. With username/password what I do is to throw an exception that lets the client know the issue.
+
+**TODO**:
+
+- Adding some authorization so I can have admin accounts.
+- Improve sanitation.
+- HTTPS ?
+
+### Optmization
+Similar situation as with security.
+
+These are some things implemented that I consider optimization-themed:
+- **Client-side input validation**: saves time to the server. I do check the same things in the server again because I imagine the client is not to be trusted. But for non bad actors this saves the potential back and forth with the server. Something I have to work on for this feature is having a cenrtalized place for these rules. Right now if I want a password to be minimum 8 characters, I have to specify that rule on both the server and the client separately, so mismatches can happen.
+
+- 
+
+**TODO**:
+
+- Optimize sessionId refresh rules.
+
+
+## FROM HERE ON OUT THESE ARE JUST RANDOM OUTDATED NOTES ! ! !
+
+### Registration
+
+- Prio: WIth user and password
+- Would be nice: Use emails for users, send out emails to confirm user email and register
 
 User can log in with username and password
 

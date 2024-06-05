@@ -6,6 +6,7 @@ import com.alfredcode.socialWebsite.Exceptions.UsernameTakenException;
 import com.alfredcode.socialWebsite.Models.UserModel;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
+import jakarta.servlet.http.HttpServletResponse;
 
 public class UserService {
     private UserDAO userDao = new UserDAO();
