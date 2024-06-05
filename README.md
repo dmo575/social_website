@@ -69,14 +69,14 @@ These provide the registration and loggin interface.
         - no session: serve /welcome
 
 ### Sequrity
-I have a couple of things in place but they are basic and I'm not using Spring Security on the project since that's something that I haven't got a chance to learn yet.
+I have a couple of basic things in place. No Spring Security added to the project (In my TOLEARN list)
 
-These are the basic features I have implemented that I consider security-themed:
+These are the features I have implemented that I consider security-themed:
 - **Authentication**: I have a class that handles basic authenticationg of users and sessions.
 - **Hasing passwords**: I make sure I just store a hash to a password.
-- **Expirable sessionIds**: Session IDs have an expiration date, so no loggin in once and stayed logged in forever.
+- **Expirable sessionIds**: Session IDs have an expiration date, so no logging in once and staying logged in forever.
 - **Updating sessionIds**: I create a new sessionId on every contact with a user. This opens up a potential for optimization. Maybe have two timers, one for sessionId expiration and another substantially smaller timer to indicate that the sessionId should be refreshed.
-- **Sanitating userame/password characters**: I do some basic sanitation at the service layer, before interacting with the DAO. Right now is just a list of illegal characters that I think should not get to the DAO level. With username/password what I do is to throw an exception that lets the client know the issue.
+- **Sanitating userame/password characters**: I do some basic sanitation at the service layer, before interacting with the DAO. Right now is just a list of illegal characters that I think should not get to the DAO level. With username/password what I do is to throw an exception that lets the client know about the issue.
 
 **TODO**:
 
@@ -96,6 +96,9 @@ These are some things implemented that I consider optimization-themed:
 
 - Optimize sessionId refresh rules.
 
+### Other TODOs
+
+- Create tests
 
 ## FROM HERE ON OUT THESE ARE JUST RANDOM OUTDATED NOTES ! ! !
 
@@ -124,8 +127,6 @@ Users can delete posts they have made
 TASKS:
 Test bootstrap      DONE
 Make logging work   DONE
-
-
 
 
 
