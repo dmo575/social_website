@@ -2,7 +2,7 @@
 
 Hi! This is what I am working on right now.
 
-**The objective** is to make a social media website with the following:
+**The objective** is to make a social media blogpost website.
 
 - **Front end server**: Will serve the front end but will also live alongside the backend server (the one with the APIs).
 - **Backend tech**: Java + Spring Boot + JPA
@@ -76,7 +76,7 @@ These are the features I have implemented that I consider security-themed:
 - **Hasing passwords**: I make sure I just store a hash to a password.
 - **Expirable sessionIds**: Session IDs have an expiration date, so no logging in once and staying logged in forever.
 - **Updating sessionIds**: I create a new sessionId on every contact with a user. This opens up a potential for optimization. Maybe have two timers, one for sessionId expiration and another substantially smaller timer to indicate that the sessionId should be refreshed.
-- **Sanitating userame/password characters**: I do some basic sanitation at the service layer, before interacting with the DAO. Right now is just a list of illegal characters that I think should not get to the DAO level. With username/password what I do is to throw an exception that lets the client know about the issue.
+- **Sanitazing userame/password characters**: I do some basic sanitation at the service layer, before interacting with the DAO. Right now is just a list of illegal characters that I think should not get to the DAO level. With username/password what I do is to throw an exception that lets the client know about the issue.
 
 **TODO**:
 
