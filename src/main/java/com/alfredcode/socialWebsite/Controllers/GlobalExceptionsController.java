@@ -1,6 +1,5 @@
 package com.alfredcode.socialWebsite.Controllers;
 
-import java.security.InvalidParameterException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -8,11 +7,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import com.alfredcode.socialWebsite.Exceptions.FailedSessionAuthenticationException;
 import com.alfredcode.socialWebsite.Exceptions.FailedUserAuthenticationException;
 import com.alfredcode.socialWebsite.Exceptions.ForbiddenActionException;
 
-import jakarta.servlet.http.HttpServletResponse;
 
 // Holds exception handlers to be used by any endpoint
 @ControllerAdvice

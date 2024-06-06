@@ -6,7 +6,6 @@ import com.alfredcode.socialWebsite.Exceptions.UsernameTakenException;
 import com.alfredcode.socialWebsite.Models.UserModel;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
-import jakarta.servlet.http.HttpServletResponse;
 
 public class UserService {
     private UserDAO userDao = new UserDAO();
@@ -16,7 +15,7 @@ public class UserService {
     private static final char[] illegalUsernameChars = {'+', '*', ';'}; // ^
 
 
-    public UserModel registerUser(UserModel u) {
+    public UserModel registerUser(UserModel u) throws UsernameTakenException, IllegalArgumentException, UserRegistrationException {
 
         // validate object
         if(u == null) throw new IllegalArgumentException("UserModel cannot be null");
@@ -33,7 +32,7 @@ public class UserService {
         if(containsChar(username, illegalPasswordChars)) throw new IllegalArgumentException("Username contains one of the following illegal charcters: " + new String(illegalUsernameChars));
 
         // check username availability
-        if(userDao.getUserByName(username) != null) throw new UsernameTakenException("Username ["+ username +"] already in use.");
+        if(userDao.getUserByName(username) != null) throw new UsernameTakenException("Username ["+ username +"] is not available.");
 
         // hash password
         String hashedPassword = BCrypt.withDefaults().hashToString(minPasswordLength, password.toCharArray());

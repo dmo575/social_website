@@ -2,8 +2,6 @@ package com.alfredcode.socialWebsite.tools;
 
 import java.util.Date;
 
-import com.alfredcode.socialWebsite.Models.UserModel;
-
 public class SessionData {
     private String username = null;
     private Date expiration = null;

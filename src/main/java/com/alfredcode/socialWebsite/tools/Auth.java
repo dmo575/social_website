@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alfredcode.socialWebsite.DAO.UserDAO;
-import com.alfredcode.socialWebsite.Exceptions.FailedSessionAuthenticationException;
 import com.alfredcode.socialWebsite.Exceptions.FailedUserAuthenticationException;
 import com.alfredcode.socialWebsite.Models.UserModel;
 
@@ -76,7 +75,7 @@ public class Auth {
     }
 
     // given an HTTP formated date, returns its Date object counterpart
-    private static Date HTTPDateToDate(String d) throws ParseException{
+    private static Date HTTPDateToDate(String d) throws ParseException {
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss ZZZ");
 
@@ -90,17 +89,17 @@ public class Auth {
         SessionData sessionData = userDao.getSessionById(sessionId);
 
         // if we cannot find session with provided sessionId, fail authentication
-        if(sessionData == null) return false; //throw new FailedSessionAuthenticationException("Invalid session ID");
+        if(sessionData == null) return false;
         
         // check that the session is not expired
         Date currentTime = new Date();
         Date currentExpiration = sessionData.getExpiration();
 
         // if no expiration data, fail authentication
-        if(currentExpiration == null) return false; //throw new FailedSessionAuthenticationException("Invalid session data.");
+        if(currentExpiration == null) return false;
 
         // if session expired, fail authentication
-        if(currentTime.compareTo(currentExpiration) > 0) return false; //throw new FailedSessionAuthenticationException("Session expired.");
+        if(currentTime.compareTo(currentExpiration) > 0) return false;
 
         // update session
         userDao.removeSession(sessionId);
@@ -110,7 +109,7 @@ public class Auth {
     }
 
     // authenticates user credentials
-    public static void authenticateUser(String username, String password) {
+    public static void authenticateUser(String username, String password) throws FailedUserAuthenticationException {
 
         // QUERY user with DAO
         UserModel user = userDao.getUserByName(username);

@@ -1,15 +1,12 @@
 package com.alfredcode.socialWebsite.DAO;
 
 import java.util.Date;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alfredcode.socialWebsite.Database;
 import com.alfredcode.socialWebsite.Models.UserModel;
-import com.alfredcode.socialWebsite.tools.Auth;
 import com.alfredcode.socialWebsite.tools.SessionData;
 
 // CRUD: CREATE, REMOVE, UPDATE, DELETE

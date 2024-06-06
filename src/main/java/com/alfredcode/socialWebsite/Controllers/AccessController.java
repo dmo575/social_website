@@ -1,15 +1,10 @@
 package com.alfredcode.socialWebsite.Controllers;
 
 
-import java.net.URI;
-import java.security.InvalidParameterException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -19,14 +14,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.servlet.view.RedirectView;
 
-import com.alfredcode.socialWebsite.Exceptions.FailedSessionAuthenticationException;
-import com.alfredcode.socialWebsite.Exceptions.FailedUserAuthenticationException;
 import com.alfredcode.socialWebsite.Exceptions.ForbiddenActionException;
-import com.alfredcode.socialWebsite.Exceptions.LoginOnLoginException;
-import com.alfredcode.socialWebsite.Exceptions.UserRegistrationException;
 import com.alfredcode.socialWebsite.Exceptions.UsernameTakenException;
 import com.alfredcode.socialWebsite.Models.UserModel;
 import com.alfredcode.socialWebsite.Services.UserService;
@@ -43,10 +32,6 @@ public class AccessController {
 
     private static final Logger logger = LoggerFactory.getLogger(AccessController.class);
     private UserService userService = new UserService();
-    public static final String pageHome = "../static/home.html";
-    public static final String pageRegister = "../static/register.html";
-    public static final String pageLogin = "../static/login.html";
-
 
     //////////////////////////////////////// GET
     // GET                                   GET
@@ -135,7 +120,7 @@ public class AccessController {
     // !201 OK: Error message in body
     @PostMapping("/login")
     @ResponseBody
-    public UserModel postLogin(HttpServletResponse res, RequestEntity<UserModel> req, @CookieValue(value="sessionId", defaultValue="") String sessionId){
+    public UserModel postLogin(HttpServletResponse res, RequestEntity<UserModel> req, @CookieValue(value="sessionId", defaultValue="") String sessionId) {
 
         // verify that client is not already in a session (logged in)
         if(sessionId != null && Auth.authenticateSession(sessionId, res)) throw new ForbiddenActionException("You cannot try to log in while logged in.");
@@ -169,14 +154,16 @@ public class AccessController {
 
     @ExceptionHandler(UsernameTakenException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
     public String UsernameTakenHandler(UsernameTakenException ex){
         return ex.getMessage();
     }
 
 
-    @ExceptionHandler(UserRegistrationException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public String userRegistrationHandler(UserRegistrationException ex){
-        return ex.getMessage();
-    }
+    //@ExceptionHandler(UserRegistrationException.class)
+    //@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    //@ResponseBody
+    //public String userRegistrationHandler(UserRegistrationException ex){
+    //    return ex.getMessage();
+    //}
 }
