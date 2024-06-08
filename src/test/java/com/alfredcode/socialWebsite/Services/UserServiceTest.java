@@ -19,7 +19,7 @@ public class UserServiceTest {
     public void registerUserWrongDataTest() throws JsonProcessingException{
 
         // wipe any possible data in the database from previous tests
-        Database.getInstance().WipeData();
+        Database.getInstance().wipeData();
         
         // represents a faulty json (username field incorrectly defined as user)
         String faultyJson = "{ \"user\" : \"value\", \"password\" : \"value\" }";

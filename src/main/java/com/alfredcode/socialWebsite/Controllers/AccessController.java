@@ -64,16 +64,6 @@ public class AccessController {
         return new ModelAndView("forward:/login.html", model);
     }
 
-    // REMOVE THIS ONE FROM HERE
-    @GetMapping("/")
-    public String home(@CookieValue(value="sessionId", defaultValue="") String sessionId, HttpServletResponse res) {
-
-        // if unauthorized, forward to welcome.html
-        if(sessionId.isEmpty() || !Auth.authenticateSession(sessionId, res)) return "forward:/welcome.html";
-
-        return "forward:/home.html";
-    }
-
 
 
     //////////////////////////////////////// POST

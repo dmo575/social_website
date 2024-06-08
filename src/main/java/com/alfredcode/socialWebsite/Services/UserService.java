@@ -1,5 +1,7 @@
 package com.alfredcode.socialWebsite.Services;
 
+import org.springframework.stereotype.Service;
+
 import com.alfredcode.socialWebsite.DAO.UserDAO;
 import com.alfredcode.socialWebsite.Exceptions.UserRegistrationException;
 import com.alfredcode.socialWebsite.Exceptions.UsernameTakenException;
@@ -7,6 +9,7 @@ import com.alfredcode.socialWebsite.Models.UserModel;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
 
+@Service
 public class UserService {
     private UserDAO userDao = new UserDAO();
     private static final int minPasswordLength = 4;

@@ -1,5 +1,3 @@
-// main JS of the login.html file
-
 document.addEventListener("DOMContentLoaded", () => {
 
     const registerForm = document.querySelector("#login-form");

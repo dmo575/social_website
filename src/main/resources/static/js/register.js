@@ -1,5 +1,3 @@
-// main JS of the register.html file
-
 document.addEventListener("DOMContentLoaded", () => {
 
     const registerForm = document.querySelector("#register-form");
