@@ -2,8 +2,6 @@ package com.alfredcode.socialWebsite.DAO;
 
 import java.util.ArrayList;
 
-import org.springframework.stereotype.Service;
-
 import com.alfredcode.socialWebsite.Database;
 import com.alfredcode.socialWebsite.Tables.UIButton;
 
