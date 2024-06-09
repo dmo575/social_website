@@ -1,6 +1,5 @@
-import { createDashBoard } from "./dashboard.js";
 import { validateUsername, validatePassword } from "./tools/clientvalidation.js";
-import { createMessage, popMessage } from "./tools/popupmessage.js";
+import { createMessage, popMessage } from "./elements/popupmessage.js";
 
 
 var registrationForm = null;
@@ -11,19 +10,11 @@ document.addEventListener("DOMContentLoaded", () => {
     registrationForm = document.querySelector("#registration-form");
     messageContainer = document.querySelector("#message-container");
 
-    // promise that returns a dashboard
-    createDashBoard(["general"])
-    .then(dashboard => {
-        // append it to the page
-        document.body.appendChild(dashboard);
-    })
-    .catch(err => {
-        console.error(`Error while creating dashboard -> ${err}`);
-    });
+    // TODO: create dashboard
 
 
     // initializes the registration form
-    registerFormInit(registrationForm);
+    registerFormInit();
 
 });
 
@@ -35,9 +26,9 @@ document.addEventListener("DOMContentLoaded", () => {
 // - handle response:
 // -- 200OK: means registration successful, go to suggested next location
 // -- not 200OK: we pop an error message to the user
-function registerFormInit(registerForm) {
+function registerFormInit() {
     // on registration form submit event
-    registerForm.addEventListener("submit", function (event) {
+    registrationForm.addEventListener("submit", function (event) {
 
         // get fields
         const username = event.target.elements["username"].value;

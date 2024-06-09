@@ -1,10 +1,23 @@
+import { popMessage } from "./elements/popupmessage.js";
+
+
+var loginForm = null;
+var messageContainer = null;
+
+
 document.addEventListener("DOMContentLoaded", () => {
 
-    const registerForm = document.querySelector("#login-form");
-    const messageContainer = document.querySelector("#message-container");
+    loginForm = document.querySelector("#login-form");
+    messageContainer = document.querySelector("#message-container");
+
+    loginFormInit();
+
+});
+
+function loginFormInit() {
 
     // on login form submit event
-    registerForm.addEventListener("submit", function (event) {
+    loginForm.addEventListener("submit", function (event) {
 
         // get fields
         const username = event.target.elements["username"].value;
@@ -30,15 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
             // if not 200 OK, inform user
             let text = await response.text();
             let msg = `Error: ${text}`;
-            printMessage(msg);
+            popMessage(msg, messageContainer);
         });
     });
-
-    // updates the alert window, removes previous content if any.
-    function printMessage(msg) {
-
-        htmlMessage = `<h3>${msg}</h3>`;
-
-        messageContainer.innerHTML = htmlMessage;
-    }
-});
+}

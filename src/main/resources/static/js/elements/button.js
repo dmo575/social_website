@@ -1,5 +1,4 @@
-// given the button data, returns a button element
-// defines the look of a dashboard button
+// returns a dashboard button ready to populate with data
 export function createButton(name, icon) {
     var container = document.createElement('div');
     var textField = codument.createElement('p');
