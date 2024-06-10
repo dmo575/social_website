@@ -83,6 +83,7 @@ These are the features I have implemented that I consider security-themed:
 - Adding some authorization so I can have admin accounts.
 - Improve sanitation.
 - HTTPS ?
+- Check out JWT (JSON Web Token)
 
 ### Optmization
 Similar situation as with security.
@@ -90,7 +91,6 @@ Similar situation as with security.
 These are some things implemented that I consider optimization-themed:
 - **Client-side input validation**: saves time to the server. I do check the same things in the server again because I imagine the client is not to be trusted. But for non bad actors this saves the potential back and forth with the server. Something I have to work on for this feature is having a cenrtalized place for these rules. Right now if I want a password to be minimum 8 characters, I have to specify that rule on both the server and the client separately, so mismatches can happen.
 
-- 
 
 **TODO**:
 
@@ -99,6 +99,20 @@ These are some things implemented that I consider optimization-themed:
 ### Other TODOs
 
 - Create tests
+- Database for translation: Have the website text in a database and allow for different languages
+- Card that explains the website features (Auth, languages, etc).
+- Markdown ?
+
+
+
+
+
+
+
+
+
+
+
 
 ## FROM HERE ON OUT THESE ARE JUST RANDOM OUTDATED NOTES ! ! !
 

@@ -3,11 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css">
+    <title>Welcome</title>
 </head>
 <body>
-    welcome
+    <div id="dashboard-container">
+        <div class="tabs is-centered">
+            <ul>
+              <li id="tab-welcome" class="is-active"><a>Welcome</a></li>
+              <li id="tab-login"><a>Log in</a></li>
+              <li id="tab-register"><a>Register</a></li>
+              <li id="tab-contact"><a>Contact</a></li>
+            </ul>
+          </div>
+    </div>
+    <div id="body-container"></div>
+    <script type="module" src="./js/welcome.js"></script>
 
-    <script defer type="module" src="./js/welcome.js"></script>
 </body>
 </html>

@@ -1,0 +1,16 @@
+<!-- login form -->
+<form id="login-form" action="/login" method="post">
+    <label for="username">username</label>
+    <input id="username" type="text">
+    <label for="password">password</label>
+    <input id="password" type="text">
+    <button type="submit">Submit</button>
+</form>
+
+<!-- loads the login.js script -->
+<script>
+    const script = document.createElement('script');
+    script.src = "./js/login.js";
+    script.type = "module";
+    document.body.appendChild(script);
+</script>

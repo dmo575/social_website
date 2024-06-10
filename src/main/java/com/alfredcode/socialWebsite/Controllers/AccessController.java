@@ -38,6 +38,7 @@ public class AccessController {
     //////////////////////////////////////// GET
 
     // registration page
+    /*
     @GetMapping("/register")
     public ModelAndView getRegiser(ModelMap model, @CookieValue(value="sessionId", defaultValue="") String sessionId, HttpServletResponse res, HttpServletRequest req) {
 
@@ -63,7 +64,18 @@ public class AccessController {
 
         return new ModelAndView("forward:/login.html", model);
     }
+    */
 
+    @GetMapping("/login")
+    public ModelAndView getLogin(ModelMap model, @CookieValue(value="sessionId", defaultValue="") String sessionId, HttpServletResponse res) {
+
+        // if session authentication succeeds, redirect to /home
+        if(Auth.authenticateSession(sessionId, res)) {
+            return new ModelAndView("redirect:/", model);
+        }
+
+        return new ModelAndView("neologin", model);
+    }
 
 
     //////////////////////////////////////// POST
