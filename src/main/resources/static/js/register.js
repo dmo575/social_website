@@ -1,32 +1,23 @@
 import { validateUsername, validatePassword } from "./tools/clientvalidation.js";
-import { createMessage, popMessage } from "./elements/popupmessage.js";
+import { errorMessage } from "./elements/popupmessage.js";
 
 
-var registrationForm = null;
-var messageContainer = null;
-
-document.addEventListener("DOMContentLoaded", () => {
-
-    registrationForm = document.querySelector("#registration-form");
-    messageContainer = document.querySelector("#message-container");
-
-    // TODO: create dashboard
-
-
-    // initializes the registration form
-    registerFormInit();
+init();
+console.log("first");
+document.querySelector("#body-container").addEventListener("tab-register", (event) => {
+    init();
+    console.log("second");
 
 });
 
+function init() {
+    const registrationForm = document.querySelector("#registration-form");
+    const messageContainer = document.querySelector("#message-container");
+    registerFormInit(registrationForm, messageContainer);
+}
 
-// defines the submition event of the form:
-// - prevent default
-// - validate username & password
-// - send POST to /register
-// - handle response:
-// -- 200OK: means registration successful, go to suggested next location
-// -- not 200OK: we pop an error message to the user
-function registerFormInit() {
+
+function registerFormInit(registrationForm, messageContainer) {
     // on registration form submit event
     registrationForm.addEventListener("submit", function (event) {
 
@@ -46,23 +37,23 @@ function registerFormInit() {
             // if password and username failed validation
             if(!passCheck && !usernameCheck) {
 
-                popMessage("Password and username too short, min 5 characters each", messageContainer);
+                errorMessage("Password and username too short, min 5 characters each", messageContainer);
                 return;
             }
             // else if username failed validation
             else if (!usernameCheck) {
-                popMessage("Username too short, min 5 characters", messageContainer);
+                errorMessage("Username too short, min 5 characters", messageContainer);
                 return;
             }
             // if password failed validation
-            popMessage("Password too short, min 5 characters", messageContainer);
+            errorMessage("Password too short, min 5 characters", messageContainer);
             return;
         }
 
         // POST to /register. Pass in JSON with username and password
         fetch("/register",{
             method: "POST",
-            headers: {"Content-Type": "Application/JSON"},
+            headers: {"Content-Type": "application/json"},
             body: JSON.stringify({
                 username: username,
                 password: password
@@ -72,12 +63,11 @@ function registerFormInit() {
         .then(async response => {
             
             // if 201 CREATED, follow Location
-            if (response.status == 201) window.location.href = response.headers.get("Location");
+            if (response.ok) window.location.href = response.headers.get("Location");
 
-            // if not 201 CREATED, it means we got an error message, so we inform the user by printing it
-            let text = await response.text();
-            let msg = `${text}`;
-            popMessage(msg, messageContainer);
+            // if not 201 CREATED, log error:
+            let msg = await response.text();
+            errorMessage(msg, messageContainer);
         });
     });
 }

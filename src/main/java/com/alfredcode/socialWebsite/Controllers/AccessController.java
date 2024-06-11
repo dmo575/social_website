@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -66,15 +67,29 @@ public class AccessController {
     }
     */
 
+    @GetMapping("/register")
+    public ModelAndView getRegiser(ModelMap model, @CookieValue(value="sessionId", defaultValue="") String sessionId, HttpServletResponse res, HttpServletRequest req) {
+
+        // if session authentication suceeds, redirect to /home
+        if(Auth.authenticateSession(sessionId, res)) {
+
+            // because the :redirect changes the location + status code, browser asks for that
+            return new ModelAndView("redirect:/", model);
+        }
+        
+        //return "forward:/register.html";
+        return new ModelAndView("neoregister", model);
+    }
+
     @GetMapping("/login")
     public ModelAndView getLogin(ModelMap model, @CookieValue(value="sessionId", defaultValue="") String sessionId, HttpServletResponse res) {
 
-        // if session authentication succeeds, redirect to /home
+        // if session authentication succeeds, redirect to /
         if(Auth.authenticateSession(sessionId, res)) {
             return new ModelAndView("redirect:/", model);
         }
 
-        return new ModelAndView("neologin", model);
+        return new ModelAndView("login", model);
     }
 
 
@@ -129,7 +144,7 @@ public class AccessController {
 
         // get model
         UserModel user = req.getBody();
-        
+
         // validate model data
         if(user == null) throw new IllegalArgumentException("User not provided.");
         if(user.getUsername() == null) throw new IllegalArgumentException("Missing JSON parameter: username");

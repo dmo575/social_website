@@ -1,0 +1,12 @@
+.w50 {
+    max-width: 50%;
+}
+
+.flex-container {
+    display: flex;
+}
+
+.flex-container-center {
+    display: flex;
+    justify-content: center;
+}

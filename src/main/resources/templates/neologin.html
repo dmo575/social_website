@@ -1,16 +1,20 @@
 <!-- login form -->
-<form id="login-form" action="/login" method="post">
-    <label for="username">username</label>
-    <input id="username" type="text">
-    <label for="password">password</label>
-    <input id="password" type="text">
-    <button type="submit">Submit</button>
+<form class="container" id="login-form" action="/login" method="post">
+    <div class="field">
+        <label class="label">Username</label>
+        <div class="control">
+            <input name="username" class="input" type="text" placeholder="▀▐▄▌█▀ ■▐">
+        </div>
+    </div>
+      
+    <div class="field">
+        <label class="label">Password</label>
+        <div class="control">
+            <input name="password" class="input" type="password" placeholder="▓▒░▓▒░▓▒░">
+        </div>
+    </div>
+    <button class="button" type="submit">Submit</button>
 </form>
 
-<!-- loads the login.js script -->
-<script>
-    const script = document.createElement('script');
-    script.src = "./js/login.js";
-    script.type = "module";
-    document.body.appendChild(script);
-</script>
+<!-- add the view script -->
+<script type="module" src="./js/login.js"></script>

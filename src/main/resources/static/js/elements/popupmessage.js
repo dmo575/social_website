@@ -1,15 +1,12 @@
 // returns the message element
-export function createMessage(msg) {
+export function errorMessage(message, container) {
     
-    let message = `<h3>${msg}</h3>`;
-    
-    return message;
-}
-
-// creates and adds the message element to given container, clears previous content
-export function popMessage(msg, container) {
-
-    let message = createMessage(msg);
-
-    container.innerHTML = message;
+    container.innerHTML =
+    `<div class="flex-container-center">
+        <article class="message is-danger w50">
+            <div class="message-body">
+            ${message}
+            </div>
+        </article>
+    </div>`;
 }

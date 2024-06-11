@@ -1,27 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SMW - Login</title>
-</head>
+<!-- login form -->
+<form class="container" id="login-form" action="/login" method="post">
+    <div class="field">
+        <label class="label">Username</label>
+        <div class="control">
+            <input name="username" class="input" type="text" placeholder="▀▐▄▌█▀ ■▐">
+        </div>
+    </div>
+      
+    <div class="field">
+        <label class="label">Password</label>
+        <div class="control">
+            <input name="password" class="input" type="password" placeholder="▓▒░▓▒░▓▒░">
+        </div>
+    </div>
+    <button class="button" type="submit">Submit</button>
+</form>
 
-
-<body>
-    <p>Login</p>
-    
-    <div id="message-container"></div>
-    
-    <!-- login form -->
-    <form id="login-form" action="/login" method="post">
-        <label for="username">username</label>
-        <input id="username" type="text">
-        <label for="password">password</label>
-        <input id="password" type="text">
-        <button type="submit">Submit</button>
-    </form>
-    
-    <script defer type="module" src="./js/login.js"></script>
-
-</body>
-</html>
+<!-- add the view script -->
+<script type="module" src="./js/login.js"></script>

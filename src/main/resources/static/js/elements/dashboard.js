@@ -1,34 +1,17 @@
-// given an array of dashboard buttons, returns a dashboard
-export function createDashboard(buttonsArr) {
+// returns false if the tab is already selected
+export function selectTab(tab, tabs) {
 
-    // create dashboard
-    const dashboard = document.createElement(`div`);
-    // ...
+    // if tab is already selected, return false
+    if(tab.classList.contains("is-active"))
+        return false;
 
-    // populate it with buttons
-    for(let i in buttonsArr) {
-        dashboard.appendChild(buttonsArr[i]);
+    // remove selection highlight from all tabs
+    for(let tabIndex in tabs) {
+        tabs[tabIndex].classList.remove("is-active");
     }
 
-    return dashboard;
-}
+    // add selection highlight to tab
+    tab.classList.add("is-active");
 
-// returns a dashboard button, set up to be added to a dashboard
-export function createDashboardBtn(name, icon, onClick) {
-    var buttonContainer = document.createElement('div');
-    var button = document.createElement('button');
-
-    button.textContent = name;
-    button.onclick = onClick;
-
-
-    buttonContainer.appendChild(button);
-
-    return buttonContainer;
-}
-
-// directs the client to a relative path
-// helper function to be used with createButton's onClick
-export function goto(path) {
-    window.location.href = path;
+    return true;
 }

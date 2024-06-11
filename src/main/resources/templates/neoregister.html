@@ -1,12 +1,20 @@
-<div id="message-container"></div>
-
-<!-- registration form -->
-<form id="registration-form" action="/register" method="post">
-    <label for="username">username</label>
-    <input id="username" type="text">
-    <label for="password">password</label>
-    <input id="password" type="text">
-    <button type="submit">Submit</button>
+<!-- login form -->
+<form class="container" id="registration-form" action="/register" method="post">
+    <div class="field">
+        <label class="label">Username</label>
+        <div class="control">
+            <input name="username" class="input" type="text" placeholder="▀▐▄▌█▀ ■▐">
+        </div>
+    </div>
+      
+    <div class="field">
+        <label class="label">Password</label>
+        <div class="control">
+            <input name="password" class="input" type="password" placeholder="▓▒░▓▒░▓▒░">
+        </div>
+    </div>
+    <button class="button" type="submit">Submit</button>
 </form>
 
-<script defer type="module" src="./js/register.js"></script>
+<!-- add the view script -->
+<script type="module" src="./js/register.js"></script>
