@@ -67,24 +67,25 @@ public class AccessController {
     }
     */
 
+    // if not logged in, returns the register form view
     @GetMapping("/register")
     public ModelAndView getRegiser(ModelMap model, @CookieValue(value="sessionId", defaultValue="") String sessionId, HttpServletResponse res, HttpServletRequest req) {
 
-        // if session authentication suceeds, redirect to /home
+        // if session authentication suceeds (meaning client is logged in), redirect to /
         if(Auth.authenticateSession(sessionId, res)) {
 
-            // because the :redirect changes the location + status code, browser asks for that
             return new ModelAndView("redirect:/", model);
         }
         
         //return "forward:/register.html";
-        return new ModelAndView("neoregister", model);
+        return new ModelAndView("register", model);
     }
 
+    // if not logged in, returns the login form view
     @GetMapping("/login")
     public ModelAndView getLogin(ModelMap model, @CookieValue(value="sessionId", defaultValue="") String sessionId, HttpServletResponse res) {
 
-        // if session authentication succeeds, redirect to /
+        // if session authentication suceeds (meaning client is logged in), redirect to /
         if(Auth.authenticateSession(sessionId, res)) {
             return new ModelAndView("redirect:/", model);
         }

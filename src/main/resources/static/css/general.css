@@ -10,3 +10,15 @@
     display: flex;
     justify-content: center;
 }
+
+.w100 {
+    max-width: 100%;
+}
+
+.w20 {
+    max-width: 20%;
+}
+
+.w80 {
+    max-width: 80%;
+}

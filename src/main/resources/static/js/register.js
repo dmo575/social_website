@@ -1,73 +1,89 @@
-import { validateUsername, validatePassword } from "./tools/clientvalidation.js";
+import {validatePassword, validateUsername} from "./tools/clientvalidation.js"
 import { errorMessage } from "./elements/popupmessage.js";
-
+import { validateInputVisual, clearInputValidationVisual } from "./tools/presentation.js";
 
 init();
-console.log("first");
-document.querySelector("#body-container").addEventListener("tab-register", (event) => {
+document.addEventListener("/register-view-event", (event) => {
     init();
-    console.log("second");
-
 });
 
-function init() {
-    const registrationForm = document.querySelector("#registration-form");
-    const messageContainer = document.querySelector("#message-container");
-    registerFormInit(registrationForm, messageContainer);
-}
+function init () {
+    
+    const loginForm = document.querySelector("#registration-form");
+    const messageContainer = document.querySelector(`#message-container`);
 
-
-function registerFormInit(registrationForm, messageContainer) {
-    // on registration form submit event
-    registrationForm.addEventListener("submit", function (event) {
-
-        // get fields
-        const username = event.target.elements["username"].value;
-        const password = event.target.elements["password"].value;
-        let passCheck = validatePassword(password);
-        let usernameCheck = validateUsername(username);
+    // on login form submit event
+    loginForm.addEventListener("submit", function (event) {
 
         event.preventDefault();
 
-        // client-side data validation
-        if(!passCheck || !usernameCheck) {
+        // get input elements
+        const usernameElement = event.target.elements["username"];
+        const passwordElement = event.target.elements["password"];
+        const passwordConfirmationElement = event.target.elements["password-confirmation"];
 
-            
 
-            // if password and username failed validation
-            if(!passCheck && !usernameCheck) {
+        // check whether the input is valid or not
+        const passOK = validatePassword(passwordElement.value);
+        const usernameOK = validateUsername(usernameElement.value);
+        const passwordConfirmationOK = passwordElement.value === passwordConfirmationElement.value && passOK;
+        
+        // highlight the input elements according to their valid state
+        validateInputVisual(usernameElement, usernameOK);
+        validateInputVisual(passwordElement, passOK);
+        validateInputVisual(passwordConfirmationElement, passwordConfirmationOK);
 
-                errorMessage("Password and username too short, min 5 characters each", messageContainer);
-                return;
-            }
-            // else if username failed validation
-            else if (!usernameCheck) {
-                errorMessage("Username too short, min 5 characters", messageContainer);
-                return;
-            }
-            // if password failed validation
-            errorMessage("Password too short, min 5 characters", messageContainer);
+
+        // show a message to the user with information about what went wrong
+        if(!passOK || !usernameOK || !passwordConfirmationOK) {
+
+            if(!usernameOK && !passOK)
+                errorMessage("Username and Password lengths are invalid", messageContainer);
+            else if(!usernameOK)
+                errorMessage("Username length is invalid", messageContainer);
+            else if(!passwordConfirmationOK)
+                errorMessage("Passwords do not match", messageContainer);
+            else
+                errorMessage("Password lenght  is invalid", messageContainer);
+
             return;
         }
+
+
 
         // POST to /register. Pass in JSON with username and password
         fetch("/register",{
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({
-                username: username,
-                password: password
+                username: usernameElement.value,
+                password: passwordElement.value
             })
         })
         // analyze response
         .then(async response => {
             
-            // if 201 CREATED, follow Location
+            // if 200 OK, redirect to suggested path
             if (response.ok) window.location.href = response.headers.get("Location");
 
-            // if not 201 CREATED, log error:
+            // if not 200 OK, inform user
             let msg = await response.text();
-            errorMessage(msg, messageContainer);
+            errorMessage(`${msg}`, messageContainer);
         });
+    });
+
+    loginForm.elements["username"].addEventListener("click", (event) => {
+        // when clicking the input, clear it from any valid/invalid visual queue
+        clearInputValidationVisual(event.target);
+    });
+
+    loginForm.elements["password"].addEventListener("click", (event) => {
+        // when clicking the input, clear it from any valid/invalid visual queue
+        clearInputValidationVisual(event.target);
+    });
+
+    loginForm.elements["password-confirmation"].addEventListener("click", (event) => {
+        // when clicking the input, clear it from any valid/invalid visual queue
+        clearInputValidationVisual(event.target);
     });
 }

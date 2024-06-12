@@ -1,9 +1,9 @@
 import {validatePassword, validateUsername} from "./tools/clientvalidation.js"
 import { errorMessage } from "./elements/popupmessage.js";
-
+import { validateInputVisual, clearInputValidationVisual } from "./tools/presentation.js";
 
 init();
-document.querySelector("#body-container").addEventListener("tab-login", (event) => {
+document.addEventListener("/login-view-event", (event) => {
     init();
 });
 
@@ -17,38 +17,40 @@ function init () {
 
         event.preventDefault();
 
-        const username = event.target.elements["username"];
-        const password = event.target.elements["password"];
+        // get input elements
+        const usernameElement = event.target.elements["username"];
+        const passwordElement = event.target.elements["password"];
 
-        const passOK = validatePassword(password.value);
-        const usernameOK = validateUsername(username.value);
+        // check whether the input is valid or not
+        const passOK = validatePassword(passwordElement.value);
+        const usernameOK = validateUsername(usernameElement.value);
         
+        // highlight the input elements according to their valid state
+        validateInputVisual(usernameElement, usernameOK);
+        validateInputVisual(passwordElement, passOK);
 
-        // validate the input
+        // show a message to the user with information about what went wrong
         if(!passOK || !usernameOK) {
-            if(!usernameOK && !passOK) {
+
+            if(!usernameOK && !passOK)
                 errorMessage("Username and Password lengths are invalid", messageContainer);
-                username.classList.add("is-danger");
-                password.classList.add("is-danger");
-                return;
-            }
-            else if(!usernameOK) {
+            else if(!usernameOK)
                 errorMessage("Username length is invalid", messageContainer);
-                username.classList.add("is-danger");
-                return;
-            }
-            errorMessage("Password lenght  is invalid", messageContainer);
-            password.classList.add("is-danger");
+            else
+                errorMessage("Password lenght  is invalid", messageContainer);
+
             return;
         }
+
+
 
         // POST to /login. Pass in JSON with username and password
         fetch("/login",{
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({
-                username: username,
-                password: password
+                username: usernameElement.value,
+                password: passwordElement.value
             })
         })
         // analyze response
@@ -57,24 +59,25 @@ function init () {
             // if 200 OK, redirect to home
             if (response.ok) window.location.href = response.headers.get("Location");
 
-            // if not 200 OK, inform user
+            // if not 200 OK:
+            
+            // inform user
             let msg = await response.text();
-            errorMessage(msg, messageContainer);
+            errorMessage(`${msg}`, messageContainer);
+
+            // update input elements' visual
+            validateInputVisual(usernameElement, false);
+            clearInputValidationVisual(passwordElement);
         });
     });
 
-    // add danger clearing visual to the username input
     loginForm.elements["username"].addEventListener("click", (event) => {
-        clearDanger(event.target);
+        // when clicking the input, clear it from any valid/invalid visual queue
+        clearInputValidationVisual(event.target);
     });
 
-    // add danger clearing visual to the password input
     loginForm.elements["password"].addEventListener("click", (event) => {
-        clearDanger(event.target);
+        // when clicking the input, clear it from any valid/invalid visual queue
+        clearInputValidationVisual(event.target);
     });
-}
-
-// clears the danger visual from given element
-function clearDanger(el) {
-    el.classList.remove("is-danger");
 }

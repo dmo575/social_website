@@ -46,7 +46,7 @@ These provide the registration and loggin interface.
 - /register
     - GET
         - if session: redirect to /
-        - no session: serve /register
+        - no session: serve /register VIEW
     - POST
         - if session: skip and redirect to /
         - no session: try to register
@@ -56,7 +56,7 @@ These provide the registration and loggin interface.
 - /login
     - GET
         - if session: redirect to /
-        - no session: serve /login
+        - no session: serve /login VIEW
     - POST
         - if session: skip and redirect to /
         - no session: try to login
@@ -65,8 +65,8 @@ These provide the registration and loggin interface.
 
 - /
     - GET
-        - if session: serve /home
-        - no session: serve /welcome
+        - if session: serve /portal PAGE
+        - no session: serve /welcome PAGE
 
 ### Sequrity
 I have a couple of basic things in place. No Spring Security added to the project (In my TOLEARN list)
@@ -94,7 +94,7 @@ These are some things implemented that I consider optimization-themed:
 
 **TODO**:
 
-- Optimize sessionId refresh rules.
+- Optimize sessionId refresh rules: instead of every time, a refresh expiration date.
 
 ### Other TODOs
 

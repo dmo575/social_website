@@ -1,6 +1,5 @@
-import { selectTab } from "./elements/dashboard.js";
+import { openTab } from "./tools/tab.js";
 import { loadView } from "./tools/tools.js";
-
 
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -8,14 +7,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const bodyContainer = document.querySelector(`#body-container`);
     const messageContainer = document.querySelector(`#message-container`);
     const tabWelcome = document.querySelector(`#tab-welcome`);
-    const tabWelcomeEvent = new CustomEvent("tab-welcome");
     const tabLogin = document.querySelector(`#tab-login`);
-    const tabLoginEvent = new CustomEvent("tab-login");
     const tabRegister = document.querySelector(`#tab-register`);
-    const tabRegisterEvent = new CustomEvent("tab-register");
     const tabContact = document.querySelector(`#tab-contact`);
-    const tabContactEvent = new CustomEvent("tab-contact");
-    const tabs = [tabWelcome, tabLogin, tabRegister, tabContact];
 
     tabWelcome.addEventListener("click", onClickTabWelcome);
     tabLogin.addEventListener("click", onClickTabLogin);
@@ -23,40 +17,40 @@ document.addEventListener("DOMContentLoaded", () => {
     tabContact.addEventListener("click", onClickTabContact);
     
     function onClickTabWelcome(event) {
-        if(!selectTab(event.target.parentNode, tabs)) return;
-
+        
         console.log("tab welcome");
     }
 
     function onClickTabLogin(event) {
-        if(!selectTab(event.target.parentNode, tabs)) return;
 
-        fetch("/login")
-        .then(response => {
-            if (response.ok) return response.text();
-        })
-        .then(loginView => {
-            loadView(bodyContainer, loginView, tabLoginEvent);
-        });
+        messageContainer.innerHTML = "";
+        openTab(event.target.parentNode, "/login", bodyContainer);
+        // handle tab not selected error
+        // handle tab not oppened error
+
     }
 
     function onClickTabRegister(event) {
-        if(!selectTab(event.target.parentNode, tabs)) return;
-
-        fetch("/register")
-        .then(response => {
-            if (response.ok) return response.text();
-        })
-        .then(registerView => {
-            loadView(bodyContainer, registerView, tabRegisterEvent);
-        });
+        messageContainer.innerHTML = "";
+        openTab(event.target.parentNode, "/register", bodyContainer);
+        // handle tab not selected error
+        // handle tab not oppened error
 
     }
 
     function onClickTabContact(event) {
-        if(!selectTab(event.target.parentNode, tabs)) return;
 
         console.log("tab contact");
     }
 
 });
+
+// TODO: We can have tab content transition animations, since we have the container for the tabs
+// content, we can animate it going away, load the content and animate it comin in.
+// we would have to make openTab an async function for that, so we can properly start the
+// comin in animation after the data is all set.
+// A fade out / fade in with some scale down / scale in, or a swipe right
+
+// or maybe the fade in out combine it with a scale up for the fade out and another scale up
+// from the fade in, the first one from normal size up, the second one from less than normal size
+// to normal size, to give the impression of depth.
