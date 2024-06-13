@@ -22,13 +22,13 @@ Hash: https://api.iconify.design/tabler:hash.svg?color=%23241f31
 <body>
     <div class="block"></div>
 
-    <div class="columns is-centered"> <!-- main frame -->
+    <div class="columns is-centered has-background-info"> <!-- main frame -->
 
-        <div class="column is-8"> <!-- centered column, where the cards go -->
+        <div class="column is-9"> <!-- centered column, where the cards go -->
 
-            <div class="container is-flex" style="min-height: 10rem; max-height: 10rem;"> <!-- Composite card container: tags + card + stats -->
+            <div class="container is-flex" style="min-height: 10rem; max-height: 10rem; column-gap: 1rem;"> <!-- Composite card container: tags + card + stats -->
 
-                <div class="container is-flex is-flex-direction-column is-justify-content-space-between px-3" style="min-width: 10rem; max-width: 10rem;"> <!-- Tags container -->
+                <div class="container is-flex is-flex-direction-column is-justify-content-space-between m-0" style=" max-width: 10rem;"> <!-- Tags container -->
 
                     <div class="tags are-normal has-addons m-1 is-flex is-flex-direction-row is-flex-wrap-nowrap" style="width: 100%;">
                         <a class="tag is-dark py-4" style="width: 10%;"> <p class="has-text-warning">C</p></a>
@@ -48,11 +48,11 @@ Hash: https://api.iconify.design/tabler:hash.svg?color=%23241f31
                     </div>
                 </div>
 
-                <div class="card m-0" style="overflow: hidden;"> <!-- Card -->
-                    <div class="card-content py-4 px-5">
+                <div class="card m-0" style="overflow: hidden; min-width: 40rem;"> <!-- Card -->
+                    <div class="card-content" style="max-height: 100%;">
                         <div class="content">
                             <h3>Title</h3>
-                            <p>
+                            <p> <!-- set a max ammount of characters for this tag -->
                                 Lorem ipsum leo risus, porta ac consectetur ac, vestibulum at eros. Donec
                                 id elit non mi porta gravida at eget metus. Cum sociis natoque penatibus
                                 et magnis dis parturient montes, nascetur ridiculus mus. Cras mattis
@@ -62,37 +62,26 @@ Hash: https://api.iconify.design/tabler:hash.svg?color=%23241f31
                     </div>
                 </div>
 
-                <iv class="container is-flex is-flex-direction-column is-justify-content-space-around px-1" style="min-width: 5rem; max-width: 7rem;"> <!-- Stats -->
+                <iv class="box is-flex is-flex-direction-column is-justify-content-space-around" style="min-width: 8rem; max-width: 7rem;"> <!-- Stats -->
 
-                    <span class="tag py-4">
-                        <span class="icon-text">
-                            <span class="icon"><img src="https://api.iconify.design/iconamoon:eye-fill.svg?color=%23241f31" alt="Views"></span>
-                            <p>1.2456</p>
-                        </span>
+                    <span class="icon-text is-flex is-flex-direction-row is-flex-wrap-nowrap">
+                        <span class="icon"><img src="https://api.iconify.design/iconamoon:eye-fill.svg?color=%23241f31" alt="Views"></span>
+                        <p>100.2K</p>
                     </span>
-                    <span class="tag py-4">
-                        <span class="icon-text">
-                            <span class="icon"><img src="https://api.iconify.design/zondicons:thumbs-up.svg?color=%23241f31" alt="Likes"></span>
-                            <p>53</p>
-                        </span>
+                    <span class="icon-text is-flex is-flex-direction-row is-flex-wrap-nowrap">
+                        <span class="icon"><img src="https://api.iconify.design/zondicons:thumbs-up.svg?color=%23241f31" alt="Likes"></span>
+                        <p>53</p>
                     </span>
-                    <span class="tag py-4">
-                        <span class="icon-text">
-                            <span class="icon"><img src="https://api.iconify.design/ic:baseline-mode-comment.svg?color=%23241f31" alt="Comments"></span>
-                            <p>81</p>
-                        </span>
+                    <span class="icon-text is-flex is-flex-direction-row is-flex-wrap-nowrap">
+                        <span class="icon"><img src="https://api.iconify.design/ic:baseline-mode-comment.svg?color=%23241f31" alt="Comments"></span>
+                        <p>81</p>
                     </span>
-                    <span class="tag py-4">
-                        <span class="icon-text">
-                            <span class="icon"><img src="https://api.iconify.design/bx:bxs-save.svg?color=%23241f31" alt="Saves"></span>
-                            <p>34</p>
-                        </span>
+                    <span class="icon-text is-flex is-flex-direction-row is-flex-wrap-nowrap">
+                        <span class="icon"><img src="https://api.iconify.design/bx:bxs-save.svg?color=%23241f31" alt="Saves"></span>
+                        <p>34</p>
                     </span>
+
                 </div>
-
-            </div>
-
-
         </div>
     </div>
 
