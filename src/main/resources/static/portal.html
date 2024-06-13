@@ -9,40 +9,106 @@
 
     <title>Document</title>
 </head>
+
+<!-- 
+Views: https://api.iconify.design/iconamoon:eye-fill.svg?color=%23241f31
+Likes: https://api.iconify.design/zondicons:thumbs-up.svg?color=%23241f31
+Comments: https://api.iconify.design/ic:baseline-mode-comment.svg?color=%23241f31
+Saves: https://api.iconify.design/bx:bxs-save.svg?color=%23241f31
+
+Hash: https://api.iconify.design/tabler:hash.svg?color=%23241f31
+ -->
+
 <body>
-    <div class="container">
-        <div class="card">
-            <div class="card-content py-4 px-5">
-                <div class="content">
-                    <div class="container">
-                        <div class="level w100">
-                            <div class="level-right w80">
-                                <div class="container">
-                                    <h3>Title</h3>
-                                    <p>
-                                        Lorem ipsum leo risus, porta ac consectetur ac, vestibulum at eros. Donec
-                                        id elit non mi porta gravida at eget metus. Cum sociis natoque penatibus
-                                        et magnis dis parturient montes, nascetur ridiculus mus. Cras mattis
-                                        consectetur purus sit amet fermentum.
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="level-left">
-                                <div class="container">
-                                    <p>PROFILE</p>
-                                </div>
-                            </div>
+    <div class="block"></div>
+
+    <div class="columns is-centered"> <!-- main frame -->
+
+        <div class="column is-8"> <!-- centered column, where the cards go -->
+
+            <div class="container is-flex" style="min-height: 10rem; max-height: 10rem;"> <!-- Composite card container: tags + card + stats -->
+
+                <div class="container is-flex is-flex-direction-column is-justify-content-space-between px-3" style="min-width: 10rem; max-width: 10rem;"> <!-- Tags container -->
+
+                    <div class="tags are-normal has-addons m-1 is-flex is-flex-direction-row is-flex-wrap-nowrap" style="width: 100%;">
+                        <a class="tag is-dark py-4" style="width: 10%;"> <p class="has-text-warning">C</p></a>
+                        <a class="tag is-link py-4" style="width: 90%;"> <p class="has-text-left" style="width: 100%;">Programming</p></a>
+                    </div>
+                    <div class="tags are-normal has-addons m-1 is-flex is-flex-direction-row is-flex-wrap-nowrap" style="width: 100%;">
+                        <a class="tag is-dark py-4" style="width: 10%;"> <p>#</p></a>
+                        <a class="tag is-light py-4" style="width: 90%;"> <p class="has-text-left" style="width: 100%;">Spring-Boot</p></a>
+                    </div>
+                    <div class="tags are-normal has-addons m-1 is-flex is-flex-direction-row is-flex-wrap-nowrap" style="width: 100%;">
+                        <a class="tag is-dark py-4" style="width: 10%;"> <p>#</p></a>
+                        <a class="tag is-light py-4" style="width: 90%;"> <p class="has-text-left" style="width: 100%;">Java</p></a>
+                    </div>
+                    <div class="tags are-normal has-addons m-1 is-flex is-flex-direction-row is-flex-wrap-nowrap" style="width: 100%;">
+                        <a class="tag is-dark py-4" style="width: 10%;"> <p>#</p></a>
+                        <a class="tag is-light py-4" style="width: 90%;"> <p class="has-text-left" style="width: 100%;">Backend</p></a>
+                    </div>
+                </div>
+
+                <div class="card m-0" style="overflow: hidden;"> <!-- Card -->
+                    <div class="card-content py-4 px-5">
+                        <div class="content">
+                            <h3>Title</h3>
+                            <p>
+                                Lorem ipsum leo risus, porta ac consectetur ac, vestibulum at eros. Donec
+                                id elit non mi porta gravida at eget metus. Cum sociis natoque penatibus
+                                et magnis dis parturient montes, nascetur ridiculus mus. Cras mattis
+                                consectetur purus sit amet fermentum.
+                            </p>
                         </div>
                     </div>
                 </div>
+
+                <iv class="container is-flex is-flex-direction-column is-justify-content-space-around px-1" style="min-width: 5rem; max-width: 7rem;"> <!-- Stats -->
+
+                    <span class="tag py-4">
+                        <span class="icon-text">
+                            <span class="icon"><img src="https://api.iconify.design/iconamoon:eye-fill.svg?color=%23241f31" alt="Views"></span>
+                            <p>1.2456</p>
+                        </span>
+                    </span>
+                    <span class="tag py-4">
+                        <span class="icon-text">
+                            <span class="icon"><img src="https://api.iconify.design/zondicons:thumbs-up.svg?color=%23241f31" alt="Likes"></span>
+                            <p>53</p>
+                        </span>
+                    </span>
+                    <span class="tag py-4">
+                        <span class="icon-text">
+                            <span class="icon"><img src="https://api.iconify.design/ic:baseline-mode-comment.svg?color=%23241f31" alt="Comments"></span>
+                            <p>81</p>
+                        </span>
+                    </span>
+                    <span class="tag py-4">
+                        <span class="icon-text">
+                            <span class="icon"><img src="https://api.iconify.design/bx:bxs-save.svg?color=%23241f31" alt="Saves"></span>
+                            <p>34</p>
+                        </span>
+                    </span>
+                </div>
+
             </div>
 
-            <div class="card-image">
-                <figure class="image ">
-                    <img src="https://fastly.picsum.photos/id/236/800/50.jpg?hmac=LT_YpVo4pI80cT9KbzfpmycAnBBxWzgexfzPXOysgi8" alt="Placeholder image"/>
-                </figure>
-            </div>
 
+        </div>
+    </div>
+
+    <div class="columns is-vcentered">
+
+        <div class="column p-1 is-offset-2"><!-- Category column -->
+            
+        </div>
+
+        <div class="column p-1 is-6"><!-- Card column -->
+            
+        </div>
+
+
+        <div class="column"><!-- Stats column -->
+            
         </div>
     </div>
 </body>
