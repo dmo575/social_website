@@ -22,33 +22,58 @@ Hash: https://api.iconify.design/tabler:hash.svg?color=%23241f31
 <body>
     <div class="block"></div>
 
-    <div class="columns is-centered has-background-info"> <!-- main frame -->
+    <div class="columns has-background-grey-lighter"> <!-- main frame -->
 
-        <div class="column is-9"> <!-- centered column, where the cards go -->
+        <div class="column"> <!-- center column, where the posts go -->
 
-            <div class="container is-flex" style="min-height: 10rem; max-height: 10rem; column-gap: 1rem;"> <!-- Composite card container: tags + card + stats -->
+            <div class="container is-flex" style="min-height: 10rem; column-gap: 1rem;"> <!-- Composite container (post): tags + card + stats -->
+                <!-- 
+                    
+                    is-flex: provides the horizontal layout of the components by default
+                    max-height: For dimensions
+                    column-gap: provides separation of elements
+                -->
 
-                <div class="container is-flex is-flex-direction-column is-justify-content-space-between m-0" style=" max-width: 10rem;"> <!-- Tags container -->
+                <div class="container is-flex is-flex-direction-column is-justify-content-space-between m-0" style="flex-grow: 0; max-width: 10rem;"> <!-- Tags container -->
+                    <!--
+                    is-flex, is-flex-direction-column: provides vertical layout of components
+                    is-justify-content-space-between: separation between components
+                    max-width: For dimensions
+                    -->
 
-                    <div class="tags are-normal has-addons m-1 is-flex is-flex-direction-row is-flex-wrap-nowrap" style="width: 100%;">
+                    <div class="tags are-normal has-addons m-1 is-flex is-flex-wrap-nowrap" style="width: 100%;">
+                        <!--
+                        visual:
+                        tags: adds the visual elements of the tag (borders, background colors)
+                        are-normal: size of the tag
+                        has-addons: used to signal that the tag is composed of two elements
+
+                        layout:
+                        is-flex, is-flex-directionrow: provides the horizontal layout of the elements
+                        is-flex-wrap-nowrap: prohibits elements from wrapping
+
+                        adaptiveness:
+                        width: tells the container to take up all the horizontal space it is given
+
+                        -->
                         <a class="tag is-dark py-4" style="width: 10%;"> <p class="has-text-warning">C</p></a>
                         <a class="tag is-link py-4" style="width: 90%;"> <p class="has-text-left" style="width: 100%;">Programming</p></a>
                     </div>
-                    <div class="tags are-normal has-addons m-1 is-flex is-flex-direction-row is-flex-wrap-nowrap" style="width: 100%;">
+                    <div class="tags are-normal has-addons m-1 is-flex is-flex-wrap-nowrap" style="width: 100%;">
                         <a class="tag is-dark py-4" style="width: 10%;"> <p>#</p></a>
                         <a class="tag is-light py-4" style="width: 90%;"> <p class="has-text-left" style="width: 100%;">Spring-Boot</p></a>
                     </div>
-                    <div class="tags are-normal has-addons m-1 is-flex is-flex-direction-row is-flex-wrap-nowrap" style="width: 100%;">
+                    <div class="tags are-normal has-addons m-1 is-flex is-flex-wrap-nowrap" style="width: 100%;">
                         <a class="tag is-dark py-4" style="width: 10%;"> <p>#</p></a>
                         <a class="tag is-light py-4" style="width: 90%;"> <p class="has-text-left" style="width: 100%;">Java</p></a>
                     </div>
-                    <div class="tags are-normal has-addons m-1 is-flex is-flex-direction-row is-flex-wrap-nowrap" style="width: 100%;">
+                    <div class="tags are-normal has-addons m-1 is-flex is-flex-wrap-nowrap" style="width: 100%;">
                         <a class="tag is-dark py-4" style="width: 10%;"> <p>#</p></a>
                         <a class="tag is-light py-4" style="width: 90%;"> <p class="has-text-left" style="width: 100%;">Backend</p></a>
                     </div>
                 </div>
 
-                <div class="card m-0" style="overflow: hidden; min-width: 40rem;"> <!-- Card -->
+                <div class="card m-0" style="flex-grow: 1; overflow: hidden; min-width: 40rem;"> <!-- Card -->
                     <div class="card-content" style="max-height: 100%;">
                         <div class="content">
                             <h3>Title</h3>
@@ -62,7 +87,7 @@ Hash: https://api.iconify.design/tabler:hash.svg?color=%23241f31
                     </div>
                 </div>
 
-                <iv class="box is-flex is-flex-direction-column is-justify-content-space-around" style="min-width: 8rem; max-width: 7rem;"> <!-- Stats -->
+                <iv class="box is-flex is-flex-direction-column is-justify-content-space-around" style="flex-grow: 0; min-width: 8rem; max-width: 7rem;"> <!-- Stats -->
 
                     <span class="icon-text is-flex is-flex-direction-row is-flex-wrap-nowrap">
                         <span class="icon"><img src="https://api.iconify.design/iconamoon:eye-fill.svg?color=%23241f31" alt="Views"></span>
@@ -83,6 +108,7 @@ Hash: https://api.iconify.design/tabler:hash.svg?color=%23241f31
 
                 </div>
         </div>
+
     </div>
 
     <div class="columns is-vcentered">
