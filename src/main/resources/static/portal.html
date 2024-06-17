@@ -8,7 +8,20 @@
     <title>Portal</title>
 </head>
 <body>
-    <div class="block"></div>
-    <p>Portal</p>
+    <div id="dashboard-container">
+        <div class="tabs is-centered">
+            <ul>
+              <li id="tab-me" class="is-active"><a>Me</a></li>
+              <li id="tab-private"><a>Private</a></li>
+              <li id="tab-public"><a>Public</a></li>
+              <li id="tab-subs"><a>Subs</a></li>
+              <li id="tab-saved"><a>Saved</a></li>
+            </ul>
+          </div>
+    </div>
+    <div id="message-container"></div>
+    <div id="body-container"></div>
+
+    <script type="module" src="./js/portal.js"></script>
 </body>
 </html>

@@ -115,10 +115,10 @@ These are some things implemented that I consider optimization-themed:
 
 **Portal - page**
 - User can manage its user profile via the Me tab
-- User can see personal feed via the My Space tab
-- User can see the latest going on and search all posts via the Feed tab
-- User can manage subscriptions (people whos posts appear on "My Space") via the My Collection tab
-- User can see and manage saves posts via the My Collection tab
+- User can see personal feed via the Private tab
+- User can see the latest going on and search all posts via the Public tab
+- User can manage subscriptions (people whos posts appear on "Private") via the Collection tab
+- User can see and manage saves posts via the Collection tab
 
 
 **Me - tab**
@@ -134,16 +134,16 @@ A place where you can see all the posts you have created, its the profile page, 
     - Edit a post
     - Pin a post
 
-**My Space - tab**
+**Private - tab**
 
 A place where you can see all the posts from users you are subscribed to, ordered by creation time.
 
-**Feed - tab**
+**Public - tab**
 
 A place where you can see the most popular posts at the moment, also most popular tags and topics.
 You can also globally search for posts with the following: Category, hashtag and keywords.
 
-**My Collection - tab**
+**Collection - tab**
 
 Place where you can see and manage users you are subscribed to and posts you have saved.
 
