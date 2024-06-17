@@ -6,7 +6,7 @@ Hi! This is what I am working on right now.
 
 - **Front end server**: Will serve the front end but will also live alongside the backend server (the one with the APIs).
 - **Backend tech**: Java + Spring Boot + JPA
-- **Frontend tech**: JS/HTML/CSS + Bootstrap
+- **Frontend tech**: JS/HTML/CSS + [BULMA](https://bulma.io/)
 - **Database server**: SQLite
 - **Build tool**: Maven
 
@@ -105,10 +105,47 @@ These are some things implemented that I consider optimization-themed:
 
 
 
+### User stories, ideas:
+
+**Welcome - page**
+- User can read about the website via the Welcome tab
+- User can register via the register tab
+- User can log in via the login tab
+- User can read about contact information via the Contact tab
+
+**Portal - page**
+- User can manage its user profile via the Me tab
+- User can see personal feed via the My Space tab
+- User can see the latest going on and search all posts via the Feed tab
+- User can manage subscriptions (people whos posts appear on "My Space") via the My Collection tab
+- User can see and manage saves posts via the My Collection tab
 
 
+**Me - tab**
 
+A place where you can see all the posts you have created, its the profile page, but when its your own you have an additional "post" with some fields that allow you to edit your stuff
+- User can edit user settings:
+    - email
+    - password
+    - username
+- User can manage own posts:
+    - Delete a post
+    - Add a post
+    - Edit a post
+    - Pin a post
 
+**My Space - tab**
+
+A place where you can see all the posts from users you are subscribed to, ordered by creation time.
+
+**Feed - tab**
+
+A place where you can see the most popular posts at the moment, also most popular tags and topics.
+You can also globally search for posts with the following: Category, hashtag and keywords.
+
+**My Collection - tab**
+
+Place where you can see and manage users you are subscribed to and posts you have saved.
 
 
 
