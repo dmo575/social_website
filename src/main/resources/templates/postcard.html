@@ -1,0 +1,64 @@
+<!-- 
+Views: https://api.iconify.design/iconamoon:eye-fill.svg?color=%23241f31
+Likes: https://api.iconify.design/zondicons:thumbs-up.svg?color=%23241f31
+Comments: https://api.iconify.design/ic:baseline-mode-comment.svg?color=%23241f31
+Saves: https://api.iconify.design/bx:bxs-save.svg?color=%23241f31
+
+Hash: https://api.iconify.design/tabler:hash.svg?color=%23241f31
+ -->
+
+<div class="post-container"> <!-- post container, holds the tags, card and stats elements -->
+        
+    <div class="post-tags"> <!-- Tags container -->
+
+        <div class="tags are-normal has-addons m-1 is-flex is-flex-wrap-nowrap" style="flex-grow: 1;" >
+            <a class="tag is-dark py-4" style="width: 10%;"> <p class="has-text-warning">C</p></a>
+            <a class="tag is-link py-4" style="width: 90%;"> <p class="has-text-left" style="width: 100%;">{post.category}</p></a>
+        </div>
+        <div class="tags are-normal has-addons m-1 is-flex is-flex-wrap-nowrap" style="flex-grow: 1;">
+            <a class="tag is-dark py-4" style="width: 10%;"> <p>#</p></a>
+            <a class="tag is-light py-4" style="width: 90%;"> <p class="has-text-left" style="width: 100%;">{post.hash1}</p></a>
+        </div>
+        <div class="tags are-normal has-addons m-1 is-flex is-flex-wrap-nowrap" style="flex-grow: 1;">
+            <a class="tag is-dark py-4" style="width: 10%;"> <p>#</p></a>
+            <a class="tag is-light py-4" style="width: 90%;"> <p class="has-text-left" style="width: 100%;">{post.hash2}</p></a>
+        </div>
+        <div class="tags are-normal has-addons m-1 is-flex is-flex-wrap-nowrap" style="flex-grow: 1;">
+            <a class="tag is-dark py-4" style="width: 10%;"> <p>#</p></a>
+            <a class="tag is-light py-4" style="width: 90%;"> <p class="has-text-left" style="width: 100%;">{post.hash3}</p></a>
+        </div>
+
+    </div>
+
+    <div class="post-card   card m-0"> <!-- Card -->
+        <div class="card-content">
+            <div class="content">
+                <h3>{post.title}</h3>
+                <p> <!-- set a max ammount of characters for this tag -->
+                    {post.content}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <iv class="post-stats   box p-1"> <!-- Stats -->
+
+        <span class="icon-text is-flex is-flex-direction-row is-flex-wrap-nowrap">
+            <span class="icon"><img src="https://api.iconify.design/iconamoon:eye-fill.svg?color=%23241f31" alt="Views"></span>
+            <p>{post.views}</p>
+        </span>
+        <span class="icon-text is-flex is-flex-direction-row is-flex-wrap-nowrap">
+            <span class="icon"><img src="https://api.iconify.design/zondicons:thumbs-up.svg?color=%23241f31" alt="Likes"></span>
+            <p>{post.likes}</p>
+        </span>
+        <span class="icon-text is-flex is-flex-direction-row is-flex-wrap-nowrap">
+            <span class="icon"><img src="https://api.iconify.design/ic:baseline-mode-comment.svg?color=%23241f31" alt="Comments"></span>
+            <p>{post.comments}</p>
+        </span>
+        <span class="icon-text is-flex is-flex-direction-row is-flex-wrap-nowrap">
+            <span class="icon"><img src="https://api.iconify.design/bx:bxs-save.svg?color=%23241f31" alt="Saves"></span>
+            <p>{post.saves}</p>
+        </span>
+
+    </div>
+</div>

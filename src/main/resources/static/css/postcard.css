@@ -1,0 +1,49 @@
+/* post on Tablet+ */
+.post-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 100%;
+    column-gap: 1rem;
+    min-height: 10rem;
+}
+
+.post-tags {
+    display: flex;
+    flex-direction: column;
+}
+
+.post-card {
+    flex-grow: 1;
+    overflow: hidden;
+    max-width: 50rem;
+}
+
+
+.post-stats {
+    display: flex;
+    flex-direction: column;
+}
+
+
+/* post on Mobile- */
+@media (max-width: 768px) {
+
+    .post-container {
+        flex-direction: column;
+    }
+
+    .post-tags {
+        flex-direction: row;
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .post-stats {
+        flex-direction: row;
+        width: 100%;
+        justify-content: space-evenly;
+        flex-wrap: wrap;
+    }
+}
