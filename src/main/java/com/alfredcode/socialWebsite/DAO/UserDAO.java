@@ -20,11 +20,12 @@ public class UserDAO {
     // CREATE - User
     public boolean createUser(UserModel u) {
 
-        boolean success = db.users.add(u);
+        //boolean success = db.users.add(u);
+        boolean success = db.createUser(u);
 
         if(success) {
 
-            logger.warn("CREATE user: " + u.getUsername() + ", " + u.getPassword() + ". t="+ db.users.size());
+            logger.warn("CREATE user: " + u.getUsername() + ", " + u.getPassword() + ". t="+ db.getUsersCount());
             return true;
         }
 
@@ -36,7 +37,7 @@ public class UserDAO {
     // QUERY - User or NULL if not found
     public UserModel getUserByName(String name) {
 
-        for(UserModel u : db.users) {
+        for(UserModel u : db.getAllUsers()) {
 
             if(u.getUsername().equals(name)) {
 
@@ -51,18 +52,18 @@ public class UserDAO {
     public void setSession(String username, String sessionHash, Date expires) {
         
         SessionData sessionData = new SessionData(username, expires);
-        db.sessions.put(sessionHash, sessionData);
+        db.addSession(sessionHash, sessionData);
     }
 
     // QUERY - Session
-    public SessionData getSessionById(String sessionId) {
+    public SessionData getSessionByHash(String sessionHash) {
 
-        return db.sessions.get(sessionId);
+        return db.getSessionData(sessionHash);
     }
 
     // DELETE - Session
-    public void removeSession(String sessionId) {
+    public void removeSession(String sessionHash) {
         
-        db.sessions.remove(sessionId);
+        db.removeSession(sessionHash);
     }
 }

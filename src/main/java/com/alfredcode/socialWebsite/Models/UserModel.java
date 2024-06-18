@@ -1,6 +1,11 @@
 package com.alfredcode.socialWebsite.Models;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter @Setter
 public class UserModel {
+    private Integer id = null;
     private String username = null;
     private String password = null;
 
@@ -9,10 +14,8 @@ public class UserModel {
         this.username = name;
         this.password = password;
     };
-
-    public String getUsername(){ return username; }
-    public String getPassword(){ return password; }
-
-    public void setUsername(String n) {username = n;}
-    public void setPassword(String p) {password = p;}
+    public UserModel(Integer id, String name, String password) {
+        this(name, password);
+        this.id = id;
+    }
 }

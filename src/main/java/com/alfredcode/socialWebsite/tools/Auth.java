@@ -86,7 +86,7 @@ public class Auth {
     public static boolean authenticateSession(String sessionId, HttpServletResponse res) {
 
         // get session data
-        SessionData sessionData = userDao.getSessionById(sessionId);
+        SessionData sessionData = userDao.getSessionByHash(sessionId);
 
         // if we cannot find session with provided sessionId, fail authentication
         if(sessionData == null) return false;
@@ -118,6 +118,6 @@ public class Auth {
         if(user == null) throw new FailedUserAuthenticationException("Incorrect username.");
 
         // authenticate
-        if(!BCrypt.verifyer().verify(password.toCharArray(), user.getPassword().toCharArray()).verified) throw new FailedUserAuthenticationException("Incorrect passwprd.");
+        if(!BCrypt.verifyer().verify(password.toCharArray(), user.getPassword().toCharArray()).verified) throw new FailedUserAuthenticationException("Incorrect password.");
     }
 }

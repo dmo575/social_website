@@ -122,17 +122,14 @@ These are some things implemented that I consider optimization-themed:
 
 
 **Me - tab**
+You can see:
+- All posts you have created ordered by date
+- Your profile section box
+- Hovering a post will show a gear icon, when licked you will see buttons labeled as: pin, edit, delete.
+- Hovering the profile section box will show a gear button that when clicked takes you to an edit profiel page.
+- A button for creating a new post, takes you to the post creation page.
 
-A place where you can see all the posts you have created, its the profile page, but when its your own you have an additional "post" with some fields that allow you to edit your stuff
-- User can edit user settings:
-    - email
-    - password
-    - username
-- User can manage own posts:
-    - Delete a post
-    - Add a post
-    - Edit a post
-    - Pin a post
+This is essentially the account page, and the edit options only appear if you are logged in as the user, otherwise this is how checking anyones user will look like (plus a subscribe button to subscribe to that user in particular)
 
 **Private - tab**
 
