@@ -1,9 +1,7 @@
-## This hold document is a WIP as im re-writting it as I change the project.
+## This document is a WIP
 
 
-Hi! This is what I am working on right now.
-
-**The objective** is to make a social media blogpost website.
+**The idea** is to make a social media blogpost website.
 
 - **Front end server**: Will serve the front end but will also live alongside the backend server (the one with the APIs).
 - **Backend tech**: Java + Spring Boot + JPA
