@@ -62,27 +62,31 @@ Description types:
 |/             | GET   |✖️      |welcome.html            |Page       |200 OK    |-            |
 |/             | GET   |✔️      |portal.html             |Page       |200 OK    |-            |
 
-**From here on out, we can assume that any request made to the endpoints below that doesnt provide a valid session ID will result on a redirect to /.**
+**From here on out, we can assume that any request made to the endpoints below that doesnt come with a valid session ID will result on a redirect to /.**
 
-**PostController**: Endpoints related to serving posts.
-|Endpoint                      | Verb  |Response                |Description                    |SC      |Req. body    |
-|------------------------------|-------|------------------------|-------------------------------|--------|-------------|
-|/post                         | GET   |welcome.html            |View                           |200 OK  |-            |
-|/post/{post_id}               | GET   |PostModel               |Query post                     |200 OK  |-            |
-|/posts/{user_id}              | GET   |PostModel[10]           |Query posts (0 to 10)          |200 OK  |-            |
-|/posts/{user_id}?page=P       | GET   |PostModel[10]           |Query posts (10\*P to 10\*P+10)|200 OK  |-            |
-|/posts/{user_id}?page=P&len=L | GET   |PostModel[L]            |Query posts (L\*P to L\*P+L)   |200 OK  |-            |
+**PostController**: RESTful endpoints related to serving posts, along a default template for fisplaying a post element (/post).
+|Endpoint                                | Verb  |Response                |Description                      |SC      |Req. body    |
+|----------------------------------------|-------|------------------------|---------------------------------|--------|-------------|
+|/post                                   |GET    |post.html               |View                             |200 OK  |-            |
+|/post/{post_id}                         |GET    |PostModel               |Query post                       |200 OK  |-            |
+|/posts?filter={F}                       |GET    |PostModel[10]           |Query posts (0 to 9)             |200 OK  |-            |
+|/posts?filter={F}&page={P}              |GET    |PostModel[10]           |Query posts (10\*P to 10\*P+10)  |200 OK  |-            |
+|/posts?filter={F}&page={P}&len={L}      |GET    |PostModel[L]            |Query posts (L\*P to L\*P+L)     |200 OK  |-            |
+|/post/{post_id}                         |DELETE |PostModel               |Delete post                      |200 OK  |-            |
+|/post                                   |POST   |PostModel               |Create post                      |200 OK  |PostModel    |
+|/post/{post_id}                         |PUT    |PostModel               |Update post, create if not found |200 OK  |PostModel    |
+|/post/{post_id}                         |PATCH  |PostModel               |Update post if it exists         |200 OK  |PostModel    |
 
 
-/post/{id}
-/posts?filter=X&orb=Y&ord=Z
-/posts/{user_id}?filter=X&orb=Y&ord=Z
+**Filters**: user_id, category, hashtag
 
-/posts/{user_id}    number
-/posts/{category}   String
-/posts/{hashtag}    #String
-/
+Note when querying posts, the order of those is from most to least recently created.
 
+**UserController**:
+|Endpoint                                | Verb  |Response                |Description                    |SC      |Req. body    |
+|----------------------------------------|-------|------------------------|-------------------------------|--------|-------------|
+|/post                                   | GET   |post.html               |View                           |200 OK  |-            |
+|/post/{post_id}                         | GET   |PostModel               |Query post                     |200 OK  |-            |
 
 ### Database
 Below are the tables (WIP):
