@@ -10,4 +10,8 @@ public class PostService {
     public PostModel[] getAllPosts() {
         return postDao.getPosts();
     }
+
+    public PostModel getPostById(Integer postId) {
+        return postDao.getPostById(postId);
+    }
 }

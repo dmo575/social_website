@@ -6,8 +6,11 @@ import com.alfredcode.socialWebsite.Models.PostModel;
 public class PostDAO {
     private Database db = Database.getInstance();
     
-    // GET - Posts
     public PostModel[] getPosts() {
         return db.getAllPosts();
+    }
+
+    public PostModel getPostById(Integer postId) {
+        return db.getPostById(postId);
     }
 }

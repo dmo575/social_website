@@ -111,6 +111,16 @@ public class Database {
     public PostModel[] getAllPosts() {
         return posts.toArray(new PostModel[0]);
     }
+
+    public PostModel getPostById(Integer postId) {
+        
+        for(PostModel p : posts) {
+            if(p.getId() == postId)
+                return p;
+        }
+
+        return null;
+    }
     // END CRUD POSTS   ==  ==  ==
 
 

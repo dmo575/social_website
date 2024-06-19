@@ -40,7 +40,7 @@ public class AccessController {
      *  - 200: If the user is not in a valid session
      */
     @GetMapping("/register")
-    public ModelAndView getRegiser(@CookieValue(value="sessionId") String sessionId, HttpServletResponse res) {
+    public ModelAndView getRegiser(@CookieValue(value="sessionId", defaultValue = "") String sessionId, HttpServletResponse res) {
 
         // if in a valid session, redirect to /
         if(Auth.authenticateSession(sessionId, res)) return new ModelAndView("redirect:/", HttpStatus.SEE_OTHER);
@@ -58,7 +58,7 @@ public class AccessController {
      *  - 200: If the user is not in a valid session
      */
     @GetMapping("/login")
-    public ModelAndView getLogin(@CookieValue(value="sessionId") String sessionId, HttpServletResponse res) {
+    public ModelAndView getLogin(@CookieValue(value="sessionId", defaultValue = "") String sessionId, HttpServletResponse res) {
 
         // if in a valid session, redirect to /
         if(Auth.authenticateSession(sessionId, res)) return new ModelAndView("redirect:/", HttpStatus.SEE_OTHER);
@@ -77,7 +77,7 @@ public class AccessController {
      *  - 401: If the user is already in a valid session.
      */
     @PostMapping("/register")
-    public void postRegister(@CookieValue(value="sessionId") String sessionId, HttpServletResponse res, RequestEntity<UserModel> req) {
+    public void postRegister(@CookieValue(value="sessionId", defaultValue = "") String sessionId, HttpServletResponse res, RequestEntity<UserModel> req) {
        
         
         // if in a valid session, throw forbiddenActionException
@@ -113,7 +113,7 @@ public class AccessController {
      *  - 401: If the user is already in a valid session.
      */
     @PostMapping("/login")
-    public void postLogin(@CookieValue(value="sessionId") String sessionId, HttpServletResponse res, RequestEntity<UserModel> req) {
+    public void postLogin(@CookieValue(value="sessionId", defaultValue = "") String sessionId, HttpServletResponse res, RequestEntity<UserModel> req) {
 
         // if in a valid session, throw forbiddenActionException
         if(!sessionId.isEmpty() && Auth.authenticateSession(sessionId, res)) throw new ForbiddenActionException("You cannot log in while logged in.");

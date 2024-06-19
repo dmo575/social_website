@@ -12,6 +12,12 @@ import jakarta.servlet.http.HttpServletResponse;
 public class PageController {
     
 
+    /*
+     *  GET - /
+     *  Serves the portal and welcome pages.
+     *  Status Codes:
+     *  - 200
+     */
     @GetMapping("/")
     public String home(@CookieValue(value="sessionId", defaultValue="") String sessionId, HttpServletResponse res) {
 
