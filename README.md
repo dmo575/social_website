@@ -1,4 +1,5 @@
-## WIP
+## This hold document is a WIP as im re-writting it as I change the project.
+
 
 Hi! This is what I am working on right now.
 
@@ -39,34 +40,92 @@ Hi! This is what I am working on right now.
 
 ### Controllers
 
-**AccessController:**
+Description types:
+- **View**: Means the endpoint returns HTML that is considered a part of a full page, a component. Like a card or a banner.
+- **Page**: Means the endpoint returns a full page, or the foundations of it where other elements are to be placed.
+- **CRUD**: Means the website does some CRUD operation.
 
-These provide the registration and loggin interface.
+**AccessController**: These provide the registration and loggin interface.
+|Endpoint      | Verb  |Session?|Response                |Description|SC        |Req. Body    |
+|--------------|-------|--------|------------------------|-----------|----------|-------------|
+|/register     | GET   |✖️      |register.html           |View       |200 OK    |-            |
+|/register     | GET   |✔️      |re to /                 |-          |302 FOUND |-            |
+|/register     | POST  |✔️      |re to /                 |-          |200 OK    |-            |
+|/register     | POST  |✖️      |*register user* + Loc   |CRUD       |302 FOUND |UserModel    |
+|/login        | GET   |✖️      |login.html              |View       |200 OK    |-            |
+|/login        | GET   |✔️      |re to /                 |-          |302 FOUND |-            |
+|/login        | POST  |✔️      |re to /                 |-          |200 OK    |-            |
+|/login        | POST  |✖️      |*log in user* + Loc     |CRUD       |200 OK    |UserModel    |
 
-- /register
-    - GET
-        - if session: redirect to /
-        - no session: serve /register VIEW
-    - POST
-        - if session: skip and redirect to /
-        - no session: try to register
-            - if success: 200 OK - return JSON + Location header to /
-            - no success: 40X - return string with error description
 
-- /login
-    - GET
-        - if session: redirect to /
-        - no session: serve /login VIEW
-    - POST
-        - if session: skip and redirect to /
-        - no session: try to login
-            - if success: 200 OK - return JSON + Location header to /
-            - no success: 40X - return string with error description
+**Frontend**: Endpoints related to serving HTML pages.
+|Endpoint      | Verb  |Session?|Response                |Description|SC        |Req. Body    |
+|--------------|-------|--------|------------------------|-----------|----------|-------------|
+|/             | GET   |✖️      |welcome.html            |Page       |200 OK    |-            |
+|/             | GET   |✔️      |portal.html             |Page       |200 OK    |-            |
 
-- /
-    - GET
-        - if session: serve /portal PAGE
-        - no session: serve /welcome PAGE
+**From here on out, we can assume that any request made to the endpoints below that doesnt provide a valid session ID will result on a redirect to /.**
+
+**PostController**: Endpoints related to serving posts.
+|Endpoint                      | Verb  |Response                |Description                    |SC      |Req. body    |
+|------------------------------|-------|------------------------|-------------------------------|--------|-------------|
+|/post                         | GET   |welcome.html            |View                           |200 OK  |-            |
+|/post/{post_id}               | GET   |PostModel               |Query post                     |200 OK  |-            |
+|/posts/{user_id}              | GET   |PostModel[10]           |Query posts (0 to 10)          |200 OK  |-            |
+|/posts/{user_id}?page=P       | GET   |PostModel[10]           |Query posts (10\*P to 10\*P+10)|200 OK  |-            |
+|/posts/{user_id}?page=P&len=L | GET   |PostModel[L]            |Query posts (L\*P to L\*P+L)   |200 OK  |-            |
+
+
+/post/{id}
+/posts?filter=X&orb=Y&ord=Z
+/posts/{user_id}?filter=X&orb=Y&ord=Z
+
+/posts/{user_id}    number
+/posts/{category}   String
+/posts/{hashtag}    #String
+/
+
+
+### Database
+Below are the tables (WIP):
+
+
+**Tables**:
+Table name|Element 1      |Element 2      |Element 3      |Element 4      |Element 5      |Element 6      |Element 7|
+|---------|---------------|---------------|---------------|---------------|---------------|---------------|---------|
+|POST     |post_id NUM    |user_id NUM    |title STR      |description STR|content STR    |views NUM      |date DATE|
+|COMMENT  |comment_id NUM |parent_id NUM  |post_id        |user_id NUM    |content STR    |date DATE      |
+|CATEGORY |category STR   |post_id NUM    |
+|HASHTAG  |hashtag STR    |post_id NUM    |
+|LIKES    |post_id NUM    |user_id NUM    |
+|SAVES    |saves_id NUM   |user_id NUM    |
+|USER     |user_id NUM    |pass_hash STR  |username STR   |
+|SESSION  |hash STR       |
+
+
+**Indexes**:
+- **Post**:
+    - Clustered: post_id. Helps when retrieving a spcific post.
+    - Non-clustered, composite: *user_id* **>** *date*. Helps when retrieving posts of a given user in chronological order.
+- **Category**:
+    - Non-clustered, composite: *category* **>** *date*. Helps when retrieving posts from a given category in chronological order.
+- **Hashtag**:
+    - Non-clustered, composite: *hashtag* **>** *date*. Helps whenretrieving posts from a given hashtag in chronological order.
+- **Likes**:
+    - Non-clustered: *post_id*. Helps when retrieving likes belonging to a given post.
+- **Saves**:
+    - Non-clustered: *post_id*. Helps when retrieving saves belonging to a given post.
+- **Comment**:
+    - Clustered: *comment_id*. Helps when retrieving a specific comment.
+    - Non-clustered: *post_id*. Helps when retrieving comments belonging to a given post.
+- **User**:
+    - Clustered: *user_id*. Helps when retrieving a specific user.
+
+
+### Searching
+For the searching, we parse the card content for the 10 most common words, and take that along the cards category and hashtags.
+
+
 
 ### Sequrity
 I have a couple of basic things in place. No Spring Security added to the project (In my TOLEARN list)
@@ -145,54 +204,7 @@ You can also globally search for posts with the following: Category, hashtag and
 Place where you can see and manage users you are subscribed to and posts you have saved.
 
 
-
-
-
-## FROM HERE ON OUT THESE ARE JUST RANDOM OUTDATED NOTES ! ! !
-
-### Registration
-
-- Prio: WIth user and password
-- Would be nice: Use emails for users, send out emails to confirm user email and register
-
-User can log in with username and password
-
-Users can post. Posts go HOME
-Users can filter by tags (user can add tags to a post) when viewing HOME
-Users can check out other user's profiles
-Users can add others as friends
-Users can accept or decline other users friends request
-
-Users can go to FRIENDS
-Users can select a friend in FRIENDS to open up a chat
-Users can send and receive live chats
-
-Users can delete posts they have made
-
-
-### Tasks
-
-TASKS:
-Test bootstrap      DONE
-Make logging work   DONE
-
-
-
-### SRAMBLES:
-Get a register page going. Make a submit form that sends a username and a password
-    - Have a `GET /register` endpoint, returns PAGE. Check if the user is logged in, if so, then redirect to `/home`
-    - PAGE will allow you to send a register form to `POST /register`
-    - Whenever we unfocus the username field, send a `GET /user` to see if the user already exists. The return of this request checks a condition needed for the user to be able to send the registration form
-    
-Have the database in the server, live.
-HOME
-REGISTER
-At register, we prodide credentials
-if registered, redirect to HOME
-
-
-
-### Things leant:
+### Notes:
 - REMEMBER: Use incognito mode when developing, makes it easy to get rid of the cookies by just closing the window
 - With Thymeleaf, the templated HTML must use a path relative to `static/`
 - With JS, just by setting document.cookie to something you are setting the cookie

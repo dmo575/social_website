@@ -33,10 +33,10 @@ export function selectTab(tab) {
  * @param {String} tabPath - the path to use to fetch the tab's content (view)
  * @param {HTMLElement} tabContainer - the container that is to receive the view content
  */
-export function openTab(targetTabElement, tabPath, tabContainer) {
+export async function openTab(targetTabElement, tabPath, tabContainer) {
     if(!selectTab(targetTabElement)) return;
 
-    fetch(tabPath)
+    await fetch(tabPath)
     .then(response => {
         if (response.ok) return response.text();
     })

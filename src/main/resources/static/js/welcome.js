@@ -16,23 +16,24 @@ document.addEventListener("DOMContentLoaded", () => {
     tabRegister.addEventListener("click", onClickTabRegister);
     tabContact.addEventListener("click", onClickTabContact);
     
-    function onClickTabWelcome(event) {
-        
-        console.log("tab welcome");
+    // provisional account tab
+    function onClickTabWelcome() {
+        openTab(tabWelcome, "/account", bodyContainer);
+        // get the 
     }
 
-    function onClickTabLogin(event) {
+    function onClickTabLogin() {
 
         messageContainer.innerHTML = "";
-        openTab(event.target.parentNode, "/login", bodyContainer);
+        openTab(tabLogin, "/login", bodyContainer);
         // handle tab not selected error
         // handle tab not oppened error
 
     }
 
-    function onClickTabRegister(event) {
+    function onClickTabRegister() {
         messageContainer.innerHTML = "";
-        openTab(event.target.parentNode, "/register", bodyContainer);
+        openTab(tabRegister, "/register", bodyContainer);
         // handle tab not selected error
         // handle tab not oppened error
 
@@ -42,6 +43,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         console.log("tab contact");
     }
+
+    // call to open the welcome tab, which is the tab we want to be opened by default
+    onClickTabWelcome();
 
 });
 

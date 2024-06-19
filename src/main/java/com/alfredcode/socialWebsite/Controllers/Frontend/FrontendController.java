@@ -21,7 +21,9 @@ public class FrontendController {
         return "forward:/portal.html";
     }
 
-    /* 
-     * 
-     */
+    @GetMapping("/account")
+    public String account() {
+        return "account";
+    }
+
 }
