@@ -64,36 +64,59 @@ Description types:
 
 **From here on out, we can assume that any request made to the endpoints below that doesnt come with a valid session ID will result on a redirect to /.**
 
-**PostController**: RESTful endpoints related to serving posts, along a default template for fisplaying a post element (/post).
-|Endpoint                                | Verb  |Response                |Description                      |SC      |Req. body    |
-|----------------------------------------|-------|------------------------|---------------------------------|--------|-------------|
-|/post                                   |GET    |post.html               |View                             |200 OK  |-            |
-|/post/{post_id}                         |GET    |PostModel               |Query post                       |200 OK  |-            |
-|/posts?filter={F}                       |GET    |PostModel[10]           |Query posts (0 to 9)             |200 OK  |-            |
-|/posts?filter={F}&page={P}              |GET    |PostModel[10]           |Query posts (10\*P to 10\*P+10)  |200 OK  |-            |
-|/posts?filter={F}&page={P}&len={L}      |GET    |PostModel[L]            |Query posts (L\*P to L\*P+L)     |200 OK  |-            |
-|/post/{post_id}                         |DELETE |PostModel               |Delete post                      |200 OK  |-            |
-|/post                                   |POST   |PostModel               |Create post                      |200 OK  |PostModel    |
-|/post/{post_id}                         |PUT    |PostModel               |Update post, create if not found |200 OK  |PostModel    |
-|/post/{post_id}                         |PATCH  |PostModel               |Update post if it exists         |200 OK  |PostModel    |
+**PostController**: RESTful endpoints related to posts, along a default template for fisplaying a post element (/post).
+|Endpoint                                | Verb  |Response                |Description                      |SC           |Req. body    |
+|----------------------------------------|-------|------------------------|---------------------------------|-------------|-------------|
+|/post/{post_id}                         |GET    |PostModel               |Query post                       |200, 400, 404|-            |
+|/posts?filter={F}                       |GET    |PostModel[10]           |Query posts (0 to 9)             |200, 400, 404|-            |
+|/posts?filter={F}&page={P}              |GET    |PostModel[10]           |Query posts (10\*P to 10\*P+10)  |200, 400, 404|-            |
+|/posts?filter={F}&page={P}&len={L}      |GET    |PostModel[L]            |Query posts (L\*P to L\*P+L)     |200, 400, 404|-            |
+|/post/{post_id}                         |DELETE |PostModel               |Delete post                      |200, 400, 404|-            |
+|/post                                   |POST   |PostModel               |Create post                      |200, 400, 404|PostModel    |
+|/post/{post_id}                         |PUT    |PostModel               |Full update on a post            |200, 400, 404|PostModel    |
+|/post/{post_id}                         |PATCH  |PostModel               |Partial update on a post         |200, 400, 404|PostModel    |
 
 
 **Filters**: user_id, category, hashtag
 
-Note when querying posts, the order of those is from most to least recently created.
+Note: when querying posts, the order of those is from most to least recently created.
 
-**UserController**:
-|Endpoint                                | Verb  |Response                |Description                    |SC      |Req. body    |
-|----------------------------------------|-------|------------------------|-------------------------------|--------|-------------|
-|/post                                   | GET   |post.html               |View                           |200 OK  |-            |
-|/post/{post_id}                         | GET   |PostModel               |Query post                     |200 OK  |-            |
+**UserController**: RESTful endpoints related to users.
+|Endpoint                                | Verb  |Response                |Description                      |SC           |Req. body    |
+|----------------------------------------|-------|------------------------|---------------------------------|-------------|-------------|
+|/user/{user_id}                         |GET    |UserModel               |Query user                       |200, 400, 404|-            |
+|/user/{user_id}                         |DELETE |UserModel               |Delete user                      |200, 400, 404|-            |
+|/user                                   |POST   |UserModel               |Create user                      |200, 400, 404|UserModel    |
+|/user/{user_id}                         |PUT    |UserModel               |Full update on a user            |200, 400, 404|UserModel    |
+|/user/{user_id}                         |PATCH  |UserModel               |Partial update on a user         |200, 400, 404|UserModel    |
+
+
+**CommentController**: RESTful endpoints related to post comments.
+|Endpoint                                | Verb  |Response                |Description                      |SC           |Req. body    |
+|----------------------------------------|-------|------------------------|---------------------------------|-------------|-------------|
+|/comment/{comment_id}                   |GET    |CommentModel            |Query a comment                  |200, 400, 404|-            |
+|/comments/{post_id}                     |GET    |CommentModel[10]        |Query a post's comments (0 to 9) |200, 400, 404|-            |
+|/comments/{post_id}?page={P}            |GET    |CommentModel[10]        |^ (10\*P to 10\*P+10)            |200, 400, 404|-            |
+|/comments/{post_id}?page={P}&len={L}    |GET    |CommentModel[L]         |^ (L\*P to L\*P+L)               |200, 400, 404|-            |
+|/comment/{post_id}                      |POST   |CommentModel            |Create comment on post           |200, 400, 404|CommentModel |
+|/comment/{comment_id}                   |PUT    |CommentModel            |Full update on a comment         |200, 400, 404|CommentModel |
+|/comment/{comment_id}                   |PATCH  |CommentModel            |Partial update on a comment      |200, 400, 404|CommentModel |
+
+
+**ViewController**: MVC endpoints that provide templates for rendering different data.
+|Endpoint                                | Verb  |Response                |Description                      |SC           |Req. body    |
+|----------------------------------------|-------|------------------------|---------------------------------|-------------|-------------|
+|/views/post                             |GET    |post.html               |View                             |200, 400, 404|-            |
+|/views/user                             |GET    |user.html               |View                             |200, 400, 404|-            |
+|/views/comment                          |GET    |comment.html            |View                             |200, 400, 404|-            |
+
 
 ### Database
 Below are the tables (WIP):
 
 
 **Tables**:
-Table name|Element 1      |Element 2      |Element 3      |Element 4      |Element 5      |Element 6      |Element 7|
+Table name|Column         |Column         |Column         |Column         |Column         |Column         |Column   |
 |---------|---------------|---------------|---------------|---------------|---------------|---------------|---------|
 |POST     |post_id NUM    |user_id NUM    |title STR      |description STR|content STR    |views NUM      |date DATE|
 |COMMENT  |comment_id NUM |parent_id NUM  |post_id        |user_id NUM    |content STR    |date DATE      |
@@ -102,12 +125,12 @@ Table name|Element 1      |Element 2      |Element 3      |Element 4      |Eleme
 |LIKES    |post_id NUM    |user_id NUM    |
 |SAVES    |saves_id NUM   |user_id NUM    |
 |USER     |user_id NUM    |pass_hash STR  |username STR   |
-|SESSION  |hash STR       |
+|SESSION  |TODO           |TODO           |
 
 
 **Indexes**:
 - **Post**:
-    - Clustered: post_id. Helps when retrieving a spcific post.
+    - Clustered: post_id. Helps when retrieving a specific post.
     - Non-clustered, composite: *user_id* **>** *date*. Helps when retrieving posts of a given user in chronological order.
 - **Category**:
     - Non-clustered, composite: *category* **>** *date*. Helps when retrieving posts from a given category in chronological order.
