@@ -1,4 +1,4 @@
-package com.alfredcode.socialWebsite.Controllers.Frontend;
+package com.alfredcode.socialWebsite.Controllers;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -9,7 +9,7 @@ import com.alfredcode.socialWebsite.tools.Auth;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Controller
-public class FrontendController {
+public class PageController {
     
 
     @GetMapping("/")
@@ -20,10 +20,4 @@ public class FrontendController {
 
         return "forward:/portal.html";
     }
-
-    @GetMapping("/account")
-    public String account() {
-        return "account";
-    }
-
 }

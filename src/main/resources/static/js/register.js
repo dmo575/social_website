@@ -63,10 +63,11 @@ function init () {
         // analyze response
         .then(async response => {
             
-            // if 200 OK, redirect to suggested path
-            if (response.ok) window.location.href = response.headers.get("Location");
+            // if 201, redirect
+            if(response.status == 201)
+                window.location.href = response.headers.get("Location");
 
-            // if not 200 OK, inform user
+            // else, log error
             let msg = await response.text();
             errorMessage(`${msg}`, messageContainer);
         });

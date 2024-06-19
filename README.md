@@ -3,10 +3,9 @@
 
 **The idea** is to make a social media blogpost website.
 
-- **Front end server**: Will serve the front end but will also live alongside the backend server (the one with the APIs).
-- **Backend tech**: Java + Spring Boot + JPA
-- **Frontend tech**: JS/HTML/CSS + [BULMA](https://bulma.io/)
-- **Database server**: SQLite
+- **Database**: SQLite
+- **Backend**: Java + Spring Boot + JPA
+- **Frontend**: JS/HTML/CSS + [BULMA](https://bulma.io/)
 - **Build tool**: Maven
 
 ### Current structure:
@@ -43,72 +42,86 @@ Description types:
 - **Page**: Means the endpoint returns a full page, or the foundations of it where other elements are to be placed.
 - **CRUD**: Means the website does some CRUD operation.
 
+SC:
+- 200 OK
+- 201 Created
+- 303 See Other
+- 400 Bad Request
+- 401 Unauthorized
+- 403 Forbidden
+- 404 Not found
+- 500 Internal Server Error
+
 **AccessController**: These provide the registration and loggin interface.
-|Endpoint      | Verb  |Session?|Response                |Description|SC        |Req. Body    |
-|--------------|-------|--------|------------------------|-----------|----------|-------------|
-|/register     | GET   |✖️      |register.html           |View       |200 OK    |-            |
-|/register     | GET   |✔️      |re to /                 |-          |302 FOUND |-            |
-|/register     | POST  |✔️      |re to /                 |-          |200 OK    |-            |
-|/register     | POST  |✖️      |*register user* + Loc   |CRUD       |302 FOUND |UserModel    |
-|/login        | GET   |✖️      |login.html              |View       |200 OK    |-            |
-|/login        | GET   |✔️      |re to /                 |-          |302 FOUND |-            |
-|/login        | POST  |✔️      |re to /                 |-          |200 OK    |-            |
-|/login        | POST  |✖️      |*log in user* + Loc     |CRUD       |200 OK    |UserModel    |
+|Endpoint      | Verb  |Session?|Response                |Description|SC       |Req. Body |
+|--------------|-------|--------|------------------------|-----------|---------|----------|
+|/register     | GET   |✖️      |register.html           |View       |200      |-         |
+|/register     | GET   |✔️      |re to /                 |-          |303      |-         |
+|/register     | POST  |✔️      |re to /                 |-          |401      |-         |
+|/register     | POST  |✖️      |Register user           |CRUD       |200, 400 |-         |
+|/login        | GET   |✖️      |login.html              |View       |200      |-         |
+|/login        | GET   |✔️      |re to /                 |-          |303      |-         |
+|/login        | POST  |✔️      |re to /                 |-          |401      |-         |
+|/login        | POST  |✖️      |Log in user             |CRUD       |200, 400 |-         |
 
 
-**Frontend**: Endpoints related to serving HTML pages.
-|Endpoint      | Verb  |Session?|Response                |Description|SC        |Req. Body    |
-|--------------|-------|--------|------------------------|-----------|----------|-------------|
-|/             | GET   |✖️      |welcome.html            |Page       |200 OK    |-            |
-|/             | GET   |✔️      |portal.html             |Page       |200 OK    |-            |
+**PageController**: Endpoints related to serving HTML pages.
+|Endpoint      | Verb  |Session?|Response                |Description|SC   |Req. Body    |
+|--------------|-------|--------|------------------------|-----------|-----|-------------|
+|/             | GET   |✖️      |welcome.html            |Page       |200  |-            |
+|/             | GET   |✔️      |portal.html             |Page       |200  |-            |
 
-**From here on out, we can assume that any request made to the endpoints below that doesnt come with a valid session ID will result on a redirect to /.**
 
 **PostController**: RESTful endpoints related to posts, along a default template for fisplaying a post element (/post).
-|Endpoint                                | Verb  |Response                |Description                      |SC           |Req. body    |
-|----------------------------------------|-------|------------------------|---------------------------------|-------------|-------------|
-|/post/{post_id}                         |GET    |PostModel               |Query post                       |200, 400, 404|-            |
-|/posts?filter={F}                       |GET    |PostModel[10]           |Query posts (0 to 9)             |200, 400, 404|-            |
-|/posts?filter={F}&page={P}              |GET    |PostModel[10]           |Query posts (10\*P to 10\*P+10)  |200, 400, 404|-            |
-|/posts?filter={F}&page={P}&len={L}      |GET    |PostModel[L]            |Query posts (L\*P to L\*P+L)     |200, 400, 404|-            |
-|/post/{post_id}                         |DELETE |PostModel               |Delete post                      |200, 400, 404|-            |
-|/post                                   |POST   |PostModel               |Create post                      |200, 400, 404|PostModel    |
-|/post/{post_id}                         |PUT    |PostModel               |Full update on a post            |200, 400, 404|PostModel    |
-|/post/{post_id}                         |PATCH  |PostModel               |Partial update on a post         |200, 400, 404|PostModel    |
+|Endpoint                                | Verb  |Response                |Description                      |SC                |Req. body    |
+|----------------------------------------|-------|------------------------|---------------------------------|------------------|-------------|
+|/post/{post_id}                         |GET    |PostModel               |Query post                       |200, 400, 401, 404|-            |
+|/posts?filter={F}                       |GET    |PostModel[10]           |Query posts (0 to 9)             |200, 400, 401, 404|-            |
+|/posts?filter={F}&page={P}              |GET    |PostModel[10]           |Query posts (10\*P to 10\*P+10)  |200, 400, 401, 404|-            |
+|/posts?filter={F}&page={P}&len={L}      |GET    |PostModel[L]            |Query posts (L\*P to L\*P+L)     |200, 400, 401, 404|-            |
+|/post/{post_id}                         |DELETE |PostModel               |Delete post                      |200, 400, 401, 404|-            |
+|/post                                   |POST   |PostModel               |Create post                      |201, 400, 401, 404|PostModel    |
+|/post/{post_id}                         |PUT    |PostModel               |Full update on a post            |200, 400, 401, 404|PostModel    |
+|/post/{post_id}                         |PATCH  |PostModel               |Partial update on a post         |200, 400, 401, 404|PostModel    |
 
 
 **Filters**: user_id, category, hashtag
 
 Note: when querying posts, the order of those is from most to least recently created.
 
+
 **UserController**: RESTful endpoints related to users.
-|Endpoint                                | Verb  |Response                |Description                      |SC           |Req. body    |
-|----------------------------------------|-------|------------------------|---------------------------------|-------------|-------------|
-|/user/{user_id}                         |GET    |UserModel               |Query user                       |200, 400, 404|-            |
-|/user/{user_id}                         |DELETE |UserModel               |Delete user                      |200, 400, 404|-            |
-|/user                                   |POST   |UserModel               |Create user                      |200, 400, 404|UserModel    |
-|/user/{user_id}                         |PUT    |UserModel               |Full update on a user            |200, 400, 404|UserModel    |
-|/user/{user_id}                         |PATCH  |UserModel               |Partial update on a user         |200, 400, 404|UserModel    |
+|Endpoint                                | Verb  |Response                |Description                      |SC                |Req. body    |
+|----------------------------------------|-------|------------------------|---------------------------------|------------------|-------------|
+|/user/{user_id}                         |GET    |UserModel               |Query user                       |200, 400, 401, 404|-            |
+|/user/{user_id}                         |DELETE |UserModel               |Delete user                      |200, 400, 401, 404|-            |
+|/user                                   |POST   |UserModel               |Create user                      |201, 400, 401, 404|UserModel    |
+|/user/{user_id}                         |PUT    |UserModel               |Full update on a user            |200, 400, 401, 404|UserModel    |
+|/user/{user_id}                         |PATCH  |UserModel               |Partial update on a user         |200, 400, 401, 404|UserModel    |
 
 
-**CommentController**: RESTful endpoints related to post comments.
-|Endpoint                                | Verb  |Response                |Description                      |SC           |Req. body    |
-|----------------------------------------|-------|------------------------|---------------------------------|-------------|-------------|
-|/comment/{comment_id}                   |GET    |CommentModel            |Query a comment                  |200, 400, 404|-            |
-|/comments/{post_id}                     |GET    |CommentModel[10]        |Query a post's comments (0 to 9) |200, 400, 404|-            |
-|/comments/{post_id}?page={P}            |GET    |CommentModel[10]        |^ (10\*P to 10\*P+10)            |200, 400, 404|-            |
-|/comments/{post_id}?page={P}&len={L}    |GET    |CommentModel[L]         |^ (L\*P to L\*P+L)               |200, 400, 404|-            |
-|/comment/{post_id}                      |POST   |CommentModel            |Create comment on post           |200, 400, 404|CommentModel |
-|/comment/{comment_id}                   |PUT    |CommentModel            |Full update on a comment         |200, 400, 404|CommentModel |
-|/comment/{comment_id}                   |PATCH  |CommentModel            |Partial update on a comment      |200, 400, 404|CommentModel |
+**CommentController**: RESTful endpoints related to post's comments.
+|Endpoint                                | Verb  |Response                |Description                      |SC                |Req. body    |
+|----------------------------------------|-------|------------------------|---------------------------------|------------------|-------------|
+|/comment/{comment_id}                   |GET    |CommentModel            |Query a comment                  |200, 400, 401, 404|-            |
+|/comments/{post_id}                     |GET    |CommentModel[10]        |Query a post's comments (0 to 9) |200, 400, 401, 404|-            |
+|/comments/{post_id}?page={P}            |GET    |CommentModel[10]        |^ (10\*P to 10\*P+10)            |200, 400, 401, 404|-            |
+|/comments/{post_id}?page={P}&len={L}    |GET    |CommentModel[L]         |^ (L\*P to L\*P+L)               |200, 400, 401, 404|-            |
+|/comment/{post_id}                      |POST   |CommentModel            |Create comment on post           |201, 400, 401, 404|CommentModel |
+|/comment/{comment_id}                   |PUT    |CommentModel            |Full update on a comment         |200, 400, 401, 404|CommentModel |
+|/comment/{comment_id}                   |PATCH  |CommentModel            |Partial update on a comment      |200, 400, 401, 404|CommentModel |
 
 
-**ViewController**: MVC endpoints that provide templates for rendering different data.
-|Endpoint                                | Verb  |Response                |Description                      |SC           |Req. body    |
-|----------------------------------------|-------|------------------------|---------------------------------|-------------|-------------|
-|/views/post                             |GET    |post.html               |View                             |200, 400, 404|-            |
-|/views/user                             |GET    |user.html               |View                             |200, 400, 404|-            |
-|/views/comment                          |GET    |comment.html            |View                             |200, 400, 404|-            |
+**ViewController**: MVC endpoints that provide templates for rendering data.
+|Endpoint                                | Verb  |Response                |Description                      |SC       |Req. body    |
+|----------------------------------------|-------|------------------------|---------------------------------|---------|-------------|
+|/views/element/post                     |GET    |post.html               |View                             |200, 401 |-            |
+|/views/element/user                     |GET    |user.html               |View                             |200, 401 |-            |
+|/views/element/comment                  |GET    |comment.html            |View                             |200, 401 |-            |
+|/views/tab/account                      |GET    |account.html            |View                             |200, 401 |-            |
+|/views/tab/private                      |GET    |private.html            |View                             |200, 401 |-            |
+|/views/tab/public                       |GET    |public.html             |View                             |200, 401 |-            |
+
 
 
 ### Database
@@ -119,13 +132,12 @@ Below are the tables (WIP):
 Table name|Column         |Column         |Column         |Column         |Column         |Column         |Column   |
 |---------|---------------|---------------|---------------|---------------|---------------|---------------|---------|
 |POST     |post_id NUM    |user_id NUM    |title STR      |description STR|content STR    |views NUM      |date DATE|
-|COMMENT  |comment_id NUM |parent_id NUM  |post_id        |user_id NUM    |content STR    |date DATE      |
+|COMMENT  |comment_id NUM |parent_id NUM  |post_id NUM    |user_id NUM    |content STR    |date DATE      |
+|USER     |user_id NUM    |pass_hash STR  |username STR   |
 |CATEGORY |category STR   |post_id NUM    |
 |HASHTAG  |hashtag STR    |post_id NUM    |
 |LIKES    |post_id NUM    |user_id NUM    |
 |SAVES    |saves_id NUM   |user_id NUM    |
-|USER     |user_id NUM    |pass_hash STR  |username STR   |
-|SESSION  |TODO           |TODO           |
 
 
 **Indexes**:
@@ -149,7 +161,6 @@ Table name|Column         |Column         |Column         |Column         |Colum
 
 ### Searching
 For the searching, we parse the card content for the 10 most common words, and take that along the cards category and hashtags.
-
 
 
 ### Sequrity
@@ -247,3 +258,10 @@ Place where you can see and manage users you are subscribed to and posts you hav
 - With slf4j, it is standard practice to have a logger instance per class.
 - in app.properties, you can set logging levels you wish to print (via root, you select theminimum one to consider), or you can do it per package (meaning you can decide package A can print from INFO up while package B from WARN up)
 
+
+TODO:
+- Go over controllers and see if they meet criteria
+    - AccessController  DOING
+    - PageController
+    - PostController
+    - ViewController
