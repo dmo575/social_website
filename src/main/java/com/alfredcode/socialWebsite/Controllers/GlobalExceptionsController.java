@@ -1,6 +1,8 @@
 package com.alfredcode.socialWebsite.Controllers;
 
 
+import java.sql.SQLException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -40,6 +42,14 @@ public class GlobalExceptionsController {
     @ResponseBody
     public String forbiddenActionHandler(ForbiddenActionException ex){
         return ex.getMessage();
+    }
+
+    // handles SQL exceptions
+    @ExceptionHandler(SQLException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseBody
+    public String forbiddenActionHandler(SQLException ex){
+        return "500 - Internal Server Error (SQL)";
     }
 
 

@@ -1,5 +1,7 @@
 package com.alfredcode.socialWebsite.Services;
 
+import java.sql.SQLException;
+
 import org.springframework.stereotype.Service;
 
 import com.alfredcode.socialWebsite.DAO.UserDAO;
@@ -35,14 +37,14 @@ public class UserService {
         if(containsChar(username, illegalPasswordChars)) throw new IllegalArgumentException("Username contains one of the following illegal charcters: " + new String(illegalUsernameChars));
 
         // check username availability
-        if(userDao.getUserByName(username) != null) throw new UsernameTakenException("Username ["+ username +"] is not available.");
+        if(userDao.getUserByUsername(username) != null) throw new UsernameTakenException("Username ["+ username +"] is not available.");
 
         // hash password
         String hashedPassword = BCrypt.withDefaults().hashToString(minPasswordLength, password.toCharArray());
         u.setPassword(hashedPassword);
         
         // ask DAO to CREATE user.
-        if(!userDao.createUser(u)) throw new UserRegistrationException("Error when registering user.");
+        if(!userDao.addUser(u)) throw new UserRegistrationException("Error when registering user.");
 
         return u;
     }

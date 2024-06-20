@@ -129,15 +129,17 @@ Below are the tables (WIP):
 
 
 **Tables**:
-Table name|Column         |Column         |Column         |Column         |Column         |Column         |Column   |
-|---------|---------------|---------------|---------------|---------------|---------------|---------------|---------|
-|POST     |post_id NUM    |user_id NUM    |title STR      |description STR|content STR    |views NUM      |date DATE|
-|COMMENT  |comment_id NUM |parent_id NUM  |post_id NUM    |user_id NUM    |content STR    |date DATE      |
+Table name|Column         |Column         |Column         |Column           |Column         |Column         |Column   |
+|---------|---------------|---------------|---------------|-----------------|---------------|---------------|---------|
+|POST     |post_id NUM    |user_id NUM    |title STR      |description STR  |content STR    |views NUM      |date DATE|
+|COMMENT  |comment_id NUM |parent_id NUM  |post_id NUM    |user_id NUM      |content STR    |date DATE      |
+|SESSION  |session_id STR |user_id NUM    |exp DATE       |refresh DATE     |
 |USER     |user_id NUM    |pass_hash STR  |username STR   |
 |CATEGORY |category STR   |post_id NUM    |
 |HASHTAG  |hashtag STR    |post_id NUM    |
 |LIKES    |post_id NUM    |user_id NUM    |
 |SAVES    |saves_id NUM   |user_id NUM    |
+
 
 
 **Indexes**:

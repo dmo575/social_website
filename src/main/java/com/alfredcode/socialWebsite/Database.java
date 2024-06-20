@@ -1,5 +1,6 @@
 package com.alfredcode.socialWebsite;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,7 +10,6 @@ import org.slf4j.LoggerFactory;
 
 import com.alfredcode.socialWebsite.Models.PostModel;
 import com.alfredcode.socialWebsite.Models.UserModel;
-import com.alfredcode.socialWebsite.Services.UserService;
 import com.alfredcode.socialWebsite.tools.SessionData;
 
 // mock database class, singleton
@@ -19,9 +19,9 @@ public class Database {
     private static Database database = new Database();
     
     // tables
-    private HashMap<String, SessionData> sessions = new HashMap<>();
-    private List<UserModel> users = new ArrayList<UserModel>();
-    private List<PostModel> posts = new ArrayList<PostModel>();
+    private HashMap<String, SessionData> session = new HashMap<>();
+    private List<UserModel> user = new ArrayList<UserModel>();
+    private List<PostModel> post = new ArrayList<PostModel>();
 
     // table id counters
     private Integer usersCount = 0;
@@ -35,9 +35,9 @@ public class Database {
     private Database() { init(); }
 
     public void wipeData() {
-        database.users.clear();
-        database.posts.clear();
-        database.sessions.clear();
+        user.clear();
+        post.clear();
+        session.clear();
 
         usersCount = 0;
         postsCount = 0;
@@ -45,19 +45,28 @@ public class Database {
 
     private void init() {
         // create some posts
-        createPost(new PostModel(1, "Post Title", "Hello. This is a post content", "Test", "TestingHashes", "Yep", "nullItIs"));
-        createPost(new PostModel(1, "Another post title", "Hello Again. This is a post content", "TestLife", "Only", "TwoHashes", null));
+        addPost(new PostModel(1, "Post Title", "Hello. This is a post content", "Test", "TestingHashes", "Yep", "nullItIs"));
+        addPost(new PostModel(1, "Another post title", "Hello Again. This is a post content", "TestLife", "Only", "TwoHashes", null));
     }
 
-    // CRUD USERS   ==  ==  ==  ==
-    public boolean createUser(UserModel user) {
-        user.setId(++usersCount);
-        return users.add(user);
+    
+    // USER
+    public UserModel addUser(UserModel userModel) {
+
+        if(getUserByUsername(userModel.getUsername()) != null)
+            return null;
+
+        userModel.setId(++usersCount);
+
+        if(user.add(userModel)) return userModel;
+
+        --usersCount;
+        return null;
     }
 
     public UserModel getUserById(Integer id) {
         
-        for(UserModel u : users) {
+        for(UserModel u : user) {
             if(u.getId() == id) return u;
         }
 
@@ -66,76 +75,75 @@ public class Database {
 
     public UserModel getUserByUsername(String username) {
 
-        for(UserModel u : users) {
+        for(UserModel u : user) {
             if(u.getUsername().equals(username)) return u;
         }
         return null;
     }
 
-    public UserModel[] getAllUsers() {
-        return users.toArray(new UserModel[0]);
+    public boolean removeUserById(Integer id) {
+        UserModel userModel = getUserById(id);
+
+        if(userModel != null) user.remove(userModel);
+
+        return userModel != null;
     }
 
-    public Integer getUsersCount() {
-        return users.size();
+    public boolean removeUserByName(String username) {
+        UserModel userModel = getUserByUsername(username);
+
+        if(userModel != null) user.remove(userModel);
+
+        return userModel != null;
     }
 
-    public boolean deleteUserById(Integer id) {
-        UserModel model = getUserById(id);
-        return users.remove(model);
-    }
 
-    public boolean deleteUserByName(String username) {
-        UserModel model = getUserByUsername(username);
-        return users.remove(model);
-    }
-    // END CRUD USERS   ==  ==  ==
-
-
-    // CRUD POSTS   ==  ==  ==  ==
-    public boolean createPost(PostModel post) {
-        post.setId(++postsCount);
-        return posts.add(post);
+    // POST
+    public boolean addPost(PostModel postModel) {
+        postModel.setId(++postsCount);
+        return post.add(postModel);
     }
 
     public PostModel[] getPostsByUserId(Integer userId) {
         List<PostModel> userPosts = new ArrayList<PostModel>();
 
-        for(PostModel p : posts) {
+        for(PostModel p : post) {
             if(p.getUserId() == userId)
                 userPosts.add(p);
         }
         return userPosts.toArray(new PostModel[0]);
     }
 
-    public PostModel[] getAllPosts() {
-        return posts.toArray(new PostModel[0]);
-    }
-
     public PostModel getPostById(Integer postId) {
         
-        for(PostModel p : posts) {
+        for(PostModel p : post) {
             if(p.getId() == postId)
                 return p;
         }
 
         return null;
     }
-    // END CRUD POSTS   ==  ==  ==
 
 
-    // CRUD SESSIONS   ==  ==  ==  ==
-    public boolean addSession(String sessionHash, SessionData sessionData) {
-        return sessions.put(sessionHash, sessionData) != null;
+    // SESSION
+    public SessionData addSession(String sessionId, SessionData sessionData) {
+        return session.put(sessionId, sessionData);
     }
 
-    public boolean removeSession(String sessionHash) {
-        return sessions.remove(sessionHash) != null;
+    public boolean removeSession(String sessionId) {
+        return session.remove(sessionId) != null;
     }
 
     public SessionData getSessionData(String sessionId) {
-        return sessions.get(sessionId);
+        return session.get(sessionId);
     }
-    // END CRUD SESSIONS   ==  ==  ==
+
+    public SessionData setSessionData(String sessionId, SessionData data) {
+        SessionData s = session.get(sessionId);
+
+        if(s!= null) return session.put(sessionId, data);
+
+        return null;
+    }
 
 }

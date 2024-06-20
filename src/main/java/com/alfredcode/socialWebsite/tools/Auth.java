@@ -112,7 +112,7 @@ public class Auth {
     public static void authenticateUser(String username, String password) throws FailedUserAuthenticationException {
 
         // QUERY user with DAO
-        UserModel user = userDao.getUserByName(username);
+        UserModel user = userDao.getUserByUsername(username);
 
         // validate 
         if(user == null) throw new FailedUserAuthenticationException("Incorrect username.");
