@@ -72,7 +72,7 @@ SC:
 |/             | GET   |✔️      |portal.html             |Page       |200  |-            |
 
 
-**PostController**: RESTful endpoints related to posts, along a default template for fisplaying a post element (/post).
+**PostController**: RESTful endpoints related to posts.
 |Endpoint                                | Verb  |Response                |Description                      |SC                |Req. body    |
 |----------------------------------------|-------|------------------------|---------------------------------|------------------|-------------|
 |/post/{post_id}                         |GET    |PostModel               |Query post                       |200, 400, 401, 404|-            |
