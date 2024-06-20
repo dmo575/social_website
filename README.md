@@ -1,4 +1,4 @@
-## This document is a WIP
+## This project and codument are a WIP
 
 
 **The idea** is to make a social media blogpost website.
