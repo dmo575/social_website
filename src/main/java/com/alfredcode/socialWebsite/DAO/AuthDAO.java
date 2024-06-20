@@ -1,20 +1,20 @@
 package com.alfredcode.socialWebsite.DAO;
 
 import com.alfredcode.socialWebsite.Database;
-import com.alfredcode.socialWebsite.tools.SessionData;
+import com.alfredcode.socialWebsite.Models.SessionModel;
 
 public class AuthDAO {
     Database db = Database.getInstance();
     
-    public SessionData addSession(String username, SessionData sessionData) {
+    public SessionModel addSession(String username, SessionModel sessionData) {
         return db.addSession(username, sessionData);
     }
 
-    public SessionData getSessionById(String sessionId) {
+    public SessionModel getSessionById(String sessionId) {
         return db.getSessionData(sessionId);
     }
 
-    public SessionData setSession(String sessionId, SessionData sessionData) {
+    public SessionModel setSession(String sessionId, SessionModel sessionData) {
         return db.setSessionData(sessionId, sessionData);
     }
 

@@ -4,13 +4,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alfredcode.socialWebsite.Models.PostModel;
+import com.alfredcode.socialWebsite.Models.SessionModel;
 import com.alfredcode.socialWebsite.Models.UserModel;
-import com.alfredcode.socialWebsite.tools.SessionData;
 
 // mock database class, singleton
 public class Database {
@@ -19,13 +20,14 @@ public class Database {
     private static Database database = new Database();
     
     // tables
-    private HashMap<String, SessionData> session = new HashMap<>();
+    private Map<String, SessionModel> session = new HashMap<>();
     private List<UserModel> user = new ArrayList<UserModel>();
     private List<PostModel> post = new ArrayList<PostModel>();
+    
 
     // table id counters
-    private Integer usersCount = 0;
-    private Integer postsCount = 0;
+    private Integer userIdCounter = 0;
+    private Integer postIdCounter = 0;
 
 
     public static Database getInstance() {
@@ -39,8 +41,8 @@ public class Database {
         post.clear();
         session.clear();
 
-        usersCount = 0;
-        postsCount = 0;
+        userIdCounter = 0;
+        postIdCounter = 0;
     }
 
     private void init() {
@@ -56,11 +58,11 @@ public class Database {
         if(getUserByUsername(userModel.getUsername()) != null)
             return null;
 
-        userModel.setId(++usersCount);
+        userModel.setId(++userIdCounter);
 
         if(user.add(userModel)) return userModel;
 
-        --usersCount;
+        --userIdCounter;
         return null;
     }
 
@@ -100,7 +102,7 @@ public class Database {
 
     // POST
     public boolean addPost(PostModel postModel) {
-        postModel.setId(++postsCount);
+        postModel.setId(++postIdCounter);
         return post.add(postModel);
     }
 
@@ -126,7 +128,7 @@ public class Database {
 
 
     // SESSION
-    public SessionData addSession(String sessionId, SessionData sessionData) {
+    public SessionModel addSession(String sessionId, SessionModel sessionData) {
         return session.put(sessionId, sessionData);
     }
 
@@ -134,12 +136,12 @@ public class Database {
         return session.remove(sessionId) != null;
     }
 
-    public SessionData getSessionData(String sessionId) {
+    public SessionModel getSessionData(String sessionId) {
         return session.get(sessionId);
     }
 
-    public SessionData setSessionData(String sessionId, SessionData data) {
-        SessionData s = session.get(sessionId);
+    public SessionModel setSessionData(String sessionId, SessionModel data) {
+        SessionModel s = session.get(sessionId);
 
         if(s!= null) return session.put(sessionId, data);
 

@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import com.alfredcode.socialWebsite.DAO.UserDAO;
 import com.alfredcode.socialWebsite.Exceptions.FailedUserAuthenticationException;
+import com.alfredcode.socialWebsite.Models.SessionModel;
 import com.alfredcode.socialWebsite.Models.UserModel;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
@@ -86,7 +87,7 @@ public class Auth {
     public static boolean authenticateSession(String sessionId, HttpServletResponse res) {
 
         // get session data
-        SessionData sessionData = userDao.getSessionByHash(sessionId);
+        SessionModel sessionData = userDao.getSessionByHash(sessionId);
 
         // if we cannot find session with provided sessionId, fail authentication
         if(sessionData == null) return false;

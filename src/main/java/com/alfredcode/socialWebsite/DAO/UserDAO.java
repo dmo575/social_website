@@ -8,8 +8,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.alfredcode.socialWebsite.Database;
+import com.alfredcode.socialWebsite.Models.SessionModel;
 import com.alfredcode.socialWebsite.Models.UserModel;
-import com.alfredcode.socialWebsite.tools.SessionData;
 
 // CRUD: CREATE, REMOVE, UPDATE, DELETE
 
