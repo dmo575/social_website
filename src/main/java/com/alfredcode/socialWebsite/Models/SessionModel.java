@@ -9,13 +9,18 @@ import lombok.Setter;
 public class SessionModel {
 
     // Fields
-    private Integer id = null;
+    private String id = null;
     private String username = null;
-    private Date expiration = null;
+    private Long expirationDateUnix = null;
+    private Long refreshDateUnix = null;
+    private Integer version = null;
 
     // Constructors
-    public SessionModel(Integer id, String username, Date expiration) {
+    public SessionModel(String id, String username, Long expirationDateUnix, Long refreshDateUnix) {
+        this.id = id;
         this.username = username;
-        this.expiration = expiration;
+        this.expirationDateUnix = expirationDateUnix;
+        this.refreshDateUnix = refreshDateUnix;
+        this.version = 0;
     }
 }

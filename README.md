@@ -20,7 +20,9 @@
 +------------------------------------------------------------------+
 |                     Controllers : HTTP                           |
 +--------------------------+---------------------------------------+
-| Service : Business logic | Auth : Authentication & Authorization |
+|            Auth : Authentication & Authorization                 |
++--------------------------+---------------------------------------+
+|                  Service : Business logic                        |
 +--------------------------+---------------------------------------+
 |                    DAO : CRUD operations                         |
 +------------------------------------------------------------------+
@@ -80,7 +82,7 @@ SC:
 |/posts?filter={F}&page={P}              |GET    |PostModel[10]           |Query posts (10\*P to 10\*P+10)  |200, 400, 401, 404|-            |
 |/posts?filter={F}&page={P}&len={L}      |GET    |PostModel[L]            |Query posts (L\*P to L\*P+L)     |200, 400, 401, 404|-            |
 |/post/{post_id}                         |DELETE |PostModel               |Delete post                      |200, 400, 401, 404|-            |
-|/post                                   |POST   |PostModel               |Create post                      |201, 400, 401, 404|PostModel    |
+|/post                                   |POST   |PostModel               |Create post                      |201, 400, 401     |PostModel    |
 |/post/{post_id}                         |PUT    |PostModel               |Full update on a post            |200, 400, 401, 404|PostModel    |
 |/post/{post_id}                         |PATCH  |PostModel               |Partial update on a post         |200, 400, 401, 404|PostModel    |
 
@@ -95,7 +97,7 @@ Note: when querying posts, the order of those is from most to least recently cre
 |----------------------------------------|-------|------------------------|---------------------------------|------------------|-------------|
 |/user/{user_id}                         |GET    |UserModel               |Query user                       |200, 400, 401, 404|-            |
 |/user/{user_id}                         |DELETE |UserModel               |Delete user                      |200, 400, 401, 404|-            |
-|/user                                   |POST   |UserModel               |Create user                      |201, 400, 401, 404|UserModel    |
+|/user (WILL NOT DO, we got /register)   |POST   |UserModel               |Create user                      |201, 400, 401     |UserModel    |
 |/user/{user_id}                         |PUT    |UserModel               |Full update on a user            |200, 400, 401, 404|UserModel    |
 |/user/{user_id}                         |PATCH  |UserModel               |Partial update on a user         |200, 400, 401, 404|UserModel    |
 
@@ -107,7 +109,7 @@ Note: when querying posts, the order of those is from most to least recently cre
 |/comments/{post_id}                     |GET    |CommentModel[10]        |Query a post's comments (0 to 9) |200, 400, 401, 404|-            |
 |/comments/{post_id}?page={P}            |GET    |CommentModel[10]        |^ (10\*P to 10\*P+10)            |200, 400, 401, 404|-            |
 |/comments/{post_id}?page={P}&len={L}    |GET    |CommentModel[L]         |^ (L\*P to L\*P+L)               |200, 400, 401, 404|-            |
-|/comment/{post_id}                      |POST   |CommentModel            |Create comment on post           |201, 400, 401, 404|CommentModel |
+|/comment/{post_id}                      |POST   |CommentModel            |Create comment on post           |201, 400, 401     |CommentModel |
 |/comment/{comment_id}                   |PUT    |CommentModel            |Full update on a comment         |200, 400, 401, 404|CommentModel |
 |/comment/{comment_id}                   |PATCH  |CommentModel            |Partial update on a comment      |200, 400, 401, 404|CommentModel |
 
@@ -133,7 +135,7 @@ Table name|Column         |Column         |Column         |Column           |Col
 |---------|---------------|---------------|---------------|-----------------|---------------|---------------|---------|
 |POST     |post_id NUM    |user_id NUM    |title STR      |description STR  |content STR    |views NUM      |date DATE|
 |COMMENT  |comment_id NUM |parent_id NUM  |post_id NUM    |user_id NUM      |content STR    |date DATE      |
-|SESSION  |session_id STR |user_id NUM    |exp DATE       |refresh DATE     |
+|SESSION  |session_id STR |username NUM   |expires NUM    |refresh DATE     |
 |USER     |user_id NUM    |pass_hash STR  |username STR   |
 |CATEGORY |category STR   |post_id NUM    |
 |HASHTAG  |hashtag STR    |post_id NUM    |

@@ -9,7 +9,7 @@ public class UserModel {
     private String username = null;
     private String password = null;
 
-    public UserModel() {}
+    //public UserModel() {}
     public UserModel(String name, String password) {
         this.username = name;
         this.password = password;

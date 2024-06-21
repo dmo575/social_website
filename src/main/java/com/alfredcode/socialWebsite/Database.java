@@ -23,6 +23,9 @@ public class Database {
     private Map<String, SessionModel> session = new HashMap<>();
     private List<UserModel> user = new ArrayList<UserModel>();
     private List<PostModel> post = new ArrayList<PostModel>();
+
+    private Map<Integer, SessionModel> neoSession = new HashMap<>();
+    
     
 
     // table id counters
