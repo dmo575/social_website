@@ -21,9 +21,16 @@ public class PageController {
     @GetMapping("/")
     public String home(@CookieValue(value="sessionId", defaultValue="") String sessionId, HttpServletResponse res) {
 
-        // if unauthorized, forward to welcome.html
-        if(sessionId.isEmpty() || !Auth.authenticateSession(sessionId, res)) return "forward:/welcome.html";
+        try{
+            // if authenticated, portal.html
+            res.setHeader("Set-Cookie", Auth.authenticateSession(sessionId));
 
-        return "forward:/portal.html";
+            return "forward:/portal.html";
+        }
+        catch(Exception ex) {
+            
+            // else, welcome.html
+            return "forward:/welcome.html";
+        }
     }
 }

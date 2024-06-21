@@ -4,8 +4,9 @@ import java.util.Date;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
-@Getter @Setter
+@Getter @Setter @ToString
 public class SessionModel {
 
     // Fields
@@ -16,6 +17,7 @@ public class SessionModel {
     private Integer version = null;
 
     // Constructors
+    public SessionModel(){};
     public SessionModel(String id, String username, Long expirationDateUnix, Long refreshDateUnix) {
         this.id = id;
         this.username = username;

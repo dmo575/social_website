@@ -11,6 +11,7 @@ import javax.naming.AuthenticationException;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 
 import com.alfredcode.socialWebsite.DAO.SessionDAO;
 import com.alfredcode.socialWebsite.DAO.UserDAO;
@@ -190,33 +191,32 @@ public class Auth {
 
     /*
      * Confirms that the user exists and the password is correct for that user
-     * Sends a 303 redirect if the authentication fails
+     * On failure, an exception is thrown.
      */
-    public static void authenticateUser(String username, String password, String redirect) throws FailedUserAuthenticationException {
+    public static void authenticateUser(String username, String password) throws FailedUserAuthenticationException {
 
-        // QUERY user with DAO
+        // validate data
+        if(username.isEmpty()) throw new IllegalArgumentException("Username field is empty.");
+        if(password.isEmpty()) throw new IllegalArgumentException("Password field is empty.");
+
+        // try to get user
         UserModel user = userDao.getUserByUsername(username);
 
         // if user doesnt exist, throw ex
-        if(user == null) throw new FailedUserAuthenticationException("Incorrect username.", redirect);
+        if(user == null) throw new FailedUserAuthenticationException("Incorrect username.");
 
-        // if password is incorrect, throw ex
-        if(!BCrypt.verifyer().verify(password.toCharArray(), user.getPassword().toCharArray()).verified) throw new FailedUserAuthenticationException("Incorrect password.", redirect);        
+        // if password is erroneous, throw ex
+        if(!BCrypt.verifyer().verify(password.toCharArray(), user.getPassword().toCharArray()).verified) throw new FailedUserAuthenticationException("Incorrect password.");
     }
 
-    /*
-     * Confirms that the user exists and the password is correct for that user
-     * Sends a 401 unauthorized if the authentication fails
-     */
-    public static void authenticateUser(String username, String password) {
-        authenticateUser(username, password, null);
-    }
 
     /*
-     * Returns a session cookie for the given username
+     * Returns a session cookie for the given username:
      * - Generates a session ID
      * - Adds it to the database
      * - Returns session cookie to be used with the Set-Cookie header
+     * 
+     * If session cannoe be created, throws ex
      */
     public static String initiateSession(String username) throws FailedSessionCreationException {
 
@@ -233,8 +233,6 @@ public class Auth {
         SessionModel session = new SessionModel(sessionId, username, expirationDate.getTime(), refreshDate.getTime());
 
         // if the session cannot be added, throw ex
-        // This could later be converted into a try-catch where we just catch any SQL error, analyze it and convert it into a more detailed Auth exception that we can throw
-        // to a global exception handler. For now any potential error from the database is just being communicated as a null return from the DAO methods.
         if(sessionService.addSession(session) == null) throw new FailedSessionCreationException("Error while adding session to database.");
 
         // return the session's Set-Cookie value
@@ -242,26 +240,26 @@ public class Auth {
     }
 
     /*
-     * Returns an updated session. Redirects if the session is expired
-     * Checks if the session is valid, updates it if so
-     * Sends a 303 redirect if the session is expired
+     * Checks if the session is valid, updates it if so.
      * Returns updated session to be used with the Set-Cookie header
+     * 
+     * If session invalid or expired, throws ex
      */
-    public static String authenticateSession(String sessionId, String redirect) {
+    public static String authenticateSession(String sessionId) throws FailedSessionAuthenticationException {
 
         // get session
         SessionModel session = sessionService.getSessionById(sessionId);
 
         // if session not found, throw ex
-        if(session == null) throw new FailedSessionAuthenticationException("Incorrect session credentials.", redirect);
-        
+        if(session == null) throw new FailedSessionAuthenticationException("Incorrect session credentials.");
+
         // get current and session expiration dates
         Date dateNow = new Date();
         Date oldExpirationDate = new Date(session.getExpirationDateUnix());
         Date oldRefreshDate = new Date(session.getExpirationDateUnix());
 
-        // if we are past the session expiration date, throw ex
-        if(dateNow.compareTo(oldExpirationDate) > 0) throw new FailedSessionAuthenticationException("Session expired.", redirect);
+        // if we are past the session expiration date:
+        if(dateNow.compareTo(oldExpirationDate) > 0) throw new FailedSessionAuthenticationException("Session expired.");
 
         // if we are past the session ID refresh date. Refresh the session ID.
         if(dateNow.compareTo(oldRefreshDate) > 0) {
@@ -285,16 +283,5 @@ public class Auth {
         // return a new sessionId cookie with the new data
         return getSessionCookie(session.getId(), dateToHTTPDate(newExpirationDate));
     }
-
-    /*
-     * Returns an updated session. Throws a 401 if session expired
-     * Checks if the session is valid, updates it if so
-     * Sends a 401 unauthorized if session expired
-     * Returns updated session to be used with the Set-Cookie header
-     */
-    public static String authenticateSession(String sessionID) {
-        return authenticateSession(sessionID, null);
-    }
-
 
 }

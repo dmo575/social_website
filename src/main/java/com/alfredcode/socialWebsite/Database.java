@@ -1,6 +1,5 @@
 package com.alfredcode.socialWebsite;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,7 +12,10 @@ import com.alfredcode.socialWebsite.Models.PostModel;
 import com.alfredcode.socialWebsite.Models.SessionModel;
 import com.alfredcode.socialWebsite.Models.UserModel;
 
-// mock database class, singleton
+/*
+ * Mock database, singleton.
+ * To be replaced with a SQLite database.
+ */
 public class Database {
     private static final Logger logger = LoggerFactory.getLogger(Database.class);
 
@@ -24,8 +26,6 @@ public class Database {
     private List<UserModel> user = new ArrayList<UserModel>();
     private List<PostModel> post = new ArrayList<PostModel>();
 
-    private Map<Integer, SessionModel> neoSession = new HashMap<>();
-    
     
 
     // table id counters
@@ -131,19 +131,34 @@ public class Database {
 
 
     // SESSION
-    public SessionModel addSession(String sessionId, SessionModel sessionData) {
-        return session.put(sessionId, sessionData);
+    public SessionModel addSession(SessionModel sessionData) {
+        session.put(sessionData.getId(), sessionData);
+        return session.get(sessionData.getId());
     }
 
-    public boolean removeSession(String sessionId) {
-        return session.remove(sessionId) != null;
+    public boolean removeSession(String sessionId, Integer sessionVersion) {
+        
+        if(session.get(sessionId).getVersion() == sessionVersion) {
+            return session.remove(sessionId) != null;
+        }
+
+        return false;
     }
 
-    public SessionModel getSessionData(String sessionId) {
+    public SessionModel getSessionById(String sessionId) {
         return session.get(sessionId);
     }
 
-    public SessionModel setSessionData(String sessionId, SessionModel data) {
+    public SessionModel getSessionByUsername(String username) {
+
+        for(Map.Entry<String, SessionModel> entry : session.entrySet()) {
+            if(entry.getValue().getUsername().equals(username))
+                return entry.getValue();
+        }
+        return null;
+    }
+
+    public SessionModel updateSessionWithId(String sessionId, SessionModel data) {
         SessionModel s = session.get(sessionId);
 
         if(s!= null) return session.put(sessionId, data);

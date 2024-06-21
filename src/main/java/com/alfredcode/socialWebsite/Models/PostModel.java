@@ -4,8 +4,9 @@ import java.util.Date;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
-@Getter @Setter
+@Getter @Setter @ToString
 public class PostModel {
 
     private Integer id = null;
@@ -19,6 +20,7 @@ public class PostModel {
     private String hash2 = null;
     private String hash3 = null;
 
+    public PostModel(){};
     public PostModel(Integer authorId, String title, String content,
     String category, String hash1, String hash2, String hash3) {
         this.userId = authorId;

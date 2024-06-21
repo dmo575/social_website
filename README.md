@@ -18,13 +18,13 @@
 
               Server 1 (Frontend + Backend APIs)
 +------------------------------------------------------------------+
-|                     Controllers : HTTP                           |
+|                     Controllers : HTTP, endpoints                |
 +--------------------------+---------------------------------------+
 |            Auth : Authentication & Authorization                 |
 +--------------------------+---------------------------------------+
 |                  Service : Business logic                        |
 +--------------------------+---------------------------------------+
-|                    DAO : CRUD operations                         |
+|                    DAO : CRUD, concurrency (session)             |
 +------------------------------------------------------------------+
 
                             Server 2
@@ -59,11 +59,11 @@ SC:
 |--------------|-------|--------|------------------------|-----------|---------|----------|
 |/register     | GET   |✖️      |register.html           |View       |200      |-         |
 |/register     | GET   |✔️      |re to /                 |-          |303      |-         |
-|/register     | POST  |✔️      |Error message           |-          |401      |-         |
+|/register     | POST  |✔️      |Error message           |-          |403      |-         |
 |/register     | POST  |✖️      |Register user           |CRUD       |200, 400 |-         |
 |/login        | GET   |✖️      |login.html              |View       |200      |-         |
 |/login        | GET   |✔️      |re to /                 |-          |303      |-         |
-|/login        | POST  |✔️      |Error message           |-          |401      |-         |
+|/login        | POST  |✔️      |Error message           |-          |403      |-         |
 |/login        | POST  |✖️      |Log in user             |CRUD       |200, 400 |-         |
 
 

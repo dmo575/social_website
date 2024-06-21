@@ -20,6 +20,9 @@ public class UserService {
     private static final char[] illegalUsernameChars = {'+', '*', ';'}; // ^
 
 
+    /*
+     * 
+     */
     public UserModel registerUser(UserModel u) throws UsernameTakenException, IllegalArgumentException, UserRegistrationException {
 
         // validate object
@@ -44,7 +47,7 @@ public class UserService {
         u.setPassword(hashedPassword);
         
         // ask DAO to CREATE user.
-        if(!userDao.addUser(u)) throw new UserRegistrationException("Error when registering user.");
+        if(userDao.addUser(u) == null) throw new UserRegistrationException("Error when registering user.");
 
         return u;
     }

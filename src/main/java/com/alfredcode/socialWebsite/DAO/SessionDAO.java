@@ -1,11 +1,12 @@
 package com.alfredcode.socialWebsite.DAO;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.alfredcode.socialWebsite.Database;
 import com.alfredcode.socialWebsite.Models.SessionModel;
 
 /*
- * This DAO is a bit different, we dont have a SessionService so things like checking if there is already a session in place fall
- * into this class' responsabilities.
- * 
  * Race conditions:
  * 
  *  Because we have two threads that manage the same session table, we need to ensure that they dont step on each other's feet.
@@ -44,24 +45,81 @@ import com.alfredcode.socialWebsite.Models.SessionModel;
  * 
  */
 public class SessionDAO {
-    
+    private static final Logger logger = LoggerFactory.getLogger(SessionDAO.class);
+    Database db = Database.getInstance();
+
+    /*
+     * Adds the session to the database.
+     * Makes sure there are no other extra sessions for the same user before adding it.
+     */
     public SessionModel addSession(SessionModel sessionModel) {
 
-        // check if there is no other session out there for this user, if there is then use that one and do not create another one
+        // check if there is already a session for this user
+        SessionModel currSession = getSessionByUsername(sessionModel.getUsername());
 
-        return null;
+        // if there is not, add one and return it
+        if(currSession == null) return db.addSession(sessionModel);
+
+        // if there is one, remove it
+        // (if a user logged in, cleared his cookies and logged in again, this could be true)
+        removeSessionWithId(currSession.getId());
+
+        // question: What if a thread has it to remove this currSession? In theory it should not matter because the sessionID is different.
+        // so even if we create this new session for the same user, the ID is different so the other thread will not find it since it deleted by session ID
+        // but in the impossible case that for some reason the session ID ends up being the same (because even tho its random, it can be the same twice)
+        // we would need to tackle that... we could add the creation time to the session ID generation...
+
+        // add session and return it
+        return db.addSession(sessionModel);
     }
 
+    /*
+     * returns the session of the given sessionId
+     */
     public SessionModel getSessionById(String sessionId) {
-        return null;
+        return db.getSessionById(sessionId);
     }
 
+    /*
+     * returns the session of the given username
+     */
     public SessionModel getSessionByUsername(String username) {
+        return db.getSessionByUsername(username);
+    }
+
+    /*
+     * Looks to update the SessionModel.
+     * 
+     * forceUpdate: Means that even if the version changed (Optimistic Lock), we still want to push the update. For our project we want to do so. Our only concern
+     * is when deleting sessions, since there is only one Thread that will be pushing updates and another one that will be focusing on deleting expired
+     * records. This would probably be different if more servers join. We would probably have to look at transactions and locking levels within the database records.
+     * 
+     */
+    public SessionModel updateSessionWithId(String sessionId, SessionModel sessionModel, Boolean forceUpdate) {
+
+        // get session
+        SessionModel currSession = getSessionById(sessionId);
+
+        // if we cannot find the session, it means the other thread removed it. So we let the service layer create it.
+        if(currSession == null) return null;
+
+
+        // check the version, if it is the same then we update the record
+        if(currSession.getVersion() == sessionModel.getVersion() || forceUpdate) {
+            sessionModel.setVersion(currSession.getVersion() + 1);
+            return db.updateSessionWithId(sessionId, sessionModel);
+        }
+
         return null;
     }
 
-    // null if nothing got modified.
-    public SessionModel updateSessionWithId(String sessionId, SessionModel sessionModel) {
+    public Boolean removeSessionWithId(String sessionId) {
 
+        // get session so we can get the ID
+        SessionModel currSession = getSessionById(sessionId);
+
+        // remove it if the ID is the same
+        // This might now work as intended in the mock database. But I believe it should work properly when using the real one.
+        return db.removeSession(sessionId, currSession.getVersion());
     }
 }

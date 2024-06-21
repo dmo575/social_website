@@ -16,9 +16,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.alfredcode.socialWebsite.Exceptions.FailedSessionAuthenticationException;
+import com.alfredcode.socialWebsite.Exceptions.FailedSessionCreationException;
 import com.alfredcode.socialWebsite.Exceptions.ForbiddenActionException;
 import com.alfredcode.socialWebsite.Exceptions.UsernameTakenException;
 import com.alfredcode.socialWebsite.Models.UserModel;
+import com.alfredcode.socialWebsite.Services.SessionService;
 import com.alfredcode.socialWebsite.Services.UserService;
 import com.alfredcode.socialWebsite.tools.Auth;
 import com.alfredcode.socialWebsite.tools.URL;
@@ -32,20 +35,27 @@ public class AccessController {
 
     private static final Logger logger = LoggerFactory.getLogger(AccessController.class);
     private UserService userService = new UserService();
+    private SessionService sessionService = new SessionService();
 
 
     /*
      *  GET - /register
      *  Serves the register view
      *  Status codes:
-     *  - 303: If the user is in a valid session
-     *  - 200: If the user is not in a valid session
+     *  - 303 See Other: If the user is in a valid session
+     *  - 200 OK: If the user is not in a valid session
      */
     @GetMapping("/register")
-    public ModelAndView getRegiser(@CookieValue(value="sessionId", defaultValue = "") String sessionId, HttpServletResponse res) {
+    public ModelAndView getRegister(@CookieValue(value="sessionId", defaultValue = "") String sessionId, HttpServletResponse res) {
 
-        // if in a valid session, redirect to /
-        if(Auth.authenticateSession(sessionId, res)) return new ModelAndView("redirect:/", HttpStatus.SEE_OTHER);
+        try{
+            // if the client has a valid session, then we should redirect to /
+            res.setHeader("Set-Cookie", Auth.authenticateSession(sessionId));
+            return new ModelAndView("redirect:/", HttpStatus.SEE_OTHER);
+        }
+        catch (FailedSessionAuthenticationException ex) {
+            // this means the client doesnt have a valid session, so we can return the register view.
+        }
 
         // 200 register
         return new ModelAndView("register");
@@ -56,15 +66,21 @@ public class AccessController {
      *  GET - /login
      *  Serves the login view
      *  Status codes:
-     *  - 303: If the user is in a valid session
-     *  - 200: If the user is not in a valid session
+     *  - 303 See Other: If the user is in a valid session
+     *  - 200 OK: If the user is not in a valid session
      */
     @GetMapping("/login")
     public ModelAndView getLogin(@CookieValue(value="sessionId", defaultValue = "") String sessionId, HttpServletResponse res) {
 
-        // if in a valid session, redirect to /
-        if(Auth.authenticateSession(sessionId, res)) return new ModelAndView("redirect:/", HttpStatus.SEE_OTHER);
-        
+        try{
+            // if the client has a valid session, then we should redirect to /
+            res.setHeader("Set-Cookie", Auth.authenticateSession(sessionId));
+            return new ModelAndView("redirect:/", HttpStatus.SEE_OTHER);
+        }
+        catch (FailedSessionAuthenticationException ex) {
+            // this means the client doesnt have a valid session, so we can return the login view.
+        }
+
         // 200 login
         return new ModelAndView("login");
     }
@@ -79,27 +95,39 @@ public class AccessController {
      *  - 401: If the user is already in a valid session.
      */
     @PostMapping("/register")
-    public void postRegister(@CookieValue(value="sessionId", defaultValue = "") String sessionId, HttpServletResponse res, RequestEntity<UserModel> req) {
+    public void postRegister(@CookieValue(value="sessionId", defaultValue = "") String sessionId, HttpServletResponse res, RequestEntity<UserModel> req) throws UsernameTakenException {
        
-        
-        // if in a valid session, throw forbiddenActionException
-        if(!sessionId.isEmpty() && Auth.authenticateSession(sessionId, res)) throw new ForbiddenActionException("You cannot register while logged in.");
-        
-        // get model
+        try{
+            // if the client has a valid session
+            res.setHeader("Set-Cookie", Auth.authenticateSession(sessionId));
+            // return a 401 Forbidden along a message
+            throw new ForbiddenActionException("You are not allowed to register while already logged in.");
+        }
+        catch (FailedSessionAuthenticationException ex) {
+            // this means the client doesnt have a valid session, so we can continue with the registration attempt.
+        }
+
+        // get user model
         UserModel user = req.getBody();
         
-        // validate model data. If invalid, throw IllegalArgumentException
+        // validate model data
         if(user == null) throw new IllegalArgumentException("UserModel not provided.");
-        if(user.getUsername() == null) throw new IllegalArgumentException("Missing JSON parameter: username");
-        if(user.getPassword() == null) throw new IllegalArgumentException("Missing JSON parameter: password");
+        if(user.getUsername() == null) throw new IllegalArgumentException("Missing username.");
+        if(user.getPassword() == null) throw new IllegalArgumentException("Missing password.");
         
         
-        // register user
+        // register user. Throws ex on failure
         userService.registerUser(user);
         
-        // create session -- TODO, REWORK THIS METHOD AND OTHERS IN THE AUTH CLASS, BUBBLE UP ANYTHING THAT MODIFIES THE HTTP RESPONSE. SHOULD BE AT THE CONTROLLER LEVEL
-        Auth.setSession(user.getUsername(), res);
-        
+        try{
+            // initiate a new session. Throws ex on failure
+            res.addHeader("Set-Cookie", Auth.initiateSession(user.getUsername()));
+
+        } catch(FailedSessionCreationException ex) {
+            // we catched this one to personalize the message for the registration context
+            throw new FailedSessionCreationException("Oops. We couldn't log you into your new account. Try a manual log in.");
+        }
+
         // prepare response
         res.addHeader("Location", URL.getUrl(req, "/"));
         res.setStatus(HttpServletResponse.SC_CREATED);
@@ -117,8 +145,15 @@ public class AccessController {
     @PostMapping("/login")
     public void postLogin(@CookieValue(value="sessionId", defaultValue = "") String sessionId, HttpServletResponse res, RequestEntity<UserModel> req) {
 
-        // if in a valid session, throw forbiddenActionException
-        if(!sessionId.isEmpty() && Auth.authenticateSession(sessionId, res)) throw new ForbiddenActionException("You cannot log in while logged in.");
+        try{
+            // if the client has a valid session
+            res.setHeader("Set-Cookie", Auth.authenticateSession(sessionId));
+            // return a 401 Forbidden along a message
+            throw new ForbiddenActionException("You are not allowed to log in while already logged in.");
+        }
+        catch (FailedSessionAuthenticationException ex) {
+            // this means the client doesnt have a valid session, so we can continue with the login attempt.
+        }
 
         // get model
         UserModel user = req.getBody();
@@ -131,8 +166,8 @@ public class AccessController {
         // authenticate user (make sure the user is valid)
         Auth.authenticateUser(user.getUsername(), user.getPassword());
 
-        // create a session for the user
-        Auth.setSession(user.getUsername(), res);
+        // initiate a new session. Throws ex on failure
+        res.addHeader("Set-Cookie", Auth.initiateSession(user.getUsername()));
 
         // prepare response
         res.addHeader("Location", URL.getUrl(req, "/"));
@@ -146,12 +181,4 @@ public class AccessController {
     public String UsernameTakenHandler(UsernameTakenException ex){
         return ex.getMessage();
     }
-
-
-    //@ExceptionHandler(UserRegistrationException.class)
-    //@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    //@ResponseBody
-    //public String userRegistrationHandler(UserRegistrationException ex){
-    //    return ex.getMessage();
-    //}
 }

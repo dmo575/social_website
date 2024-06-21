@@ -13,7 +13,6 @@ public class AuthTest {
     public void testSetSession() {
         HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
 
-        Auth.setSession("usernam", response);
 
 
     }
