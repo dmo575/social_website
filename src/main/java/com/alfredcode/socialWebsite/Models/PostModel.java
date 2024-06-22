@@ -9,6 +9,7 @@ import lombok.ToString;
 @Getter @Setter @ToString
 public class PostModel {
 
+    // fields
     private Integer id = null;
     private Integer userId = null;
     private String title = null;
@@ -20,6 +21,7 @@ public class PostModel {
     private String hash2 = null;
     private String hash3 = null;
 
+    // constructors
     public PostModel(){};
     public PostModel(Integer authorId, String title, String content,
     String category, String hash1, String hash2, String hash3) {

@@ -6,6 +6,9 @@ import org.springframework.stereotype.Service;
 import com.alfredcode.socialWebsite.DAO.PostDAO;
 import com.alfredcode.socialWebsite.Models.PostModel;
 
+/*
+ * Manages business logic for the post entities
+ */
 @Service
 public class PostService {
     private PostDAO postDao = new PostDAO();

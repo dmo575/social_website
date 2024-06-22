@@ -5,6 +5,9 @@ import org.springframework.stereotype.Service;
 import com.alfredcode.socialWebsite.DAO.SessionDAO;
 import com.alfredcode.socialWebsite.Models.SessionModel;
 
+/*
+ * Manages business logic for the session entities
+ */
 @Service
 public class SessionService {
     private SessionDAO sessionDao = new SessionDAO();

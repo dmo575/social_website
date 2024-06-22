@@ -1,7 +1,5 @@
 package com.alfredcode.socialWebsite.Models;
 
-import java.util.Date;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -9,14 +7,14 @@ import lombok.ToString;
 @Getter @Setter @ToString
 public class SessionModel {
 
-    // Fields
+    // fields
     private String id = null;
     private String username = null;
     private Long expirationDateUnix = null;
     private Long refreshDateUnix = null;
     private Integer version = null;
 
-    // Constructors
+    // constructors
     public SessionModel(){};
     public SessionModel(String id, String username, Long expirationDateUnix, Long refreshDateUnix) {
         this.id = id;

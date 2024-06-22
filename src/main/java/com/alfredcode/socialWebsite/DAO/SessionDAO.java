@@ -44,6 +44,10 @@ import com.alfredcode.socialWebsite.Models.SessionModel;
  *          -The session id is correct, but the version is no longer 3, so the changes don't apply and we confirm that by checking the affected rows count (0).
  * 
  */
+
+ /*
+  * Manages CRUD operations for the session table
+  */
 public class SessionDAO {
     private static final Logger logger = LoggerFactory.getLogger(SessionDAO.class);
     Database db = Database.getInstance();

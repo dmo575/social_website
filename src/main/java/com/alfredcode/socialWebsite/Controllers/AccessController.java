@@ -1,8 +1,6 @@
 package com.alfredcode.socialWebsite.Controllers;
 
 
-import java.sql.SQLException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -21,40 +19,42 @@ import com.alfredcode.socialWebsite.Exceptions.FailedSessionCreationException;
 import com.alfredcode.socialWebsite.Exceptions.ForbiddenActionException;
 import com.alfredcode.socialWebsite.Exceptions.UsernameTakenException;
 import com.alfredcode.socialWebsite.Models.UserModel;
-import com.alfredcode.socialWebsite.Services.SessionService;
 import com.alfredcode.socialWebsite.Services.UserService;
 import com.alfredcode.socialWebsite.tools.Auth;
 import com.alfredcode.socialWebsite.tools.URL;
 
 import jakarta.servlet.http.HttpServletResponse;
 
-// MVC endpoints related to user registration and login
+/*
+ * MVC endpoints related to user registration and login.
+ */
 
 @Controller
 public class AccessController {
 
     private static final Logger logger = LoggerFactory.getLogger(AccessController.class);
     private UserService userService = new UserService();
-    private SessionService sessionService = new SessionService();
 
 
     /*
-     *  GET - /register
+     *  GET /register
+     * 
      *  Serves the register view
-     *  Status codes:
-     *  - 303 See Other: If the user is in a valid session
-     *  - 200 OK: If the user is not in a valid session
+     * 
+     *  303 - If client has valid sessionId
+     *  200 - If client doesnt have valid sessionId
+     * 
      */
     @GetMapping("/register")
     public ModelAndView getRegister(@CookieValue(value="sessionId", defaultValue = "") String sessionId, HttpServletResponse res) {
 
         try{
-            // if the client has a valid session, then we should redirect to /
+            // if client has a valid sessionId: update session cookie and return 303 to /
             res.setHeader("Set-Cookie", Auth.authenticateSession(sessionId));
             return new ModelAndView("redirect:/", HttpStatus.SEE_OTHER);
         }
         catch (FailedSessionAuthenticationException ex) {
-            // this means the client doesnt have a valid session, so we can return the register view.
+            // this means the client doesnt have a valid sessionId
         }
 
         // 200 register
@@ -63,22 +63,23 @@ public class AccessController {
 
 
     /*
-     *  GET - /login
+     *  GET /login
+     * 
      *  Serves the login view
-     *  Status codes:
-     *  - 303 See Other: If the user is in a valid session
-     *  - 200 OK: If the user is not in a valid session
+     * 
+     *  303 - If client has valid sessionId
+     *  200 - If client doesnt have valid sessionId
      */
     @GetMapping("/login")
     public ModelAndView getLogin(@CookieValue(value="sessionId", defaultValue = "") String sessionId, HttpServletResponse res) {
 
         try{
-            // if the client has a valid session, then we should redirect to /
+            // if client has a valid sessionId: update session cookie and return 303 to /
             res.setHeader("Set-Cookie", Auth.authenticateSession(sessionId));
             return new ModelAndView("redirect:/", HttpStatus.SEE_OTHER);
         }
         catch (FailedSessionAuthenticationException ex) {
-            // this means the client doesnt have a valid session, so we can return the login view.
+            // this means the client doesnt have a valid sessionId
         }
 
         // 200 login
@@ -87,24 +88,24 @@ public class AccessController {
 
 
     /*
-     *  POST - /register
-     *  Registers a user and opens a session
-     *  Status codes:
-     *  - 200: Along a path in the Location header for redirection.
-     *  - 400: If the data sent is invalid.
-     *  - 401: If the user is already in a valid session.
+     *  POST /register
+     * 
+     *  Registers a user and initiates a session
+     * 
+     *  200 - Sucessfull registration and session initiated. Location header suggests where to go next
+     *  400 - If the data sent is invalid
+     *  401 - If the client has a valid sessionId
      */
     @PostMapping("/register")
     public void postRegister(@CookieValue(value="sessionId", defaultValue = "") String sessionId, HttpServletResponse res, RequestEntity<UserModel> req) throws UsernameTakenException {
        
         try{
-            // if the client has a valid session
+            // if the client has a valid sessionId, update session cookie an return 401
             res.setHeader("Set-Cookie", Auth.authenticateSession(sessionId));
-            // return a 401 Forbidden along a message
             throw new ForbiddenActionException("You are not allowed to register while already logged in.");
         }
         catch (FailedSessionAuthenticationException ex) {
-            // this means the client doesnt have a valid session, so we can continue with the registration attempt.
+            // this means the client doesnt have a valid sessionId
         }
 
         // get user model
@@ -128,31 +129,31 @@ public class AccessController {
             throw new FailedSessionCreationException("Oops. We couldn't log you into your new account. Try a manual log in.");
         }
 
-        // prepare response
+        // return 201 and suggest /
         res.addHeader("Location", URL.getUrl(req, "/"));
         res.setStatus(HttpServletResponse.SC_CREATED);
     }
 
 
     /*
-     *  POST - /login
+     *  POST /login
+     * 
      *  Opens a session for the given user
-     *  Status codes:
-     *  - 200: Along a path in the Location header for redirection.
-     *  - 400: If the data sent is invalid.
-     *  - 401: If the user is already in a valid session.
+     * 
+     *  200 - Sucessfull login and session initiated. Location header suggests where to go next
+     *  400 - If the data sent is invalid
+     *  401 - If the client has a valid sessionId
      */
     @PostMapping("/login")
     public void postLogin(@CookieValue(value="sessionId", defaultValue = "") String sessionId, HttpServletResponse res, RequestEntity<UserModel> req) {
 
         try{
-            // if the client has a valid session
+            // if the client has a valid sessionId, update session cookie an return 401
             res.setHeader("Set-Cookie", Auth.authenticateSession(sessionId));
-            // return a 401 Forbidden along a message
             throw new ForbiddenActionException("You are not allowed to log in while already logged in.");
         }
         catch (FailedSessionAuthenticationException ex) {
-            // this means the client doesnt have a valid session, so we can continue with the login attempt.
+            // this means the client doesnt have a valid sessionId
         }
 
         // get model
@@ -163,18 +164,19 @@ public class AccessController {
         if(user.getUsername() == null) throw new IllegalArgumentException("Missing JSON parameter: username");
         if(user.getPassword() == null) throw new IllegalArgumentException("Missing JSON parameter: password");
         
-        // authenticate user (make sure the user is valid)
+        // authenticate user. Throws ex on failure
         Auth.authenticateUser(user.getUsername(), user.getPassword());
 
         // initiate a new session. Throws ex on failure
         res.addHeader("Set-Cookie", Auth.initiateSession(user.getUsername()));
 
-        // prepare response
+        // return 200 and suggest /
         res.addHeader("Location", URL.getUrl(req, "/"));
         res.setStatus(HttpServletResponse.SC_OK);
     }
 
 
+    // Handles UsernameTaken
     @ExceptionHandler(UsernameTakenException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody

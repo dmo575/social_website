@@ -1,13 +1,9 @@
 package com.alfredcode.socialWebsite.Controllers;
 
 
-import java.sql.SQLException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -21,11 +17,7 @@ import com.alfredcode.socialWebsite.Exceptions.ForbiddenActionException;
 
 
 /*
- * Here we provide a default handling for all unchecked exceptions that might bubble out of the Controllers.
- * 
- * The idea with the unchecked exceptions is:
- * - We make them unchecked because they are already dealt with here, but a programmer have the option to catch them and handle them if preffered.
- * - We declare them in the methods that throw them to let the programmer know they can come up.
+ * Here we provide a default handling for all unchecked exceptions that might bubble up from the Controllers.
  */
 @ControllerAdvice
 public class GlobalExceptionsController {
@@ -35,7 +27,10 @@ public class GlobalExceptionsController {
 
     // GLOBAL EXCEPTION HANDLERS --------------------------------------------------------------------
 
-    // Handles illegal argument errors
+    /*
+     * Handles illegal argument errors
+     * Ex: wrong data, missing argument
+     */
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
@@ -43,8 +38,10 @@ public class GlobalExceptionsController {
         return ex.getMessage();
     }
 
-    // Handles forrbiden action errors
-    // ex: trying to register while logged in
+    /*
+     * Handles forrbiden action errors
+     * Ex: trying to register while logged in
+     */
     @ExceptionHandler(ForbiddenActionException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ResponseBody
@@ -56,7 +53,10 @@ public class GlobalExceptionsController {
 
     // AUTHENTICATION & AUTHORIZATION EXCEPTION HANDLERS --------------------------------------------
 
-    // Handles a failure in user authentication
+    /*
+     * Handles a failure in user authentication
+     * Ex: Incorrect password, invalid username
+     */
     @ExceptionHandler(FailedUserAuthenticationException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ResponseBody
@@ -69,7 +69,10 @@ public class GlobalExceptionsController {
 
     }
 
-    // Handles a failure in session authentication
+    /*
+     * Handles a failure in session authentication, comming from a lower layer
+     * Ex: Session could not be stored in the database
+     */
     @ExceptionHandler(FailedAuthenticationException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
@@ -81,7 +84,10 @@ public class GlobalExceptionsController {
         return "Something went wrong while Authenticating.";
     }
 
-    // Handles a failure in session authentication
+    /*
+     * Handles a failure in session authentication
+     * Ex: Expired session, incorrect session
+     */
     @ExceptionHandler(FailedSessionAuthenticationException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ResponseBody
@@ -93,7 +99,10 @@ public class GlobalExceptionsController {
         return "Invalid session Credentials.";
     }
 
-    // Handles a failure in session authentication
+    /*
+     * Handles a failure in session creation.
+     * Ex: Error converting Date object to HTTP date string
+     */
     @ExceptionHandler(FailedSessionCreationException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody

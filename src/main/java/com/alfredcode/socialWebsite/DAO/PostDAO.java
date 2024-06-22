@@ -3,6 +3,9 @@ package com.alfredcode.socialWebsite.DAO;
 import com.alfredcode.socialWebsite.Database;
 import com.alfredcode.socialWebsite.Models.PostModel;
 
+/*
+ * Manages CRUD operations for the post table.
+ */
 public class PostDAO {
     private Database db = Database.getInstance();
     

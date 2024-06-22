@@ -1,18 +1,15 @@
 package com.alfredcode.socialWebsite.DAO;
 
-import java.sql.SQLException;
-import java.util.Date;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 
 import com.alfredcode.socialWebsite.Database;
-import com.alfredcode.socialWebsite.Models.SessionModel;
 import com.alfredcode.socialWebsite.Models.UserModel;
 
-// CRUD: CREATE, REMOVE, UPDATE, DELETE
 
+/*
+ * Manages CRUD operations for the user table
+ */
 public class UserDAO {
 
     private static final Logger logger = LoggerFactory.getLogger(UserDAO.class);

@@ -1,7 +1,5 @@
 package com.alfredcode.socialWebsite.Services;
 
-import java.sql.SQLException;
-
 import org.springframework.stereotype.Service;
 
 import com.alfredcode.socialWebsite.DAO.UserDAO;
@@ -11,6 +9,9 @@ import com.alfredcode.socialWebsite.Models.UserModel;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
 
+/*
+ * Manages business logic for the user entities
+ */
 @Service
 public class UserService {
     private UserDAO userDao = new UserDAO();
@@ -20,9 +21,6 @@ public class UserService {
     private static final char[] illegalUsernameChars = {'+', '*', ';'}; // ^
 
 
-    /*
-     * 
-     */
     public UserModel registerUser(UserModel u) throws UsernameTakenException, IllegalArgumentException, UserRegistrationException {
 
         // validate object

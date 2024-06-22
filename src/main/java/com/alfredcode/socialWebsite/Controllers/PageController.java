@@ -8,28 +8,32 @@ import com.alfredcode.socialWebsite.tools.Auth;
 
 import jakarta.servlet.http.HttpServletResponse;
 
+/*
+ * Controllers that return PAGES
+ */
 @Controller
 public class PageController {
     
 
     /*
-     *  GET - /
+     *  GET /
+     * 
      *  Serves the portal and welcome pages.
-     *  Status Codes:
-     *  - 200
+     * 
+     *  200
      */
     @GetMapping("/")
     public String home(@CookieValue(value="sessionId", defaultValue="") String sessionId, HttpServletResponse res) {
 
         try{
-            // if authenticated, portal.html
+            // if authenticated, 200 portal
             res.setHeader("Set-Cookie", Auth.authenticateSession(sessionId));
 
             return "forward:/portal.html";
         }
         catch(Exception ex) {
             
-            // else, welcome.html
+            // else, 200 welcome
             return "forward:/welcome.html";
         }
     }

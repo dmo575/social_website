@@ -6,14 +6,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
-import javax.naming.AuthenticationException;
-
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 
-import com.alfredcode.socialWebsite.DAO.SessionDAO;
 import com.alfredcode.socialWebsite.DAO.UserDAO;
 import com.alfredcode.socialWebsite.Exceptions.FailedAuthenticationException;
 import com.alfredcode.socialWebsite.Exceptions.FailedSessionAuthenticationException;
@@ -24,54 +20,35 @@ import com.alfredcode.socialWebsite.Models.UserModel;
 import com.alfredcode.socialWebsite.Services.SessionService;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
 
-// manages authentication of user and session
-// creates sessions
+/*
+ * Manages user and session authentication and authorization
+ */
 public class Auth {
 
-    private static final int randomSectionLength = 16;
-    private static final int sessionExpirationTimeHours = 2;
-    private static final int sessionRefreshTimeMinutes = 15;
+    private static final Logger logger = LoggerFactory.getLogger(Auth.class);
 
+    // defines the length of the first section of the sessionId
+    private static final int randomSectionLength = 16;
+    // defines the lifespan of a session ID in hours
+    private static final int sessionExpirationTimeHours = 2;
+    // defines the lifespan of a session ID's refresh
+    private static final int sessionRefreshTimeMinutes = 15;
+    // used by ByCrypt, the higher the more iterations on the hashing computation, which seems to make it more secure but also means it takes more to compute
     private static final int hashingCost = 4;
 
-    private static final Logger logger = LoggerFactory.getLogger(Auth.class);
     private static UserDAO userDao = new UserDAO();
     private static SessionService sessionService = new SessionService();
 
     {
-        // start a thread that empties expired sessions every [sessionExpirationTimeHours] time. Then log that you did just that to the console.
+        // TODO: start a thread that empties expired sessions every [sessionExpirationTimeHours] time. Then log that you did just that to the console.
     }
 
-/* 
-    // it sets a session cookie for the given user in the given response servlet.
-    public static void setSession(String username, HttpServletResponse res) {
-
-        // get session ID
-        String sessionRandom = RandomStringUtils.randomAlphanumeric(randomSectionLength);
-
-        // this makes the sessionId different every time for the same user
-        // it also makes sure that each sessionId is unique since users cannot share the same username
-        String sessionIdString = sessionRandom + username;
-
-        // stores the hashes session data
-        String sessionId = BCrypt.withDefaults().hashToString(hashingCost, sessionIdString.toCharArray());
-
-        // get date on HTTP standards
-        Date expires = offsetDate(new Date(), sessionExpirationTime);
-        String HttpExpires = dateToHTTPDate(expires);
-
-        // set cookie
-        res.addHeader("Set-Cookie", "sessionId=" + sessionId + "; expires=" + HttpExpires + "; path=/");
-
-        //register a new session
-        userDao.setSession(username, sessionId, expires);
-    } */
-
-    /*
+    /**
      * Given a Date object, returns an HTTP formatter date as a String
+     * 
+     * @param date The date to convert to an HTTP date string
+     * @return The date in HTTP format as a string
      */
     private static String dateToHTTPDate(Date date) {
 
@@ -81,8 +58,13 @@ public class Auth {
         return dateFormat.format(date);
     }
 
-    /*
+    /**
      * Given a date, a time offset and a time scale (Calendar.HOUR_OF_DAY for example), returns the offseted Date object
+     * 
+     * @param date The date to offset
+     * @param timeOffset The time to offset the date by
+     * @param timeScale The time scale of the timeOffset time
+     * @return The newly offseted date
      */
     private static Date offsetDate(Date date, int timeOffset, int timeScale) {
         
@@ -94,8 +76,11 @@ public class Auth {
         return calendar.getTime();
     }
 
-    /*
+    /**
      * Given an HTTP formatted date string, return a Date object
+     * 
+     * @param httpData An HTTP date in string format
+     * @return Ahe date as a Date object
      */
     private static Date HTTPDateToDate(String httpDate) {
 
@@ -109,8 +94,11 @@ public class Auth {
         }
     }
 
-    /*
+    /**
      * Given an ISO8601 date, returns a Date object
+     * 
+     * @param iso8601Date An ISO8601 date in string format
+     * @return The date as a Date object
      */
     private static Date ISO8601DateToDate(String iso8601Date) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyy-MM-dd HH:mm:ss");
@@ -122,49 +110,12 @@ public class Auth {
             throw new FailedAuthenticationException("Error parsing ISO8601 date to Date: " + ex.getMessage());
         }
     }
-/* 
-    // authenticates the session and re-issues the sessionId
-    public static boolean authenticateSession(String sessionId, HttpServletResponse res) {
 
-        // get session data
-        SessionModel sessionData = userDao.getSessionByHash(sessionId);
-
-        // if we cannot find session with provided sessionId, fail authentication
-        if(sessionData == null) return false;
-        
-        // check that the session is not expired
-        Date currentTime = new Date();
-        Date currentExpiration = sessionData.getExpiration();
-
-        // if no expiration data, fail authentication
-        if(currentExpiration == null) return false;
-
-        // if session expired, fail authentication
-        if(currentTime.compareTo(currentExpiration) > 0) return false;
-
-        // update session
-        userDao.removeSession(sessionId);
-        setSession(sessionData.getUsername(), res);
-
-        return true;
-    } */
-
-   /*  // authenticates user credentials
-    public static void authenticateUser(String username, String password) throws FailedUserAuthenticationException {
-
-        // QUERY user with DAO
-        UserModel user = userDao.getUserByUsername(username);
-
-        // validate 
-        if(user == null) throw new FailedUserAuthenticationException("Incorrect username.");
-
-        // authenticate
-        if(!BCrypt.verifyer().verify(password.toCharArray(), user.getPassword().toCharArray()).verified) throw new FailedUserAuthenticationException("Incorrect password.");
-    } */
-
-
-    /*
-     * Given a username, returns a session ID (unusable alone, you still have to register it)
+    /**
+     * Given a username, returns a session ID (not registered)
+     * 
+     * @param username The username we want to produce a session ID for
+     * @return A session ID valid to the given username. Not registered.
      */
     private static String getSessionId(String username) {
 
@@ -181,17 +132,24 @@ public class Auth {
         return sessionId;
     }
 
-    /*
-     * given a session ID and an expiration date in HTTP format, returns a cookie for that session to be used with Set-Cookie
+    /**
+     * Given a session ID and an expiration date in HTTP format, returns a cookie for that session to be used with Set-Cookie
+     * 
+     * @param sessionId The session ID to add to the cookie
+     * @param expirationDateHttp The expiration date string for the cookie in HTTP format
+     * @return A string representing a session ID cookie, ready to be added to Set-Cookie
      */
     private static String getSessionCookie(String sessionId, String expirationDateHttp) {
         return "sessionId=" + sessionId + "; expires=" + expirationDateHttp + "; path=/";
     }
 
 
-    /*
+    /**
      * Confirms that the user exists and the password is correct for that user
-     * On failure, an exception is thrown.
+     * 
+     * @param username The username of the user we want to authenticate
+     * @param password The password for that username
+     * @throws FailedUserAuthenticationException If the credentials are invalid
      */
     public static void authenticateUser(String username, String password) throws FailedUserAuthenticationException {
 
@@ -210,13 +168,12 @@ public class Auth {
     }
 
 
-    /*
-     * Returns a session cookie for the given username:
-     * - Generates a session ID
-     * - Adds it to the database
-     * - Returns session cookie to be used with the Set-Cookie header
+    /**
+     * Registers and returns a session cookie for the given username
      * 
-     * If session cannoe be created, throws ex
+     * @param username The username we want to initiate a session for
+     * @return The session ID cookie string, ready to be added to a Set-Cookie header
+     * @throws FailedSessionCreationException If something goes wrong when adding the session to the database
      */
     public static String initiateSession(String username) throws FailedSessionCreationException {
 
@@ -239,11 +196,12 @@ public class Auth {
         return getSessionCookie(sessionId, dateToHTTPDate(expirationDate));
     }
 
-    /*
-     * Checks if the session is valid, updates it if so.
-     * Returns updated session to be used with the Set-Cookie header
+    /**
+     * Checks if sessionId is valid, updates it and returns the updated session cookie string
      * 
-     * If session invalid or expired, throws ex
+     * @param sessionId The ID of the session we want to authenticate
+     * @returns An updated session cookie string (This deprecates the old one). Ready to be used on the Set-Cookie header
+     * @throws FailedSessionAuthenticationException If the session authentication fails (expired, non existent...)
      */
     public static String authenticateSession(String sessionId) throws FailedSessionAuthenticationException {
 

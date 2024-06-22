@@ -1,15 +1,10 @@
 ## This project and codument are a WIP
+Social media blogpost website.
 
 
-**The idea** is to make a social media blogpost website.
+### Structure - WIP
 
-- **Database**: SQLite
-- **Backend**: Java + Spring Boot + JPA
-- **Frontend**: JS/HTML/CSS + [BULMA](https://bulma.io/)
-- **Build tool**: Maven
-
-### Current structure:
-
+**Tiers**:
 ```
                               Client
                          +-------------+
@@ -19,11 +14,11 @@
               Server 1 (Frontend + Backend APIs)
 +------------------------------------------------------------------+
 |                     Controllers : HTTP, endpoints                |
-+--------------------------+---------------------------------------+
++------------------------------------------------------------------+
 |            Auth : Authentication & Authorization                 |
-+--------------------------+---------------------------------------+
++------------------------------------------------------------------+
 |                  Service : Business logic                        |
-+--------------------------+---------------------------------------+
++------------------------------------------------------------------+
 |                    DAO : CRUD, concurrency (session)             |
 +------------------------------------------------------------------+
 
@@ -33,41 +28,40 @@
                       +-------------------+
 ```
 
-### Solutions
+**Tech**:
+
+- **Database**: SQLite
+- **Backend**: Java + Spring Boot + JPA
+- **Frontend**: JS/HTML/CSS + [BULMA](https://bulma.io/)
+- **Build tool**: Maven
 - **Hashing**: bcrypt
 - **Random gen**: commons-lang3
 
-### Controllers
+
+### Controllers - WIP
+
+Below is a list of the controller classes and their endpoints.
 
 Description types:
 - **View**: Means the endpoint returns HTML that is considered a part of a full page, a component. Like a card or a banner.
 - **Page**: Means the endpoint returns a full page, or the foundations of it where other elements are to be placed.
 - **CRUD**: Means the website does some CRUD operation.
 
-SC:
-- 200 OK
-- 201 Created
-- 303 See Other
-- 400 Bad Request
-- 401 Unauthorized
-- 403 Forbidden
-- 404 Not found
-- 500 Internal Server Error
 
 **AccessController**: These provide the registration and loggin interface.
-|Endpoint      | Verb  |Session?|Response                |Description|SC       |Req. Body |
-|--------------|-------|--------|------------------------|-----------|---------|----------|
-|/register     | GET   |✖️      |register.html           |View       |200      |-         |
-|/register     | GET   |✔️      |re to /                 |-          |303      |-         |
-|/register     | POST  |✔️      |Error message           |-          |403      |-         |
-|/register     | POST  |✖️      |Register user           |CRUD       |200, 400 |-         |
-|/login        | GET   |✖️      |login.html              |View       |200      |-         |
-|/login        | GET   |✔️      |re to /                 |-          |303      |-         |
-|/login        | POST  |✔️      |Error message           |-          |403      |-         |
-|/login        | POST  |✖️      |Log in user             |CRUD       |200, 400 |-         |
+|Endpoint      | Verb |Session?|Response                |Description|SC       |Req. Body |
+|--------------|------|--------|------------------------|-----------|---------|----------|
+|/register     |GET   |✖️      |register.html           |View       |200      |-         |
+|/register     |GET   |✔️      |re to /                 |-          |303      |-         |
+|/register     |POST  |✔️      |Error message           |-          |403      |-         |
+|/register     |POST  |✖️      |Register user           |CRUD       |200, 400 |-         |
+|/login        |GET   |✖️      |login.html              |View       |200      |-         |
+|/login        |GET   |✔️      |re to /                 |-          |303      |-         |
+|/login        |POST  |✔️      |Error message           |-          |403      |-         |
+|/login        |POST  |✖️      |Log in user             |CRUD       |200, 400 |-         |
 
 
-**PageController**: Endpoints related to serving HTML pages.
+**PageController**: MVC endpoints related to serving HTML **pages**.
 |Endpoint      | Verb  |Session?|Response                |Description|SC   |Req. Body    |
 |--------------|-------|--------|------------------------|-----------|-----|-------------|
 |/             | GET   |✖️      |welcome.html            |Page       |200  |-            |
@@ -85,8 +79,6 @@ SC:
 |/post                                   |POST   |PostModel               |Create post                      |201, 400, 401     |PostModel    |
 |/post/{post_id}                         |PUT    |PostModel               |Full update on a post            |200, 400, 401, 404|PostModel    |
 |/post/{post_id}                         |PATCH  |PostModel               |Partial update on a post         |200, 400, 401, 404|PostModel    |
-
-
 **Filters**: user_id, category, hashtag
 
 Note: when querying posts, the order of those is from most to least recently created.
@@ -126,9 +118,7 @@ Note: when querying posts, the order of those is from most to least recently cre
 
 
 
-### Database
-Below are the tables (WIP):
-
+### Database - WIP
 
 **Tables**:
 Table name|Column         |Column         |Column         |Column           |Column         |Column         |Column   |
@@ -141,7 +131,6 @@ Table name|Column         |Column         |Column         |Column           |Col
 |HASHTAG  |hashtag STR    |post_id NUM    |
 |LIKES    |post_id NUM    |user_id NUM    |
 |SAVES    |saves_id NUM   |user_id NUM    |
-
 
 
 **Indexes**:
@@ -163,22 +152,21 @@ Table name|Column         |Column         |Column         |Column           |Col
     - Clustered: *user_id*. Helps when retrieving a specific user.
 
 
-### Searching
-For the searching, we parse the card content for the 10 most common words, and take that along the cards category and hashtags.
+### Searching - WIP
+For the searching, we could parse the card content for the 10 most common words, and save that along the cards category and hashtags.
 
 
 ### Sequrity
 I have a couple of basic things in place. No Spring Security added to the project (In my TOLEARN list)
 
 These are the features I have implemented that I consider security-themed:
-- **Authentication**: I have a class that handles basic authenticationg of users and sessions.
+- **Authentication**: I have a class that handles basic authenticationg of users and sessions (Auth).
 - **Hasing passwords**: I make sure I just store a hash to a password.
-- **Expirable sessionIds**: Session IDs have an expiration date, so no logging in once and staying logged in forever.
-- **Updating sessionIds**: I create a new sessionId on every contact with a user. This opens up a potential for optimization. Maybe have two timers, one for sessionId expiration and another substantially smaller timer to indicate that the sessionId should be refreshed.
-- **Sanitazing userame/password characters**: I do some basic sanitation at the service layer, before interacting with the DAO. Right now is just a list of illegal characters that I think should not get to the DAO level. With username/password what I do is to throw an exception that lets the client know about the issue.
+- **Expirable session IDs**: Session IDs have an expiration date, so a client cannot log in once and stay logged in forever.
+- **Re-generating session IDs**: Session IDs have a refresh countdown, meaning even when logged in, the server is always re-generating the session ID every X minutes. This shortens any window of opportunity for an attacker.
+- **Sanitazing userame/password characters**: I do some basic sanitation before interacting with the DAO in order to look for SQL queries. WIP.
 
-**TODO**:
-
+**Sequrity - TODO**:
 - Adding some authorization so I can have admin accounts.
 - Improve sanitation.
 - HTTPS ?
@@ -188,19 +176,20 @@ These are the features I have implemented that I consider security-themed:
 Similar situation as with security.
 
 These are some things implemented that I consider optimization-themed:
-- **Client-side input validation**: saves time to the server. I do check the same things in the server again because I imagine the client is not to be trusted. But for non bad actors this saves the potential back and forth with the server. Something I have to work on for this feature is having a cenrtalized place for these rules. Right now if I want a password to be minimum 8 characters, I have to specify that rule on both the server and the client separately, so mismatches can happen.
+- **Client-side input validation**: Saves time to the server. I do check the same things in the server again because I imagine the client is not to be trusted. But for non bad actors this saves the potential back and forth with the server.
 
+**Optimization - TODO**:
+- Find a single source of truth for input validation that the client and the backend can relate to. Database probably.
 
-**TODO**:
+### Other things:
+- For the sessions, the backend run a second thread that scans the table every X time and removes expired keys, so I implement Optimistic locking for the session table (WIP).
 
-- Optimize sessionId refresh rules: instead of every time, a refresh expiration date.
-
-### Other TODOs
-
+### Backlog:
 - Create tests
 - Database for translation: Have the website text in a database and allow for different languages
 - Card that explains the website features (Auth, languages, etc).
 - Markdown ?
+- Work on concurrency. Do transactions and lock levels.
 
 
 
