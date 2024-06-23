@@ -1,4 +1,4 @@
-package com.alfredcode.socialWebsite.Controllers;
+package com.alfredcode.socialWebsite.controller;
 
 
 import org.slf4j.Logger;
@@ -9,11 +9,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import com.alfredcode.socialWebsite.Exceptions.FailedAuthenticationException;
-import com.alfredcode.socialWebsite.Exceptions.FailedSessionAuthenticationException;
-import com.alfredcode.socialWebsite.Exceptions.FailedSessionCreationException;
-import com.alfredcode.socialWebsite.Exceptions.FailedUserAuthenticationException;
-import com.alfredcode.socialWebsite.Exceptions.ForbiddenActionException;
+import com.alfredcode.socialWebsite.exception.FailedAuthenticationException;
+import com.alfredcode.socialWebsite.exception.FailedSessionAuthenticationException;
+import com.alfredcode.socialWebsite.exception.FailedSessionCreationException;
+import com.alfredcode.socialWebsite.exception.FailedUserAuthenticationException;
+import com.alfredcode.socialWebsite.exception.ForbiddenActionException;
 
 
 /*

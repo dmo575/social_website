@@ -1,4 +1,4 @@
-package com.alfredcode.socialWebsite.Controllers;
+package com.alfredcode.socialWebsite.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CookieValue;

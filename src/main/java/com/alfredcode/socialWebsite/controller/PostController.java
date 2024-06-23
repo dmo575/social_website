@@ -1,10 +1,10 @@
-package com.alfredcode.socialWebsite.Controllers;
+package com.alfredcode.socialWebsite.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.alfredcode.socialWebsite.Models.PostModel;
-import com.alfredcode.socialWebsite.Services.PostService;
+import com.alfredcode.socialWebsite.model.PostModel;
+import com.alfredcode.socialWebsite.service.PostService;
 
 import jakarta.websocket.server.PathParam;
 

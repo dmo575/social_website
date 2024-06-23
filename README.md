@@ -6,26 +6,28 @@ Social media blogpost website.
 
 **Tiers**:
 ```
-                              Client
-                         +-------------+
-                         | HTML/CSS/JS |
-                         +-------------+
+                               Client
+                          +-------------+
+                          | HTML/CSS/JS |
+                          +-------------+
+
+                                ⬇⬆
 
               Server 1 (Frontend + Backend APIs)
-+------------------------------------------------------------------+
-|                     Controllers : HTTP, endpoints                |
-+------------------------------------------------------------------+
-|            Auth : Authentication & Authorization                 |
-+------------------------------------------------------------------+
-|                  Service : Business logic                        |
-+------------------------------------------------------------------+
-|                    DAO : CRUD, concurrency (session)             |
-+------------------------------------------------------------------+
++--------------------------------------------------------------------+
+| AOP (Auth) ▶️ Controllers (HTTP, endpoints) ▶️ InterceptorHandlers |
++--------------------------------------------------------------------+
+|                     Service : Business logic                       |
++--------------------------------------------------------------------+
+|                 DAO : CRUD, concurrency (session)                  |
++--------------------------------------------------------------------+
 
-                            Server 2
-                      +-------------------+
-                      | DB : Data storage |
-                      +-------------------+
+                                ⬇⬆
+
+                              Server 2
+                        +-------------------+
+                        | DB : Data storage |
+                        +-------------------+
 ```
 
 **Tech**:
@@ -182,7 +184,7 @@ These are some things implemented that I consider optimization-themed:
 - Find a single source of truth for input validation that the client and the backend can relate to. Database probably.
 
 ### Other things:
-- For the sessions, the backend run a second thread that scans the table every X time and removes expired keys, so I implement Optimistic locking for the session table (WIP).
+- **Concurrency**: For the sessions, the backend run a second thread that scans the table every X time and removes expired keys, so I implement Optimistic locking for the session table (WIP).
 
 ### Backlog:
 - Create tests
@@ -231,3 +233,13 @@ You can also globally search for posts with the following: Category, hashtag and
 **Collection - tab**
 
 Place where you can see and manage users you are subscribed to and posts you have saved.
+
+#### END - TODO list:
+- The other TODOs scattered across the document
+- Properly design Exceptions. Right now I don't really follow a logic for which ones should be checked and which ones should not. Think it trough
+- Now that we are adding AOP with custom annotations that take in exceptions, properly organize exception hierarchy
+- Properly organize the project. Instead of socialWebsite/annotations/, let the directory structure be guided by themes, like socialWebsite/security/annotations
+- Finish implementing AOP for cross-cutting (even tho theres none atm, is just Auth) and InterceptorHandlers for HTTP session management.
+- Figure out what's going on with the H2 dependency. I can't get it out the project. I will use MySQL
+- Start setting up a MySQL database, decide on how to proceed on the backend: Plain JDBC (DriverManager || DataSource) or also add Spring JPA + Repositories. Do some refreshing on this.
+- Concurrency, transactions

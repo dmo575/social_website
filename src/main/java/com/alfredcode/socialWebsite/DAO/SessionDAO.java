@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alfredcode.socialWebsite.Database;
-import com.alfredcode.socialWebsite.Models.SessionModel;
+import com.alfredcode.socialWebsite.model.SessionModel;
 
 /*
  * Race conditions:

@@ -1,4 +1,4 @@
-package com.alfredcode.socialWebsite.Controllers;
+package com.alfredcode.socialWebsite.controller;
 
 
 import org.slf4j.Logger;
@@ -14,12 +14,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.alfredcode.socialWebsite.Exceptions.FailedSessionAuthenticationException;
-import com.alfredcode.socialWebsite.Exceptions.FailedSessionCreationException;
-import com.alfredcode.socialWebsite.Exceptions.ForbiddenActionException;
-import com.alfredcode.socialWebsite.Exceptions.UsernameTakenException;
-import com.alfredcode.socialWebsite.Models.UserModel;
-import com.alfredcode.socialWebsite.Services.UserService;
+import com.alfredcode.socialWebsite.exception.FailedSessionAuthenticationException;
+import com.alfredcode.socialWebsite.exception.FailedSessionCreationException;
+import com.alfredcode.socialWebsite.exception.ForbiddenActionException;
+import com.alfredcode.socialWebsite.exception.UsernameTakenException;
+import com.alfredcode.socialWebsite.model.UserModel;
+import com.alfredcode.socialWebsite.security.annotation.SessionRequired;
+import com.alfredcode.socialWebsite.service.UserService;
 import com.alfredcode.socialWebsite.tools.Auth;
 import com.alfredcode.socialWebsite.tools.URL;
 
@@ -59,6 +60,13 @@ public class AccessController {
 
         // 200 register
         return new ModelAndView("register");
+    }
+
+    @SessionRequired
+    @GetMapping("/test")
+    @ResponseBody
+    public String test(){
+        return "This is a test";
     }
 
 

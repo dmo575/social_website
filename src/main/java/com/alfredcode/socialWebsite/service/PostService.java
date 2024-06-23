@@ -1,10 +1,10 @@
-package com.alfredcode.socialWebsite.Services;
+package com.alfredcode.socialWebsite.service;
 
 
 import org.springframework.stereotype.Service;
 
 import com.alfredcode.socialWebsite.DAO.PostDAO;
-import com.alfredcode.socialWebsite.Models.PostModel;
+import com.alfredcode.socialWebsite.model.PostModel;
 
 /*
  * Manages business logic for the post entities

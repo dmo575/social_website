@@ -7,23 +7,34 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.alfredcode.socialWebsite.DAO.UserDAO;
-import com.alfredcode.socialWebsite.Exceptions.FailedAuthenticationException;
-import com.alfredcode.socialWebsite.Exceptions.FailedSessionAuthenticationException;
-import com.alfredcode.socialWebsite.Exceptions.FailedSessionCreationException;
-import com.alfredcode.socialWebsite.Exceptions.FailedUserAuthenticationException;
-import com.alfredcode.socialWebsite.Models.SessionModel;
-import com.alfredcode.socialWebsite.Models.UserModel;
-import com.alfredcode.socialWebsite.Services.SessionService;
+import com.alfredcode.socialWebsite.controller.AccessController;
+import com.alfredcode.socialWebsite.exception.FailedAuthenticationException;
+import com.alfredcode.socialWebsite.exception.FailedSessionAuthenticationException;
+import com.alfredcode.socialWebsite.exception.FailedSessionCreationException;
+import com.alfredcode.socialWebsite.exception.FailedUserAuthenticationException;
+import com.alfredcode.socialWebsite.model.SessionModel;
+import com.alfredcode.socialWebsite.model.UserModel;
+import com.alfredcode.socialWebsite.service.SessionService;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 
 /*
  * Manages user and session authentication and authorization
  */
+@Aspect
+@Component
 public class Auth {
 
     private static final Logger logger = LoggerFactory.getLogger(Auth.class);
@@ -240,6 +251,52 @@ public class Auth {
 
         // return a new sessionId cookie with the new data
         return getSessionCookie(session.getId(), dateToHTTPDate(newExpirationDate));
+    }
+
+    /////////////////////////////////////////////////////////////////////////////
+    @Before("@annotation(com.alfredcode.socialWebsite.security.Annotations.SessionRequired)")
+    private void sessionRequired(JoinPoint jp) {
+
+        /*
+         * Each time this thread is processing an HTTP request trough a controller method, information about that current task can be accessed trough the 
+         * RequestContextholder class.
+         * The getRequestAttributes allows us to access the request and response objects, which is what makes this great, else we would have to
+         * have the controller method declare a HttpServletRequest parameter every time at the same place to then access it trough args[] 
+         */
+
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+
+        // will store the sessionId if any
+        String sessionId = null;
+        Cookie[] cookies = request.getCookies();
+
+        if(cookies != null) {
+            // go trough the cookies and retrieve the sessionId
+            for(Cookie c : request.getCookies()) {
+                if(c.getName().equals("sessionId")) {
+                    sessionId = c.getValue();
+                    break;
+                }
+            }
+        }
+
+        // if no sessionId, throw ex
+        if(sessionId == null || sessionId.isBlank()) {/* throw exception */}
+
+        // authenticate sessionId
+        logger.info("SESSION_ID: " + sessionId);
+
+        // authorize sessionId (TODO, we dont have sequrity levels right now)
+
+        // use sessionService to check if the session is valid
+
+        // throw ex if not valid
+    }
+
+    @Before("@annotation(com.alfredcode.socialWebsite.security.Annotations.NoSessionAllowed)")
+    private void noSessionAllowed(JoinPoint jp) {
+        // use sessionService to check if the session is valid
+        // throw ex if valid
     }
 
 }

@@ -1,4 +1,4 @@
-package com.alfredcode.socialWebsite.Models;
+package com.alfredcode.socialWebsite.model;
 
 import java.util.Date;
 

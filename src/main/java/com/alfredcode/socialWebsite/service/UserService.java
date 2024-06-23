@@ -1,11 +1,11 @@
-package com.alfredcode.socialWebsite.Services;
+package com.alfredcode.socialWebsite.service;
 
 import org.springframework.stereotype.Service;
 
 import com.alfredcode.socialWebsite.DAO.UserDAO;
-import com.alfredcode.socialWebsite.Exceptions.UserRegistrationException;
-import com.alfredcode.socialWebsite.Exceptions.UsernameTakenException;
-import com.alfredcode.socialWebsite.Models.UserModel;
+import com.alfredcode.socialWebsite.exception.UserRegistrationException;
+import com.alfredcode.socialWebsite.exception.UsernameTakenException;
+import com.alfredcode.socialWebsite.model.UserModel;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
 

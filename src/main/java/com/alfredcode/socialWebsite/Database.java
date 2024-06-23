@@ -8,9 +8,9 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alfredcode.socialWebsite.Models.PostModel;
-import com.alfredcode.socialWebsite.Models.SessionModel;
-import com.alfredcode.socialWebsite.Models.UserModel;
+import com.alfredcode.socialWebsite.model.PostModel;
+import com.alfredcode.socialWebsite.model.SessionModel;
+import com.alfredcode.socialWebsite.model.UserModel;
 
 /*
  * Mock database, singleton.
