@@ -27,7 +27,6 @@ import jakarta.servlet.http.HttpServletResponse;
  *      - This means that
  * 
  */
-@Component
 public class SessionInterceptor implements HandlerInterceptor{
 
     private static final Logger logger = LoggerFactory.getLogger(SessionInterceptor.class);

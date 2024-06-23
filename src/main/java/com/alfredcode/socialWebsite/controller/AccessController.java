@@ -3,6 +3,7 @@ package com.alfredcode.socialWebsite.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.stereotype.Controller;
@@ -34,7 +35,12 @@ import jakarta.servlet.http.HttpServletResponse;
 public class AccessController {
 
     private static final Logger logger = LoggerFactory.getLogger(AccessController.class);
-    private UserService userService = new UserService();
+    private UserService userService = null;
+    
+    @Autowired
+    public AccessController(UserService userService) {
+        this.userService = userService;
+    }
 
 
     /*

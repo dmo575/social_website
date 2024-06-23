@@ -12,6 +12,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -50,6 +51,11 @@ public class Auth {
 
     private static UserDAO userDao = new UserDAO();
     private static SessionService sessionService = new SessionService();
+
+    @Autowired
+    public Auth(SessionService sessionService) {
+        this.sessionService = sessionService;
+    }
 
     {
         // TODO: start a thread that empties expired sessions every [sessionExpirationTimeHours] time. Then log that you did just that to the console.

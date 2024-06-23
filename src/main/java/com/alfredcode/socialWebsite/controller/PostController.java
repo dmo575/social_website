@@ -1,5 +1,6 @@
 package com.alfredcode.socialWebsite.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -13,7 +14,12 @@ import jakarta.websocket.server.PathParam;
  */
 @RestController
 public class PostController {
-    private PostService postService = new PostService();
+    private PostService postService = null;
+
+    @Autowired
+    public PostController(PostService postService) {
+        this.postService = postService;
+    }
 
     /*
      * POST /post/{post_id}
