@@ -1,10 +1,14 @@
 package com.alfredcode.socialWebsite.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.alfredcode.socialWebsite.tools.Auth;
+import com.alfredcode.socialWebsite.security.Auth;
+import com.alfredcode.socialWebsite.security.annotation.NoSessionAllowed;
+import com.alfredcode.socialWebsite.service.session.SessionService;
 
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -14,6 +18,12 @@ import jakarta.servlet.http.HttpServletResponse;
 @Controller
 public class PageController {
     
+    private SessionService sessionService = null;
+
+    @Autowired
+    public PageController(SessionService sessionService) {
+        this.sessionService = sessionService;
+    }
 
     /*
      *  GET /
@@ -27,7 +37,7 @@ public class PageController {
 
         try{
             // if authenticated, 200 portal
-            res.setHeader("Set-Cookie", Auth.authenticateSession(sessionId));
+            res.setHeader("Set-Cookie", sessionService.updateSession(sessionId));
 
             return "forward:/portal.html";
         }

@@ -1,4 +1,4 @@
-package com.alfredcode.socialWebsite.service;
+package com.alfredcode.socialWebsite.service.post;
 
 
 import org.springframework.stereotype.Service;

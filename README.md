@@ -6,33 +6,33 @@ Social media blogpost website.
 
 **Tiers**:
 ```
-                               Client
-                          +-------------+
-                          | HTML/CSS/JS |
-                          +-------------+
-
-                                ⬇⬆
-
-              Server 1 (Frontend + Backend APIs)
-+--------------------------------------------------------------------+
-| AOP (Auth) ▶️ Controllers (HTTP, endpoints) ▶️ InterceptorHandlers |
-+--------------------------------------------------------------------+
-|                     Service : Business logic                       |
-+--------------------------------------------------------------------+
-|                 DAO : CRUD, concurrency (session)                  |
-+--------------------------------------------------------------------+
-
-                                ⬇⬆
-
-                              Server 2
-                        +-------------------+
-                        | DB : Data storage |
-                        +-------------------+
+                                         Client
+                                    +-------------+
+                                    | HTML/CSS/JS |
+                                    +-------------+
+          
+                                          ⬇⬆
+          
+                           Server 1 (Frontend + Backend APIs)
++----------------------------------------------------------------------------------------+
+| AOP (Auth) ▶️ InterceptorHandlers (HTTP session updt) ▶️ Controllers (HTTP, endpoints) |
++----------------------------------------------------------------------------------------+
+|                                Service : Business logic                                |
++----------------------------------------------------------------------------------------+
+|                            DAO : CRUD, concurrency (session)                           |
++----------------------------------------------------------------------------------------+
+          
+                                          ⬇⬆
+          
+                                        Server 2
+                                  +-------------------+
+                                  | DB : Data storage |
+                                  +-------------------+
 ```
 
 **Tech**:
 
-- **Database**: SQLite
+- **Database**: MySQL
 - **Backend**: Java + Spring Boot + JPA
 - **Frontend**: JS/HTML/CSS + [BULMA](https://bulma.io/)
 - **Build tool**: Maven
@@ -243,3 +243,89 @@ Place where you can see and manage users you are subscribed to and posts you hav
 - Figure out what's going on with the H2 dependency. I can't get it out the project. I will use MySQL
 - Start setting up a MySQL database, decide on how to proceed on the backend: Plain JDBC (DriverManager || DataSource) or also add Spring JPA + Repositories. Do some refreshing on this.
 - Concurrency, transactions
+
+### Exceptions and data transfer between layers - WIP
+
+
+#### Database:
+TODO
+
+#### DAO:
+DAO layers always return the following:
+- Read: Data model with retrieved record data or `null` if error.
+- Create: Data model with created record data or `null` if error.
+- Update: Data model with updated record data or `null` if error.
+- Delete: `boolean` indicating operation success status.
+- DAO instances throw no exceptions for the time being.
+
+
+#### Service:
+Service layers do throw exceptions:
+- Exceptions to represent a faulty return from a CRUD operation.
+- Exceptions to represent failure at the service layer.
+- Ambiguous exceptions are thrown to indicate that something went wrong in the process, but their name doesnt specifically points to the issue. Their description message will describe the issue, which will be a business logic related issue unless the error comes from the DAO (some null return), in which case the message will be generic.
+
+|Layer             |Exception type |Exception name                 |Reasons to throw it                   |
+|------------------|---------------|-------------------------------|--------------------------------------|
+|Any service layer |Speciffic      |IllegalArgumentException       |The data passed is invalid            |
+|UserService       |Ambiguous      |FailedUserRegistrationEx       |Error while registering the user      |
+|UserService       |Ambiguous      |FailedUserAuthenticationEx     |Error while authenticating the user   |
+|SessionService    |Ambiguous      |FailedSessionAuthenticationEx  |Error while authenticating the sesion |
+|SessionService    |Ambiguous      |FailedSessionUpdateEx          |Error while updating the sesion       |
+|SessionService    |Ambiguous      |FailedSessionCreationEx        |Error while creating the sesion       |
+|. . .
+
+
+#### Exception hierarchy:
+```
+RuntimeException                                [java.lang]
+├── AuthenticationException (Abstract)          [com.alfredcode.socialWebsite.security.exception]
+│   ├── FailedAuthenticationException           [com.alfredcode.socialWebsite.service.session.exception]
+│   ├── FailedSessionAuthenticationException    [com.alfredcode.socialWebsite.service.session.exception]
+│   ├── FailesSessionCreationException          [com.alfredcode.socialWebsite.service.session.exception]
+│   ├── FailedSessionUpdateException            [com.alfredcode.socialWebsite.service.session.exception]
+│   └── FailesUserAuthenticationException       [com.alfredcode.socialWebsite.service.user.exception]
+├── FailesUserRegistrationException             [com.alfredcode.socialWebsite.service.user.exception]
+├── ForbiddenActionException                    [com.alfredcode.socialWebsite.exception]
+└── IllgalArgumentException                     [java.lang]
+```
+
+#### Handling exceptions:
+- Exceptions are handled by the `GlobalExceptionsController.java` controller when they are general exceptions.
+- If they are exceptions speciffic to a service, then the controller of that service will have the handlers for it at the bottom of the class.
+
+**Auth**:
+- Catches: Service layer exceptions
+- Throws: Auth exceptions
+    - FailedAuthenticationException: Generic for when something goes wrong with Auth (Either comming from a the service layer in use or within Auth).
+    - FailedSessionAuthentication: The authentication provided is invalid.
+    - FailedSessionCreationException: A session for the user could not be created.
+
+**Outdated Exceptions**:
+- FailedUserAuthentication: We use FailedSessionAuthentication
+
+### AOP, Controllers and Interceptor handlers - WIP
+In order to implement an easy Authorization and Authentication system, we will be using AOP methods and Interceptor handlers in combination with some custom annotations.
+
+**First layer is Authentication**:
+- @SessionRequired: to be used on @Controller methods that require a valid session in order for the client to interact with its endpoints
+- @NoSessionAllowed: to be usedon @Controller methods that require **no** valid session in order for the client to interact with its endpoints (login, register, ...)
+- Auth.sessionRequired(): AOP method (@Before). Authenticates a client's session. Throws exceptions on failure.
+- Auth.noSessionAllowed(): AOP method (@Before). Authenticates a client's session. Throws exceptions on success.
+
+**Second layer are the controllers**:
+- Process the HTTP request and come up with an HTTP response.
+
+**Third layer is the Interceptor handler (SessionInterceptor)**:
+- If method handler (controller method) has a @SessionRequired annotation: Update session
+    - We know that the client had a valid session before hitting this point because of Auth
+- If method handler (controller method) has a @NosessionAllowed annotation: do nothing
+    - We know the user had no valid session before hitting this point because of Auth
+
+**TODO:**
+- Add the ability to define a exception to throw when Auth's AOP methods fail. Or the ability to define a redirect and SC. Have defaults in place.
+
+#### Why use both AOP and Interceptor handlers, instead of either:
+- Separation of concerns: Interceptors are the conventional place for HTTP request/response modifications while AOP are saved for cross-cutting concerns; that is tasks that involve several unrealted instances, each performing some operation.
+- Ease of access: Interceptors make it really easy to access the HTTP req/res because they are intended to modify these things. They are even included in the servlet lifecycle. With AOP you do need to do some workaround to get to the servlets.
+- Standards: Even tho we can do these things in either place, the standard seems to be the one already explained, so going against it makes the code harder to understand.

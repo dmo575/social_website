@@ -9,11 +9,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import com.alfredcode.socialWebsite.exception.FailedAuthenticationException;
-import com.alfredcode.socialWebsite.exception.FailedSessionAuthenticationException;
-import com.alfredcode.socialWebsite.exception.FailedSessionCreationException;
-import com.alfredcode.socialWebsite.exception.FailedUserAuthenticationException;
 import com.alfredcode.socialWebsite.exception.ForbiddenActionException;
+import com.alfredcode.socialWebsite.service.session.exception.FailedAuthenticationException;
+import com.alfredcode.socialWebsite.service.session.exception.FailedSessionAuthenticationException;
+import com.alfredcode.socialWebsite.service.session.exception.FailedSessionCreationException;
+import com.alfredcode.socialWebsite.service.user.exception.FailedUserAuthenticationException;
 
 
 /*

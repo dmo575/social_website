@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alfredcode.socialWebsite.model.PostModel;
-import com.alfredcode.socialWebsite.service.PostService;
+import com.alfredcode.socialWebsite.service.post.PostService;
 
 import jakarta.websocket.server.PathParam;
 

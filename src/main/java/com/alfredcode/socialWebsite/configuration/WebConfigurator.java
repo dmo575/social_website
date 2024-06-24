@@ -1,8 +1,11 @@
 package com.alfredcode.socialWebsite.configuration;
 
 import com.alfredcode.socialWebsite.security.SessionInterceptor;
+import com.alfredcode.socialWebsite.service.session.SessionService;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -13,11 +16,19 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * Interceptors are used to manipulate the HTTP response/request.
  */
 @Configuration
+@EnableScheduling
 public class WebConfigurator implements WebMvcConfigurer {
+
+    private SessionService sessionService = null;
+
+    @Autowired
+    public WebConfigurator(SessionService sessionService) {
+        this.sessionService = sessionService;
+    }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         // we will add the session interceptor for all endpoints
-        registry.addInterceptor(new SessionInterceptor()).addPathPatterns("/**");
+        registry.addInterceptor(new SessionInterceptor(sessionService)).addPathPatterns("/**");
     }
 }

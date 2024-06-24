@@ -99,19 +99,19 @@ public class SessionDAO {
      * records. This would probably be different if more servers join. We would probably have to look at transactions and locking levels within the database records.
      * 
      */
-    public SessionModel updateSessionWithId(String sessionId, SessionModel sessionModel, Boolean forceUpdate) {
+    public SessionModel updateSession(SessionModel sessionModel) {
 
         // get session
-        SessionModel currSession = getSessionById(sessionId);
+        SessionModel currSession = getSessionById(sessionModel.getId());
 
         // if we cannot find the session, it means the other thread removed it. So we let the service layer create it.
         if(currSession == null) return null;
 
 
         // check the version, if it is the same then we update the record
-        if(currSession.getVersion() == sessionModel.getVersion() || forceUpdate) {
+        if(currSession.getVersion() == sessionModel.getVersion()) {
             sessionModel.setVersion(currSession.getVersion() + 1);
-            return db.updateSessionWithId(sessionId, sessionModel);
+            return db.updateSessionWithId(sessionModel.getId(), sessionModel);
         }
 
         return null;

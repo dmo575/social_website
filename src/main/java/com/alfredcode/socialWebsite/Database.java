@@ -14,7 +14,7 @@ import com.alfredcode.socialWebsite.model.UserModel;
 
 /*
  * Mock database, singleton.
- * To be replaced with a SQLite database.
+ * To be replaced with a MySQL database.
  */
 public class Database {
     private static final Logger logger = LoggerFactory.getLogger(Database.class);

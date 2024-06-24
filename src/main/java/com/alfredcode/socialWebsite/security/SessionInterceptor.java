@@ -2,12 +2,18 @@ package com.alfredcode.socialWebsite.security;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.alfredcode.socialWebsite.service.SessionService;
+import com.alfredcode.socialWebsite.model.SessionModel;
+import com.alfredcode.socialWebsite.security.annotation.SessionRequired;
+import com.alfredcode.socialWebsite.service.session.SessionService;
+import com.alfredcode.socialWebsite.service.session.exception.FailedSessionAuthenticationException;
+import com.alfredcode.socialWebsite.service.session.exception.FailedSessionUpdateException;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -30,15 +36,54 @@ import jakarta.servlet.http.HttpServletResponse;
 public class SessionInterceptor implements HandlerInterceptor{
 
     private static final Logger logger = LoggerFactory.getLogger(SessionInterceptor.class);
-    private SessionService sessionService = new SessionService();
+    private SessionService sessionService = null;
 
-    public SessionInterceptor() {}
+    @Autowired
+    public SessionInterceptor(SessionService sessionService) {
+        this.sessionService = sessionService;
+    }
 
     @Override
-    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView maw) throws Exception {
+    public boolean preHandle(HttpServletRequest req, HttpServletResponse res, Object handler) throws Exception {
 
-        // TODO: update the session ID
-        logger.info("SESSION INTERCEPTOR");
+        // if the handler is not a controller method, return true
+        if(!(handler instanceof HandlerMethod)) return true;
 
+        // attempt to get the annotation SessionRequired from the method
+        SessionRequired sessionRequired = ((HandlerMethod)handler).getMethodAnnotation(SessionRequired.class);
+
+        // if no @SessionRequired annotation found, then we can return true
+        if(sessionRequired == null) return true;
+
+        // at this point, we know that the client had a valid sessionId when the authentication took place.
+        // it might be expired by now but it wasn't at the start, so we can try to update it if it already exists
+
+        // get cookies
+        Cookie[] cookies = req.getCookies();
+        String sessionId = null;
+
+        if(cookies != null) {
+            // get sessionId
+            for(Cookie c : cookies) {
+                if(c.getName().equals("sessionId")) {
+                    sessionId = c.getValue();
+                    break;
+                }
+            }
+        }
+
+        try{
+            // attempt to update the session
+            res.setHeader("sessionId", sessionService.updateSession(sessionId));
+            return true;
+        }
+        catch(FailedSessionUpdateException ex) {
+
+            // if the update failed, throw ex
+            throw new FailedSessionAuthenticationException("Session expired.");
+
+            // note: FailedSessionUpdateException right now just means that the session was deleted due to it being expired so the update
+            // never happened, so we can just take it as if the session was expired and the authentication failed.
+        }
     }
 }

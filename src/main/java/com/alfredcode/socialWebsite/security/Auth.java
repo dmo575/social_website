@@ -1,4 +1,4 @@
-package com.alfredcode.socialWebsite.tools;
+package com.alfredcode.socialWebsite.security;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -19,13 +19,13 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.alfredcode.socialWebsite.DAO.UserDAO;
 import com.alfredcode.socialWebsite.controller.AccessController;
-import com.alfredcode.socialWebsite.exception.FailedAuthenticationException;
-import com.alfredcode.socialWebsite.exception.FailedSessionAuthenticationException;
-import com.alfredcode.socialWebsite.exception.FailedSessionCreationException;
-import com.alfredcode.socialWebsite.exception.FailedUserAuthenticationException;
 import com.alfredcode.socialWebsite.model.SessionModel;
 import com.alfredcode.socialWebsite.model.UserModel;
-import com.alfredcode.socialWebsite.service.SessionService;
+import com.alfredcode.socialWebsite.service.session.SessionService;
+import com.alfredcode.socialWebsite.service.session.exception.FailedAuthenticationException;
+import com.alfredcode.socialWebsite.service.session.exception.FailedSessionAuthenticationException;
+import com.alfredcode.socialWebsite.service.session.exception.FailedSessionCreationException;
+import com.alfredcode.socialWebsite.service.user.exception.FailedUserAuthenticationException;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
 import jakarta.servlet.http.Cookie;
@@ -50,16 +50,13 @@ public class Auth {
     private static final int hashingCost = 4;
 
     private static UserDAO userDao = new UserDAO();
-    private static SessionService sessionService = new SessionService();
+    private SessionService sessionService = null;
 
     @Autowired
     public Auth(SessionService sessionService) {
         this.sessionService = sessionService;
     }
 
-    {
-        // TODO: start a thread that empties expired sessions every [sessionExpirationTimeHours] time. Then log that you did just that to the console.
-    }
 
     /**
      * Given a Date object, returns an HTTP formatter date as a String
@@ -67,13 +64,13 @@ public class Auth {
      * @param date The date to convert to an HTTP date string
      * @return The date in HTTP format as a string
      */
-    private static String dateToHTTPDate(Date date) {
+/*     private static String dateToHTTPDate(Date date) {
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss ZZZ");
         dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 
         return dateFormat.format(date);
-    }
+    } */
 
     /**
      * Given a date, a time offset and a time scale (Calendar.HOUR_OF_DAY for example), returns the offseted Date object
@@ -83,7 +80,7 @@ public class Auth {
      * @param timeScale The time scale of the timeOffset time
      * @return The newly offseted date
      */
-    private static Date offsetDate(Date date, int timeOffset, int timeScale) {
+/*     private static Date offsetDate(Date date, int timeOffset, int timeScale) {
         
         Calendar calendar = Calendar.getInstance();
 
@@ -91,7 +88,7 @@ public class Auth {
         calendar.add(timeScale, timeOffset);
 
         return calendar.getTime();
-    }
+    } */
 
     /**
      * Given an HTTP formatted date string, return a Date object
@@ -99,7 +96,7 @@ public class Auth {
      * @param httpData An HTTP date in string format
      * @return Ahe date as a Date object
      */
-    private static Date HTTPDateToDate(String httpDate) {
+/*     private static Date HTTPDateToDate(String httpDate) {
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss ZZZ");
 
@@ -109,7 +106,7 @@ public class Auth {
         catch(ParseException ex) {
             throw new FailedAuthenticationException("Error parsing HTTP date to Date: " + ex.getMessage());
         }
-    }
+    } */
 
     /**
      * Given an ISO8601 date, returns a Date object
@@ -117,7 +114,7 @@ public class Auth {
      * @param iso8601Date An ISO8601 date in string format
      * @return The date as a Date object
      */
-    private static Date ISO8601DateToDate(String iso8601Date) {
+/*     private static Date ISO8601DateToDate(String iso8601Date) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyy-MM-dd HH:mm:ss");
 
         try {
@@ -126,7 +123,7 @@ public class Auth {
         catch(ParseException ex) {
             throw new FailedAuthenticationException("Error parsing ISO8601 date to Date: " + ex.getMessage());
         }
-    }
+    } */
 
     /**
      * Given a username, returns a session ID (not registered)
@@ -134,7 +131,7 @@ public class Auth {
      * @param username The username we want to produce a session ID for
      * @return A session ID valid to the given username. Not registered.
      */
-    private static String getSessionId(String username) {
+/*     private static String getSessionId(String username) {
 
         // get a random string of charcter as an artifact for the sessionID
         String sessionRandom = RandomStringUtils.randomAlphanumeric(randomSectionLength);
@@ -147,7 +144,7 @@ public class Auth {
         String sessionId = BCrypt.withDefaults().hashToString(hashingCost, sessionIdString.toCharArray());
 
         return sessionId;
-    }
+    } */
 
     /**
      * Given a session ID and an expiration date in HTTP format, returns a cookie for that session to be used with Set-Cookie
@@ -156,10 +153,9 @@ public class Auth {
      * @param expirationDateHttp The expiration date string for the cookie in HTTP format
      * @return A string representing a session ID cookie, ready to be added to Set-Cookie
      */
-    private static String getSessionCookie(String sessionId, String expirationDateHttp) {
+/*     private static String getSessionCookie(String sessionId, String expirationDateHttp) {
         return "sessionId=" + sessionId + "; expires=" + expirationDateHttp + "; path=/";
-    }
-
+    } */
 
     /**
      * Confirms that the user exists and the password is correct for that user
@@ -168,7 +164,7 @@ public class Auth {
      * @param password The password for that username
      * @throws FailedUserAuthenticationException If the credentials are invalid
      */
-    public static void authenticateUser(String username, String password) throws FailedUserAuthenticationException {
+/*     public static void authenticateUser(String username, String password) throws FailedUserAuthenticationException {
 
         // validate data
         if(username.isEmpty()) throw new IllegalArgumentException("Username field is empty.");
@@ -182,8 +178,7 @@ public class Auth {
 
         // if password is erroneous, throw ex
         if(!BCrypt.verifyer().verify(password.toCharArray(), user.getPassword().toCharArray()).verified) throw new FailedUserAuthenticationException("Incorrect password.");
-    }
-
+    } */
 
     /**
      * Registers and returns a session cookie for the given username
@@ -192,7 +187,7 @@ public class Auth {
      * @return The session ID cookie string, ready to be added to a Set-Cookie header
      * @throws FailedSessionCreationException If something goes wrong when adding the session to the database
      */
-    public static String initiateSession(String username) throws FailedSessionCreationException {
+/*     public static String initiateSession(String username) throws FailedSessionCreationException {
 
         // we get a session ID
         String sessionId = getSessionId(username);
@@ -211,7 +206,7 @@ public class Auth {
 
         // return the session's Set-Cookie value
         return getSessionCookie(sessionId, dateToHTTPDate(expirationDate));
-    }
+    } */
 
     /**
      * Checks if sessionId is valid, updates it and returns the updated session cookie string
@@ -220,7 +215,7 @@ public class Auth {
      * @returns An updated session cookie string (This deprecates the old one). Ready to be used on the Set-Cookie header
      * @throws FailedSessionAuthenticationException If the session authentication fails (expired, non existent...)
      */
-    public static String authenticateSession(String sessionId) throws FailedSessionAuthenticationException {
+    /* public static String authenticateSession(String sessionId) throws FailedSessionAuthenticationException {
 
         // get session
         SessionModel session = sessionService.getSessionById(sessionId);
@@ -257,10 +252,20 @@ public class Auth {
 
         // return a new sessionId cookie with the new data
         return getSessionCookie(session.getId(), dateToHTTPDate(newExpirationDate));
-    }
+    } */
 
     /////////////////////////////////////////////////////////////////////////////
-    @Before("@annotation(com.alfredcode.socialWebsite.security.Annotations.SessionRequired)")
+    /////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////
+
+
+    /*
+     * Throws an exception if no valid session is found in the request HTTP
+    */
+    @Before("@annotation(com.alfredcode.socialWebsite.security.annotation.SessionRequired)")
     private void sessionRequired(JoinPoint jp) {
 
         /*
@@ -268,16 +273,20 @@ public class Auth {
          * RequestContextholder class.
          * The getRequestAttributes allows us to access the request and response objects, which is what makes this great, else we would have to
          * have the controller method declare a HttpServletRequest parameter every time at the same place to then access it trough args[] 
-         */
+        */
 
+        String sessionId = null;
+
+        //get request servlet
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
 
-        // will store the sessionId if any
-        String sessionId = null;
+        // get cookies if any
         Cookie[] cookies = request.getCookies();
 
+        // if the request has cookies
         if(cookies != null) {
-            // go trough the cookies and retrieve the sessionId
+
+            // go trough them and retrieve the sessionId if any
             for(Cookie c : request.getCookies()) {
                 if(c.getName().equals("sessionId")) {
                     sessionId = c.getValue();
@@ -286,23 +295,53 @@ public class Auth {
             }
         }
 
-        // if no sessionId, throw ex
-        if(sessionId == null || sessionId.isBlank()) {/* throw exception */}
+        // authenticate session, throws ex on failure
+        sessionService.authenticateSession(sessionId);
 
-        // authenticate sessionId
-        logger.info("SESSION_ID: " + sessionId);
 
         // authorize sessionId (TODO, we dont have sequrity levels right now)
+        // . . .
 
-        // use sessionService to check if the session is valid
-
-        // throw ex if not valid
     }
 
-    @Before("@annotation(com.alfredcode.socialWebsite.security.Annotations.NoSessionAllowed)")
+    /*
+     * Throws an exception if a valid session is found in the request HTTP
+     * TODO: Come up with a custom exception to throw for such a case.
+    */
+    @Before("@annotation(com.alfredcode.socialWebsite.security.annotation.NoSessionAllowed)")
     private void noSessionAllowed(JoinPoint jp) {
-        // use sessionService to check if the session is valid
-        // throw ex if valid
+        
+        String sessionId = null;
+
+        //get request servlet
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+
+        // get cookies if any
+        Cookie[] cookies = request.getCookies();
+
+        // if the request has cookies
+        if(cookies != null) {
+
+            // go trough them and retrieve the sessionId if any
+            for(Cookie c : request.getCookies()) {
+                if(c.getName().equals("sessionId")) {
+                    sessionId = c.getValue();
+                    break;
+                }
+            }
+        }
+
+        try{
+            // try to validate the session
+            sessionService.authenticateSession(sessionId);
+        }
+        catch(FailedSessionAuthenticationException ex) {
+            // an exception means failure in authentication, so we return.
+            return;
+        }
+
+        // reaching the end means that the authentication was successful
+        throw new FailedSessionAuthenticationException("Valid sessionId found.");
     }
 
 }
