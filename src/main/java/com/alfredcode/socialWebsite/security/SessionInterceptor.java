@@ -5,9 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.ModelAndView;
 
-import com.alfredcode.socialWebsite.model.SessionModel;
 import com.alfredcode.socialWebsite.security.annotation.SessionRequired;
 import com.alfredcode.socialWebsite.service.session.SessionService;
 import com.alfredcode.socialWebsite.service.session.exception.FailedSessionAuthenticationException;
@@ -18,20 +16,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 /*
- * This interceptor handles session ID management.
- * We will use AOP for authentication and authorization (see Auth.java), but interceptors for sessionId management.
- * 
- * We could use either for both of those mentioned tasks, but we will stick with the plan above because:
- * - Separation of concerns: Interceptors are the conventional place for HTTP request/response modifications while AOP are
- * saved for cross-cutting concerns; that is tasks that involve several unrealted instances, each performing some operation.
- * - Ease of access: Interceptors make it really easy to access the HTTP req/res because they are intended to modify these things.
- * They are even included in the servlet lifecycle. With AOP you do need to do some workaround to get to the servlets.
- * - Standards: Even tho we can do these things in either place, the standard seems to be the one already explained, so going against
- * it makes the code harder to understand.
- * 
- * If there is a sessionId:
- *      - This means that
- * 
+ * Takes care of updating a client's session ID.
  */
 public class SessionInterceptor implements HandlerInterceptor{
 
@@ -43,6 +28,18 @@ public class SessionInterceptor implements HandlerInterceptor{
         this.sessionService = sessionService;
     }
 
+    /*
+     * If the request has the @SessionRequired annotation, attempt to update the session
+     * If the request doesnt have the @SessionRequired annotation, do nothing
+     * 
+     * Before this triggers, the Auth's aspect methods trigger. Those check if the @SessionRequired requests have a valid session or not
+     * so we don't have to do it again. However the session might be expired by the time we attempt to update it. In such a case we will
+     * just write it off as expired since we don't care about a couple of milliseconds of difference and this triggers PRE handle, meaning
+     * we don't have to worry about reviving the session or else rolling back the changes.
+     * 
+     * The downside is that if someone accidentally messes with the sessionId cookie at the Controller layer, we don't have way of fixing it.
+     * That could potentially log someone out.
+     */
     @Override
     public boolean preHandle(HttpServletRequest req, HttpServletResponse res, Object handler) throws Exception {
 
@@ -56,13 +53,14 @@ public class SessionInterceptor implements HandlerInterceptor{
         if(sessionRequired == null) return true;
 
         // at this point, we know that the client had a valid sessionId when the authentication took place.
-        // it might be expired by now but it wasn't at the start, so we can try to update it if it already exists
+        // it might be expired by now but it wasn't at the start, so we can try to update it if it still exists
 
         // get cookies
         Cookie[] cookies = req.getCookies();
         String sessionId = null;
 
         if(cookies != null) {
+
             // get sessionId
             for(Cookie c : cookies) {
                 if(c.getName().equals("sessionId")) {
@@ -81,9 +79,6 @@ public class SessionInterceptor implements HandlerInterceptor{
 
             // if the update failed, throw ex
             throw new FailedSessionAuthenticationException("Session expired.");
-
-            // note: FailedSessionUpdateException right now just means that the session was deleted due to it being expired so the update
-            // never happened, so we can just take it as if the session was expired and the authentication failed.
         }
     }
 }

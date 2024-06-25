@@ -3,8 +3,9 @@ package com.alfredcode.socialWebsite.security.exception;
 import org.springframework.http.HttpStatus;
 
 import lombok.Getter;
+import lombok.Setter;
 
-@Getter
+@Getter @Setter
 public abstract class AuthenticationException extends RuntimeException{
     private HttpStatus statusCode = null;
     private String redirect = null;

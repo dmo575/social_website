@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import com.alfredcode.socialWebsite.exception.ForbiddenActionException;
+import com.alfredcode.socialWebsite.security.exception.UnauthorizedException;
 import com.alfredcode.socialWebsite.service.session.exception.FailedAuthenticationException;
 import com.alfredcode.socialWebsite.service.session.exception.FailedSessionAuthenticationException;
 import com.alfredcode.socialWebsite.service.session.exception.FailedSessionCreationException;
@@ -42,10 +42,10 @@ public class GlobalExceptionsController {
      * Handles forrbiden action errors
      * Ex: trying to register while logged in
      */
-    @ExceptionHandler(ForbiddenActionException.class)
+    @ExceptionHandler(UnauthorizedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ResponseBody
-    public String forbiddenActionHandler(ForbiddenActionException ex){
+    public String forbiddenActionHandler(UnauthorizedException ex){
         return ex.getMessage();
     }
 

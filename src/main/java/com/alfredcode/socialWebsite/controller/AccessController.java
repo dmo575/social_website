@@ -15,11 +15,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.alfredcode.socialWebsite.exception.ForbiddenActionException;
 import com.alfredcode.socialWebsite.model.UserModel;
 import com.alfredcode.socialWebsite.security.Auth;
 import com.alfredcode.socialWebsite.security.annotation.NoSessionAllowed;
 import com.alfredcode.socialWebsite.security.annotation.SessionRequired;
+import com.alfredcode.socialWebsite.security.exception.UnauthorizedException;
 import com.alfredcode.socialWebsite.service.session.SessionService;
 import com.alfredcode.socialWebsite.service.session.exception.FailedSessionAuthenticationException;
 import com.alfredcode.socialWebsite.service.session.exception.FailedSessionCreationException;

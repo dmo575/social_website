@@ -2,6 +2,7 @@
 Social media blogpost website.
 
 
+
 ### Structure - WIP
 
 **Tiers**:
@@ -31,7 +32,6 @@ Social media blogpost website.
 ```
 
 **Tech**:
-
 - **Database**: MySQL
 - **Backend**: Java + Spring Boot + JPA
 - **Frontend**: JS/HTML/CSS + [BULMA](https://bulma.io/)
@@ -40,15 +40,14 @@ Social media blogpost website.
 - **Random gen**: commons-lang3
 
 
-### Controllers - WIP
 
+### Controllers - WIP
 Below is a list of the controller classes and their endpoints.
 
 Description types:
 - **View**: Means the endpoint returns HTML that is considered a part of a full page, a component. Like a card or a banner.
 - **Page**: Means the endpoint returns a full page, or the foundations of it where other elements are to be placed.
 - **CRUD**: Means the website does some CRUD operation.
-
 
 **AccessController**: These provide the registration and loggin interface.
 |Endpoint      | Verb |Session?|Response                |Description|SC       |Req. Body |
@@ -62,13 +61,11 @@ Description types:
 |/login        |POST  |✔️      |Error message           |-          |403      |-         |
 |/login        |POST  |✖️      |Log in user             |CRUD       |200, 400 |-         |
 
-
 **PageController**: MVC endpoints related to serving HTML **pages**.
 |Endpoint      | Verb  |Session?|Response                |Description|SC   |Req. Body    |
 |--------------|-------|--------|------------------------|-----------|-----|-------------|
 |/             | GET   |✖️      |welcome.html            |Page       |200  |-            |
 |/             | GET   |✔️      |portal.html             |Page       |200  |-            |
-
 
 **PostController**: RESTful endpoints related to posts.
 |Endpoint                                | Verb  |Response                |Description                      |SC                |Req. body    |
@@ -85,7 +82,6 @@ Description types:
 
 Note: when querying posts, the order of those is from most to least recently created.
 
-
 **UserController**: RESTful endpoints related to users.
 |Endpoint                                | Verb  |Response                |Description                      |SC                |Req. body    |
 |----------------------------------------|-------|------------------------|---------------------------------|------------------|-------------|
@@ -94,7 +90,6 @@ Note: when querying posts, the order of those is from most to least recently cre
 |/user (WILL NOT DO, we got /register)   |POST   |UserModel               |Create user                      |201, 400, 401     |UserModel    |
 |/user/{user_id}                         |PUT    |UserModel               |Full update on a user            |200, 400, 401, 404|UserModel    |
 |/user/{user_id}                         |PATCH  |UserModel               |Partial update on a user         |200, 400, 401, 404|UserModel    |
-
 
 **CommentController**: RESTful endpoints related to post's comments.
 |Endpoint                                | Verb  |Response                |Description                      |SC                |Req. body    |
@@ -106,7 +101,6 @@ Note: when querying posts, the order of those is from most to least recently cre
 |/comment/{post_id}                      |POST   |CommentModel            |Create comment on post           |201, 400, 401     |CommentModel |
 |/comment/{comment_id}                   |PUT    |CommentModel            |Full update on a comment         |200, 400, 401, 404|CommentModel |
 |/comment/{comment_id}                   |PATCH  |CommentModel            |Partial update on a comment      |200, 400, 401, 404|CommentModel |
-
 
 **ViewController**: MVC endpoints that provide templates for rendering data.
 |Endpoint                                | Verb  |Response                |Description                      |SC       |Req. body    |
@@ -134,7 +128,6 @@ Table name|Column         |Column         |Column         |Column           |Col
 |LIKES    |post_id NUM    |user_id NUM    |
 |SAVES    |saves_id NUM   |user_id NUM    |
 
-
 **Indexes**:
 - **Post**:
     - Clustered: post_id. Helps when retrieving a specific post.
@@ -154,18 +147,20 @@ Table name|Column         |Column         |Column         |Column           |Col
     - Clustered: *user_id*. Helps when retrieving a specific user.
 
 
+
 ### Searching - WIP
-For the searching, we could parse the card content for the 10 most common words, and save that along the cards category and hashtags.
+WIP
+
 
 
 ### Sequrity
 I have a couple of basic things in place. No Spring Security added to the project (In my TOLEARN list)
 
 These are the features I have implemented that I consider security-themed:
-- **Authentication**: I have a class that handles basic authenticationg of users and sessions (Auth).
+- **Authentication**: I have a system that handles basic authentication of users and sessions.
 - **Hasing passwords**: I make sure I just store a hash to a password.
 - **Expirable session IDs**: Session IDs have an expiration date, so a client cannot log in once and stay logged in forever.
-- **Re-generating session IDs**: Session IDs have a refresh countdown, meaning even when logged in, the server is always re-generating the session ID every X minutes. This shortens any window of opportunity for an attacker.
+- **Re-generating session IDs**: Session IDs have a refresh countdown, meaning even when logged in, the server is always re-generating the session ID every some time. This means that if a client is constantly online, the sessionId will still periodically change, stablishing a limited timeframe for any attacker who want to try to guess the sessionId.
 - **Sanitazing userame/password characters**: I do some basic sanitation before interacting with the DAO in order to look for SQL queries. WIP.
 
 **Sequrity - TODO**:
@@ -173,6 +168,8 @@ These are the features I have implemented that I consider security-themed:
 - Improve sanitation.
 - HTTPS ?
 - Check out JWT (JSON Web Token)
+
+
 
 ### Optmization
 Similar situation as with security.
@@ -183,8 +180,12 @@ These are some things implemented that I consider optimization-themed:
 **Optimization - TODO**:
 - Find a single source of truth for input validation that the client and the backend can relate to. Database probably.
 
+
+
 ### Other things:
 - **Concurrency**: For the sessions, the backend run a second thread that scans the table every X time and removes expired keys, so I implement Optimistic locking for the session table (WIP).
+
+
 
 ### Backlog:
 - Create tests
@@ -210,8 +211,7 @@ These are some things implemented that I consider optimization-themed:
 - User can manage subscriptions (people whos posts appear on "Private") via the Collection tab
 - User can see and manage saves posts via the Collection tab
 
-
-**Me - tab**
+#### Me - tab
 You can see:
 - All posts you have created ordered by date
 - Your profile section box
@@ -221,17 +221,14 @@ You can see:
 
 This is essentially the account page, and the edit options only appear if you are logged in as the user, otherwise this is how checking anyones user will look like (plus a subscribe button to subscribe to that user in particular)
 
-**Private - tab**
-
+#### Private - tab
 A place where you can see all the posts from users you are subscribed to, ordered by creation time.
 
-**Public - tab**
-
+#### Public - tab
 A place where you can see the most popular posts at the moment, also most popular tags and topics.
 You can also globally search for posts with the following: Category, hashtag and keywords.
 
-**Collection - tab**
-
+#### Collection - tab
 Place where you can see and manage users you are subscribed to and posts you have saved.
 
 #### END - TODO list:
@@ -244,8 +241,9 @@ Place where you can see and manage users you are subscribed to and posts you hav
 - Start setting up a MySQL database, decide on how to proceed on the backend: Plain JDBC (DriverManager || DataSource) or also add Spring JPA + Repositories. Do some refreshing on this.
 - Concurrency, transactions
 
-### Exceptions and data transfer between layers - WIP
 
+
+### Exceptions and data transfer between layers - WIP
 
 #### Database:
 TODO
@@ -257,7 +255,6 @@ DAO layers always return the following:
 - Update: Data model with updated record data or `null` if error.
 - Delete: `boolean` indicating operation success status.
 - DAO instances throw no exceptions for the time being.
-
 
 #### Service:
 Service layers do throw exceptions:
@@ -275,6 +272,10 @@ Service layers do throw exceptions:
 |SessionService    |Ambiguous      |FailedSessionCreationEx        |Error while creating the sesion       |
 |. . .
 
+#### Other exceptions:
+|Class             |Exception type |Exception name                 |Reasons to throw it                   |
+|------------------|---------------|-------------------------------|--------------------------------------|
+|Auth              |Speciffic      |AuthenticatedUserException     |A valid session found (expected none) |
 
 #### Exception hierarchy:
 ```
@@ -294,38 +295,25 @@ RuntimeException                                [java.lang]
 - Exceptions are handled by the `GlobalExceptionsController.java` controller when they are general exceptions.
 - If they are exceptions speciffic to a service, then the controller of that service will have the handlers for it at the bottom of the class.
 
-**Auth**:
-- Catches: Service layer exceptions
-- Throws: Auth exceptions
-    - FailedAuthenticationException: Generic for when something goes wrong with Auth (Either comming from a the service layer in use or within Auth).
-    - FailedSessionAuthentication: The authentication provided is invalid.
-    - FailedSessionCreationException: A session for the user could not be created.
 
-**Outdated Exceptions**:
-- FailedUserAuthentication: We use FailedSessionAuthentication
 
-### AOP, Controllers and Interceptor handlers - WIP
+### Authorization and authentication: AOP, Interceptor handlers and controllers
 In order to implement an easy Authorization and Authentication system, we will be using AOP methods and Interceptor handlers in combination with some custom annotations.
 
-**First layer is Authentication**:
+**Annotations**:
 - @SessionRequired: to be used on @Controller methods that require a valid session in order for the client to interact with its endpoints
 - @NoSessionAllowed: to be usedon @Controller methods that require **no** valid session in order for the client to interact with its endpoints (login, register, ...)
-- Auth.sessionRequired(): AOP method (@Before). Authenticates a client's session. Throws exceptions on failure.
-- Auth.noSessionAllowed(): AOP method (@Before). Authenticates a client's session. Throws exceptions on success.
 
-**Second layer are the controllers**:
-- Process the HTTP request and come up with an HTTP response.
+**AOP methods (Auth.java)**:
+- @Before Auth.sessionRequired(): Authenticates a client's session. Triggered on @SessionRequired methods.
+- @Before Auth.noSessionAllowed(): Authenticates a client's session. Triggered on @NoSessionAllowed methods.
 
-**Third layer is the Interceptor handler (SessionInterceptor)**:
-- If method handler (controller method) has a @SessionRequired annotation: Update session
-    - We know that the client had a valid session before hitting this point because of Auth
-- If method handler (controller method) has a @NosessionAllowed annotation: do nothing
-    - We know the user had no valid session before hitting this point because of Auth
+**Interceptor Handlers (SessionIncerceptor.java)**:
+- SessionIncerceptor.preHandle():
+    - If the method handler has a @SessionRequired annotation, tries to update the session.
+    - If the method handler has a @NoSessionAllowed annotation, does nothing.
 
-**TODO:**
-- Add the ability to define a exception to throw when Auth's AOP methods fail. Or the ability to define a redirect and SC. Have defaults in place.
-
-#### Why use both AOP and Interceptor handlers, instead of either:
+#### Why use both AOP and Interceptor handlers, instead of either one:
 - Separation of concerns: Interceptors are the conventional place for HTTP request/response modifications while AOP are saved for cross-cutting concerns; that is tasks that involve several unrealted instances, each performing some operation.
 - Ease of access: Interceptors make it really easy to access the HTTP req/res because they are intended to modify these things. They are even included in the servlet lifecycle. With AOP you do need to do some workaround to get to the servlets.
-- Standards: Even tho we can do these things in either place, the standard seems to be the one already explained, so going against it makes the code harder to understand.
+- Readability: Even tho we can do these things in either place, the standard seems to be the one already explained, so going against it makes the code harder to understand.

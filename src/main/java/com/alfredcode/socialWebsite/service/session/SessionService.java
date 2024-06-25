@@ -146,9 +146,9 @@ public class SessionService {
         Date dateNow = new Date();
         Date oldRefreshDate = new Date(session.getExpirationDateUnix());
 
-        // if we are past the session ID refresh date: update session's
+        // if we are past the session ID refresh date: refresh it
         if(dateNow.compareTo(oldRefreshDate) > 0) {
-            // update session's id
+            // generate a new session ID for the user
             session.setId(generateSessionIdString(session.getUsername()));
             // calculate new refresh date
             Date newRefreshDate = offsetDate(dateNow, sessionRefreshTimeMinutes, Calendar.MINUTE);
