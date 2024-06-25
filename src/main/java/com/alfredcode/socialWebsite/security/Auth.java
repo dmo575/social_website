@@ -14,7 +14,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.alfredcode.socialWebsite.security.annotation.NoSessionAllowed;
-import com.alfredcode.socialWebsite.security.exception.UnauthorizedException;
+import com.alfredcode.socialWebsite.security.exception.UnauthorizedActionException;
 import com.alfredcode.socialWebsite.service.session.SessionService;
 
 import jakarta.servlet.http.Cookie;
@@ -71,13 +71,13 @@ public class Auth {
             Method method = retrieveMethodFromJoinPoint(jp);
 
             // if we fail to get the method, throw ex w/o annotation arguments passed
-            if(method == null) throw new UnauthorizedException(ex.getMessage());
+            if(method == null) throw new UnauthorizedActionException(ex.getMessage());
 
             // get annotation
             NoSessionAllowed annotation = method.getAnnotation(NoSessionAllowed.class);
 
             // throw exception with annotation's arguments
-            throw new UnauthorizedException(annotation.statusCode(), annotation.redirect(), ex.getMessage());
+            throw new UnauthorizedActionException(annotation.statusCode(), annotation.redirect(), ex.getMessage());
         }
 
 
@@ -89,7 +89,7 @@ public class Auth {
      * Throws an exception if a valid session is found in the request HTTP
     */
     @Before("@annotation(com.alfredcode.socialWebsite.security.annotation.NoSessionAllowed)")
-    private void noSessionAllowed(JoinPoint jp) throws UnauthorizedException {
+    private void noSessionAllowed(JoinPoint jp) throws UnauthorizedActionException {
         
         String sessionId = null;
 
@@ -126,13 +126,13 @@ public class Auth {
         Method method = retrieveMethodFromJoinPoint(jp);
 
         // if we fail to get the method, throw ex w/o annotation arguments passed
-        if(method == null) throw new UnauthorizedException("Valid sessionId found.");
+        if(method == null) throw new UnauthorizedActionException("Valid sessionId found.");
 
         // get the annotation
         NoSessionAllowed annotation = method.getAnnotation(NoSessionAllowed.class);
 
         // throw the proper exception with the annotation values
-        throw new UnauthorizedException(annotation.statusCode(), annotation.redirect(), "Valid sessionId found.");
+        throw new UnauthorizedActionException(annotation.statusCode(), annotation.redirect(), "Valid sessionId found.");
     }
 
 

@@ -273,21 +273,21 @@ Service layers do throw exceptions:
 |. . .
 
 #### Other exceptions:
-|Class             |Exception type |Exception name                 |Reasons to throw it                   |
-|------------------|---------------|-------------------------------|--------------------------------------|
-|Auth              |Speciffic      |AuthenticatedUserException     |A valid session found (expected none) |
+|Class             |Exception type |Exception name                 |Reasons to throw it                                 |
+|------------------|---------------|-------------------------------|----------------------------------------------------|
+|Auth              |Speciffic      |UnauthorizedActionException    |Client is trying to access an unauthorized endpoint |
 
 #### Exception hierarchy:
 ```
-RuntimeException                                [java.lang]
-├── AuthenticationException (Abstract)          [com.alfredcode.socialWebsite.security.exception]
-│   ├── FailedAuthenticationException           [com.alfredcode.socialWebsite.service.session.exception]
-│   ├── FailedSessionAuthenticationException    [com.alfredcode.socialWebsite.service.session.exception]
-│   ├── FailesSessionCreationException          [com.alfredcode.socialWebsite.service.session.exception]
-│   ├── FailedSessionUpdateException            [com.alfredcode.socialWebsite.service.session.exception]
-│   └── FailesUserAuthenticationException       [com.alfredcode.socialWebsite.service.user.exception]
-├── FailesUserRegistrationException             [com.alfredcode.socialWebsite.service.user.exception]
-├── ForbiddenActionException                    [com.alfredcode.socialWebsite.exception]
+RuntimeException                                [java.lang]                                                 Y
+├── AuthenticationException (Abstract)          [com.alfredcode.socialWebsite.security.exception]           Y
+│   ├── FailedAuthenticationException           [com.alfredcode.socialWebsite.service.session.exception]    ?
+│   ├── FailedSessionAuthenticationException    [com.alfredcode.socialWebsite.service.session.exception]    X
+│   ├── FailesSessionCreationException          [com.alfredcode.socialWebsite.service.session.exception]    X
+│   ├── FailedSessionUpdateException            [com.alfredcode.socialWebsite.service.session.exception]    X
+│   └── FailesUserAuthenticationException       [com.alfredcode.socialWebsite.service.user.exception]       X
+├── FailedUserRegistrationException             [com.alfredcode.socialWebsite.service.user.exception]
+├── UnauthorizedActionException                 [com.alfredcode.socialWebsite.security.exception]
 └── IllgalArgumentException                     [java.lang]
 ```
 

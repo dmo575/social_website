@@ -16,12 +16,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.alfredcode.socialWebsite.model.UserModel;
-import com.alfredcode.socialWebsite.security.Auth;
 import com.alfredcode.socialWebsite.security.annotation.NoSessionAllowed;
-import com.alfredcode.socialWebsite.security.annotation.SessionRequired;
-import com.alfredcode.socialWebsite.security.exception.UnauthorizedException;
 import com.alfredcode.socialWebsite.service.session.SessionService;
-import com.alfredcode.socialWebsite.service.session.exception.FailedSessionAuthenticationException;
 import com.alfredcode.socialWebsite.service.session.exception.FailedSessionCreationException;
 import com.alfredcode.socialWebsite.service.user.UserService;
 import com.alfredcode.socialWebsite.service.user.exception.FailedUserRegistrationException;
@@ -56,18 +52,9 @@ public class AccessController {
      *  200 - If client doesnt have valid sessionId
      * 
      */
-    @NoSessionAllowed
+    @NoSessionAllowed(statusCode = HttpStatus.SEE_OTHER, redirect = "/")
     @GetMapping("/register")
-    public ModelAndView getRegister(@CookieValue(value="sessionId", defaultValue = "") String sessionId, HttpServletResponse res) {
-
-        /* try{
-            // if client has a valid sessionId: update session cookie and return 303 to /
-            res.setHeader("Set-Cookie", Auth.authenticateSession(sessionId));
-            return new ModelAndView("redirect:/", HttpStatus.SEE_OTHER);
-        }
-        catch (FailedSessionAuthenticationException ex) {
-            // this means the client doesnt have a valid sessionId
-        } */
+    public ModelAndView getRegister() {
 
         // 200 register
         return new ModelAndView("register");
@@ -89,18 +76,9 @@ public class AccessController {
      *  303 - If client has valid sessionId
      *  200 - If client doesnt have valid sessionId
      */
-    @NoSessionAllowed
+    @NoSessionAllowed(statusCode = HttpStatus.SEE_OTHER, redirect = "/")
     @GetMapping("/login")
-    public ModelAndView getLogin(@CookieValue(value="sessionId", defaultValue = "") String sessionId, HttpServletResponse res) {
-
-        /* try{
-            // if client has a valid sessionId: update session cookie and return 303 to /
-            res.setHeader("Set-Cookie", Auth.authenticateSession(sessionId));
-            return new ModelAndView("redirect:/", HttpStatus.SEE_OTHER);
-        }
-        catch (FailedSessionAuthenticationException ex) {
-            // this means the client doesnt have a valid sessionId
-        } */
+    public ModelAndView getLogin() {
 
         // 200 login
         return new ModelAndView("login");
@@ -118,16 +96,7 @@ public class AccessController {
      */
     @NoSessionAllowed
     @PostMapping("/register")
-    public void postRegister(@CookieValue(value="sessionId", defaultValue = "") String sessionId, HttpServletResponse res, RequestEntity<UserModel> req) {
-       
-        /* try{
-            // if the client has a valid sessionId, update session cookie an return 401
-            res.setHeader("Set-Cookie", Auth.authenticateSession(sessionId));
-            throw new ForbiddenActionException("You are not allowed to register while already logged in.");
-        }
-        catch (FailedSessionAuthenticationException ex) {
-            // this means the client doesnt have a valid sessionId
-        } */
+    public void postRegister(HttpServletResponse res, RequestEntity<UserModel> req) {
 
         // get user model
         UserModel user = req.getBody();
@@ -168,16 +137,7 @@ public class AccessController {
      */
     @NoSessionAllowed
     @PostMapping("/login")
-    public void postLogin(@CookieValue(value="sessionId", defaultValue = "") String sessionId, HttpServletResponse res, RequestEntity<UserModel> req) {
-
-        /* try{
-            // if the client has a valid sessionId, update session cookie an return 401
-            res.setHeader("Set-Cookie", Auth.authenticateSession(sessionId));
-            throw new ForbiddenActionException("You are not allowed to log in while already logged in.");
-        }
-        catch (FailedSessionAuthenticationException ex) {
-            // this means the client doesnt have a valid sessionId
-        } */
+    public void postLogin(HttpServletResponse res, RequestEntity<UserModel> req) {
 
         // get model
         UserModel user = req.getBody();
