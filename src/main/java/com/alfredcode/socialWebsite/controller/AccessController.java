@@ -7,12 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.alfredcode.socialWebsite.model.UserModel;
@@ -20,7 +16,6 @@ import com.alfredcode.socialWebsite.security.annotation.NoSessionAllowed;
 import com.alfredcode.socialWebsite.service.session.SessionService;
 import com.alfredcode.socialWebsite.service.session.exception.FailedSessionCreationException;
 import com.alfredcode.socialWebsite.service.user.UserService;
-import com.alfredcode.socialWebsite.service.user.exception.FailedUserRegistrationException;
 import com.alfredcode.socialWebsite.tools.URL;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -58,13 +53,6 @@ public class AccessController {
 
         // 200 register
         return new ModelAndView("register");
-    }
-
-    @NoSessionAllowed
-    @GetMapping("/test")
-    @ResponseBody
-    public String test(){
-        return "This is a test";
     }
 
 
@@ -156,15 +144,5 @@ public class AccessController {
         // return 200 and suggest /
         res.addHeader("Location", URL.getUrl(req, "/"));
         res.setStatus(HttpServletResponse.SC_OK);
-    }
-
-
-    // Handles UsernameTaken
-    // TODO: fix SC
-    @ExceptionHandler(FailedUserRegistrationException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ResponseBody
-    public String UsernameTakenHandler(FailedUserRegistrationException ex){
-        return ex.getMessage();
     }
 }

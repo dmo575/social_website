@@ -16,6 +16,7 @@ import com.alfredcode.socialWebsite.service.session.exception.FailedSessionAuthe
 import com.alfredcode.socialWebsite.service.session.exception.FailedSessionCreationException;
 import com.alfredcode.socialWebsite.service.session.exception.FailedSessionUpdateException;
 import com.alfredcode.socialWebsite.service.user.exception.FailedUserAuthenticationException;
+import com.alfredcode.socialWebsite.service.user.exception.FailedUserRegistrationException;
 
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -50,34 +51,43 @@ public class GlobalExceptionsController {
 
     // AUTHENTICATION & AUTHORIZATION EXCEPTION HANDLERS --------------------------------------------
 
+    // user
     @ExceptionHandler(FailedUserAuthenticationException.class)
     public ResponseEntity<String> failedUserAuthenticationHandler(FailedUserAuthenticationException ex, HttpServletResponse res) {
         // log the event as INFO
         logger.info(ex.getMessage());
         return handleAuthenticationException(ex, res, "Invalid username/password combination.", HttpStatus.UNAUTHORIZED);
     }
+    // user
+    @ExceptionHandler(FailedUserRegistrationException.class)
+    public ResponseEntity<String> failedUserRegistrationHandler(FailedUserRegistrationException ex, HttpServletResponse res) {
+        // log the event as ERROR
+        logger.info(ex.getMessage());
+        return handleAuthenticationException(ex, res, "Invalid username/password combination.", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 
+    // session
     @ExceptionHandler(FailedSessionAuthenticationException.class)
     public ResponseEntity<String> failedSessionAuthenticationHandler(FailedSessionAuthenticationException ex, HttpServletResponse res) {
         // log the event as WARNING
         logger.warn(ex.getMessage());
         return handleAuthenticationException(ex, res, "Invalid session.", HttpStatus.UNAUTHORIZED);
     }
-
+    // session
     @ExceptionHandler(FailedSessionCreationException.class)
     public ResponseEntity<String> failedSessionCreationHandler(FailedSessionCreationException ex, HttpServletResponse res){
         // log the event as ERROR
         logger.error(ex.getMessage());
         return handleAuthenticationException(ex, res, "Failure at creating a session.", HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
+    // session
     @ExceptionHandler(FailedSessionUpdateException.class)
     public ResponseEntity<String> failedSessionUpdateHandler(FailedSessionUpdateException ex, HttpServletResponse res){
         // log the event as ERROR
         logger.error(ex.getMessage());
         return handleAuthenticationException(ex, res, "Failure at updating the session.", HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
+    
     /**
      * Theturns a ResponseEntity with values defined in the AuthenticationException if any, else it uses the optional values
      * @param ex The exception

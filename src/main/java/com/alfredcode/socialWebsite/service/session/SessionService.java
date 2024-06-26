@@ -10,7 +10,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.alfredcode.socialWebsite.DAO.SessionDAO;
-import com.alfredcode.socialWebsite.DAO.UserDAO;
 import com.alfredcode.socialWebsite.model.SessionModel;
 import com.alfredcode.socialWebsite.service.session.exception.FailedSessionAuthenticationException;
 import com.alfredcode.socialWebsite.service.session.exception.FailedSessionCreationException;

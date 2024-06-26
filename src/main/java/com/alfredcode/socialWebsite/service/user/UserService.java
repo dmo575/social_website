@@ -45,14 +45,14 @@ public class UserService {
         if(containsChar(username, illegalPasswordChars)) throw new IllegalArgumentException("Username contains one of the following illegal charcters: " + new String(illegalUsernameChars));
 
         // check username availability
-        if(userDao.getUserByUsername(username) != null) throw new FailedUserRegistrationException("Username ["+ username +"] is not available.");
+        if(userDao.getUserByUsername(username) != null) throw new IllegalArgumentException("Username ["+ username +"] is not available.");
 
         // hash password
         String hashedPassword = BCrypt.withDefaults().hashToString(minPasswordLength, password.toCharArray());
         userModel.setPassword(hashedPassword);
         
         // ask DAO to CREATE user.
-        if(userDao.addUser(userModel) == null) throw new FailedUserRegistrationException("Error when registering user.");
+        if(userDao.addUser(userModel) == null) throw new FailedUserRegistrationException("User could not be persisted.");
 
         return userModel;
     }

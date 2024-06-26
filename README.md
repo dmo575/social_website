@@ -233,10 +233,7 @@ Place where you can see and manage users you are subscribed to and posts you hav
 
 #### END - TODO list:
 - The other TODOs scattered across the document
-- Properly design Exceptions. Right now I don't really follow a logic for which ones should be checked and which ones should not. Think it trough
-- Now that we are adding AOP with custom annotations that take in exceptions, properly organize exception hierarchy
-- Properly organize the project. Instead of socialWebsite/annotations/, let the directory structure be guided by themes, like socialWebsite/security/annotations
-- Finish implementing AOP for cross-cutting (even tho theres none atm, is just Auth) and InterceptorHandlers for HTTP session management.
+- Properly design Exceptions. Right now I don't really follow a logic for which ones should be checked and which ones should not. Think it trough.
 - Figure out what's going on with the H2 dependency. I can't get it out the project. I will use MySQL
 - Start setting up a MySQL database, decide on how to proceed on the backend: Plain JDBC (DriverManager || DataSource) or also add Spring JPA + Repositories. Do some refreshing on this.
 - Concurrency, transactions
@@ -260,39 +257,23 @@ DAO layers always return the following:
 Service layers do throw exceptions:
 - Exceptions to represent a faulty return from a CRUD operation.
 - Exceptions to represent failure at the service layer.
-- Ambiguous exceptions are thrown to indicate that something went wrong in the process, but their name doesnt specifically points to the issue. Their description message will describe the issue, which will be a business logic related issue unless the error comes from the DAO (some null return), in which case the message will be generic.
-
-|Layer             |Exception type |Exception name                 |Reasons to throw it                   |
-|------------------|---------------|-------------------------------|--------------------------------------|
-|Any service layer |Speciffic      |IllegalArgumentException       |The data passed is invalid            |
-|UserService       |Ambiguous      |FailedUserRegistrationEx       |Error while registering the user      |
-|UserService       |Ambiguous      |FailedUserAuthenticationEx     |Error while authenticating the user   |
-|SessionService    |Ambiguous      |FailedSessionAuthenticationEx  |Error while authenticating the sesion |
-|SessionService    |Ambiguous      |FailedSessionUpdateEx          |Error while updating the sesion       |
-|SessionService    |Ambiguous      |FailedSessionCreationEx        |Error while creating the sesion       |
-|. . .
-
-#### Other exceptions:
-|Class             |Exception type |Exception name                 |Reasons to throw it                                 |
-|------------------|---------------|-------------------------------|----------------------------------------------------|
-|Auth              |Speciffic      |UnauthorizedActionException    |Client is trying to access an unauthorized endpoint |
 
 #### Exception hierarchy:
 ```
-RuntimeException                                [java.lang]                                                 Y
-├── AuthenticationException (Abstract)          [com.alfredcode.socialWebsite.security.exception]           Y
-│   ├── FailedAuthenticationException           [com.alfredcode.socialWebsite.service.session.exception]    ?
-│   ├── FailedSessionAuthenticationException    [com.alfredcode.socialWebsite.service.session.exception]    X
-│   ├── FailesSessionCreationException          [com.alfredcode.socialWebsite.service.session.exception]    X
-│   ├── FailedSessionUpdateException            [com.alfredcode.socialWebsite.service.session.exception]    X
-│   └── FailesUserAuthenticationException       [com.alfredcode.socialWebsite.service.user.exception]       X
+RuntimeException                                [java.lang]
+├── AuthenticationException (Abstract)          [com.alfredcode.socialWebsite.security.exception]
+│   ├── FailedAuthenticationException           [com.alfredcode.socialWebsite.service.session.exception]
+│   ├── FailedSessionAuthenticationException    [com.alfredcode.socialWebsite.service.session.exception]
+│   ├── FailesSessionCreationException          [com.alfredcode.socialWebsite.service.session.exception]
+│   ├── FailedSessionUpdateException            [com.alfredcode.socialWebsite.service.session.exception]
+│   └── FailesUserAuthenticationException       [com.alfredcode.socialWebsite.service.user.exception]
 ├── FailedUserRegistrationException             [com.alfredcode.socialWebsite.service.user.exception]
 ├── UnauthorizedActionException                 [com.alfredcode.socialWebsite.security.exception]
 └── IllgalArgumentException                     [java.lang]
 ```
 
 #### Handling exceptions:
-- Exceptions are handled by the `GlobalExceptionsController.java` controller when they are general exceptions.
+- Exceptions are handled by the `GlobalExceptionsController.java` controller when they are general or authentication/authorization related exceptions.
 - If they are exceptions speciffic to a service, then the controller of that service will have the handlers for it at the bottom of the class.
 
 
@@ -301,12 +282,12 @@ RuntimeException                                [java.lang]                     
 In order to implement an easy Authorization and Authentication system, we will be using AOP methods and Interceptor handlers in combination with some custom annotations.
 
 **Annotations**:
-- @SessionRequired: to be used on @Controller methods that require a valid session in order for the client to interact with its endpoints
-- @NoSessionAllowed: to be usedon @Controller methods that require **no** valid session in order for the client to interact with its endpoints (login, register, ...)
+- @SessionRequired: to be used on method handlers (@Controller methods) that require a valid session in order for the client to interact with its endpoints.
+- @NoSessionAllowed: to be used on method handlers (@Controller methods) that require **no** valid session in order for the client to interact with its endpoints (login, register, ...)
 
 **AOP methods (Auth.java)**:
-- @Before Auth.sessionRequired(): Authenticates a client's session. Triggered on @SessionRequired methods.
-- @Before Auth.noSessionAllowed(): Authenticates a client's session. Triggered on @NoSessionAllowed methods.
+- @Before, Auth.sessionRequired(): Authenticates a client's session. Triggered on @SessionRequired annotated methods.
+- @Before, Auth.noSessionAllowed(): Authenticates a client's session. Triggered on @NoSessionAllowed annotated methods.
 
 **Interceptor Handlers (SessionIncerceptor.java)**:
 - SessionIncerceptor.preHandle():
@@ -316,4 +297,4 @@ In order to implement an easy Authorization and Authentication system, we will b
 #### Why use both AOP and Interceptor handlers, instead of either one:
 - Separation of concerns: Interceptors are the conventional place for HTTP request/response modifications while AOP are saved for cross-cutting concerns; that is tasks that involve several unrealted instances, each performing some operation.
 - Ease of access: Interceptors make it really easy to access the HTTP req/res because they are intended to modify these things. They are even included in the servlet lifecycle. With AOP you do need to do some workaround to get to the servlets.
-- Readability: Even tho we can do these things in either place, the standard seems to be the one already explained, so going against it makes the code harder to understand.
+- Readability: Even tho we can do these things in either place, the standard **seems** to be the one already explained, so going against it makes the code harder to understand.
