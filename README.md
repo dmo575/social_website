@@ -231,14 +231,6 @@ You can also globally search for posts with the following: Category, hashtag and
 #### Collection - tab
 Place where you can see and manage users you are subscribed to and posts you have saved.
 
-#### END - TODO list:
-- The other TODOs scattered across the document
-- Properly design Exceptions. Right now I don't really follow a logic for which ones should be checked and which ones should not. Think it trough.
-- Figure out what's going on with the H2 dependency. I can't get it out the project. I will use MySQL
-- Start setting up a MySQL database, decide on how to proceed on the backend: Plain JDBC (DriverManager || DataSource) or also add Spring JPA + Repositories. Do some refreshing on this.
-- Concurrency, transactions
-
-
 
 ### Exceptions and data transfer between layers - WIP
 
