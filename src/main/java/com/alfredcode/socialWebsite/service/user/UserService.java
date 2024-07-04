@@ -1,5 +1,6 @@
 package com.alfredcode.socialWebsite.service.user;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alfredcode.socialWebsite.DAO.UserDAO;
@@ -8,13 +9,16 @@ import com.alfredcode.socialWebsite.service.user.exception.FailedUserAuthenticat
 import com.alfredcode.socialWebsite.service.user.exception.FailedUserRegistrationException;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
+import lombok.Setter;
 
 /*
  * Manages business logic for user data.
 */
 @Service
 public class UserService {
-    private UserDAO userDao = new UserDAO();
+    //private UserDAO userDao = new UserDAO();
+    @Autowired @Setter
+    public UserDAO userDao = null;
     private static final int minPasswordLength = 4;
     private static final int minUsernameLength = 4;
     private static final char[] illegalPasswordChars = {'+', '*', ';'}; // here we could include sensitive DB characters that could be used for SQL injection

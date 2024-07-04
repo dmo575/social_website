@@ -7,7 +7,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.Date;
 
-import org.h2.engine.Session;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
