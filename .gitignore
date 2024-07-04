@@ -4,6 +4,9 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+### Source of tuth ###
+/sot
+
 ### STS ###
 .apt_generated
 .classpath
