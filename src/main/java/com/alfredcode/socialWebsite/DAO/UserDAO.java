@@ -49,7 +49,6 @@ public class UserDAO {
             }
 
             Connection connection = DriverManager.getConnection(String.format("jdbc:mysql://%s:%s/%s", databaseIp, databasePort, databaseName), username, password);
-            //Connection connection = DriverManager.getConnection("jdbc:mysql://146.190.125.135:3306/social_blogpost", "dummy", "@l0h432Qq");
 
             PreparedStatement prepStatement = connection.prepareStatement("INSERT INTO user(username, password) VALUES(?, ?)");
             prepStatement.setString(1, userModel.getUsername());
