@@ -16,7 +16,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * Interceptors are used to manipulate the HTTP response/request.
  */
 @Configuration
-@EnableScheduling
+@EnableScheduling// we use this here but we make use of the @Shcedule inside Auth.java
 public class WebConfigurator implements WebMvcConfigurer {
 
     private SessionService sessionService = null;

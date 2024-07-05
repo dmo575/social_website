@@ -1,7 +1,11 @@
 package com.alfredcode.socialWebsite.DAO;
 
+import javax.sql.DataSource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.alfredcode.socialWebsite.Database;
 import com.alfredcode.socialWebsite.model.SessionModel;
@@ -48,9 +52,17 @@ import com.alfredcode.socialWebsite.model.SessionModel;
  /*
   * Manages CRUD operations for the session table
   */
+@Component
 public class SessionDAO {
     private static final Logger logger = LoggerFactory.getLogger(SessionDAO.class);
     Database db = Database.getInstance();
+
+    @Autowired
+    public DataSource ds = null;
+
+    public SessionDAO(DataSource ds) {
+        this.ds = ds;
+    }
 
     /*
      * Adds the session to the database.

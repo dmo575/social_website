@@ -31,7 +31,7 @@
 			<version>0.10.2</version>
 		</dependency>
 
-		<!-- Mockito -->
+		<!-- Mockito, for creating mock objects so we can properly unit test -->
 		<!-- https://mvnrepository.com/artifact/org.mockito/mockito-core -->
 		<dependency>
 			<groupId>org.mockito</groupId>
@@ -40,7 +40,7 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- Lombok -->
+		<!-- Lombok (@Getters, @Setters, ...)-->
 		<!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -57,15 +57,39 @@
 			<version>9.0.0</version>
 		</dependency>
 
-
+		<!-- Template engine -->
 	    <dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 	    </dependency>
+
+		<!--
+		As far as I understand, this (spring-boot-starter-data-jdbc, below) includes:
+			- HikariCP (DataSource implementation)
+			- Common RDBMS vendor drivers (MySQL, PostgreSQL, h2, Microsoft SQL)
+			- Spring JDBC (@Transactional, @Repository, @Query)
+		For this project, I wanted to do some things manually, so I:
+			- Removed h2's embedded database dependency
+			- Removed spring-boot-starter-data-jdbc
+			- Added MySQL driver
+			- Added HikariCP
+			- Manually configured our DataSource
+		-->
+		<!--
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jdbc</artifactId>
 		</dependency>
+		-->
+
+		<!-- HikariCP -->
+		<!-- https://mvnrepository.com/artifact/com.zaxxer/HikariCP -->
+		<dependency>
+			<groupId>com.zaxxer</groupId>
+			<artifactId>HikariCP</artifactId>
+			<version>5.1.0</version>
+		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
@@ -78,19 +102,13 @@
 			<optional>true</optional>
 	    </dependency>
 
-		<!-- AOP -->
+		<!-- AOP, used with Auth.java -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-aop</artifactId>
 	    </dependency>
-		<!-- we will comment out h2's database dep for now. We plan on using our own MySQL database. -->
-		<!--
-		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-		-->
+
+		<!-- I imagine this contains annotations to facilitate creating tests for a spring boot application -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>

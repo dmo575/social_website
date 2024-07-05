@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -35,7 +36,8 @@ public class SessionService {
     // used by ByCrypt, the higher the more iterations on the hashing computation, which seems to make it more secure but also means it takes more to compute
     private static final int hashingCost = 7;
 
-    private SessionDAO sessionDao = new SessionDAO();
+    @Autowired
+    private SessionDAO sessionDao = null;
 
     /**
      * Given a Date object, returns an HTTP compliant date string

@@ -1,6 +1,7 @@
 package com.alfredcode.socialWebsite.service.post;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alfredcode.socialWebsite.DAO.PostDAO;
@@ -11,7 +12,8 @@ import com.alfredcode.socialWebsite.model.PostModel;
  */
 @Service
 public class PostService {
-    private PostDAO postDao = new PostDAO();
+    @Autowired
+    private PostDAO postDao = null;
 
 
     public PostModel getPostById(Integer postId) {

@@ -39,6 +39,7 @@ public class DataSourceConfigurator {
         }catch(IOException ex) {
             logger.error("Error while configuring Hikari's DataSource: " + ex.getMessage());
         }
+        
         HikariConfig dsConfig = new HikariConfig();
 
         dsConfig.setJdbcUrl(String.format("jdbc:mysql://%s:%s/%s", databaseIp, databasePort, databaseName));

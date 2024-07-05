@@ -14,8 +14,6 @@ import org.springframework.stereotype.Component;
 import com.alfredcode.socialWebsite.Database;
 import com.alfredcode.socialWebsite.model.UserModel;
 
-import lombok.Setter;
-
 
 /*
  * Manages CRUD operations for the user table
@@ -24,14 +22,14 @@ import lombok.Setter;
 public class UserDAO {
 
     private static final Logger logger = LoggerFactory.getLogger(UserDAO.class);
-    public Database db = Database.getInstance();
+    //public Database db = Database.getInstance();
 
-    @Autowired @Setter
+    @Autowired
     public DataSource ds = null;
 
-    //public UserDAO(DataSource ds) {
-    //    this.ds = ds;
-    //}
+    public UserDAO(DataSource ds) {
+        this.ds = ds;
+    }
 
     public UserModel addUser(UserModel userModel) {
       
@@ -48,12 +46,12 @@ public class UserDAO {
             logger.error("Damn");
         }
 
-        return db.addUser(userModel);
+        return null;//db.addUser(userModel);
     }
 
     public UserModel getUserByUsername(String username) {
 
-        return db.getUserByUsername(username);
+        return null;//db.getUserByUsername(username);
     }
 
     /* public void setSession(String username, String sessionHash, Date expires) {
