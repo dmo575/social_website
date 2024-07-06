@@ -1,6 +1,6 @@
 package com.alfredcode.socialWebsite.DAO.exception;
 
-public class FailureToPersistDataException extends RuntimeException{
+public class FailureToPersistDataException extends DAOException {
     public FailureToPersistDataException(String msg) {
         super(msg);
     }

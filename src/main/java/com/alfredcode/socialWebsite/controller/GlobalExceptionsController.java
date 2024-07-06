@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import com.alfredcode.socialWebsite.DAO.exception.DAOException;
 import com.alfredcode.socialWebsite.DAO.exception.FailureToPersistDataException;
 import com.alfredcode.socialWebsite.security.exception.AuthenticationException;
 import com.alfredcode.socialWebsite.security.exception.UnauthorizedActionException;
@@ -48,14 +49,20 @@ public class GlobalExceptionsController {
         return handleAuthenticationException(ex, res, "Forbidden action.", HttpStatus.FORBIDDEN);
     }
 
-    @ExceptionHandler(FailureToPersistDataException.class)
+    /**
+     * This exception handler takes on any kind of DAO level exceptions that are not recoverable:
+     * - SQLExceptions get recasted as DAOExceptions
+     * - Failure persisting data (Adding a record but receiving 0 rows edited, ...)
+     * - Failure querying data (SQLException during the query, ...)
+     */
+    @ExceptionHandler(DAOException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
-    public String failureToPersistDataHandler(FailureToPersistDataException ex, HttpServletResponse res){
+    public String failureToPersistDataHandler(DAOException ex, HttpServletResponse res){
         // log the event as ERROR
         logger.error(ex.getMessage());
 
-        return "Database kapup, idk man";
+        return "Some user-level error message: Oops something went wrong, try again later.";
     }
 
     // AUTHENTICATION & AUTHORIZATION EXCEPTION HANDLERS --------------------------------------------

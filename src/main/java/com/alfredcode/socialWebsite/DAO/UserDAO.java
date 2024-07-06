@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alfredcode.socialWebsite.DAO.exception.FailureToPersistDataException;
+import com.alfredcode.socialWebsite.DAO.exception.FailureToQueryDataException;
 import com.alfredcode.socialWebsite.model.UserModel;
 
 
@@ -36,8 +37,9 @@ public class UserDAO {
      * Attempts to add a user record to the database.
      * @param userModel The user we whish to add to the database.
      * @return The user record, including its assigned ID.
+     * @throws FailureToPersistDataException On failure adding user.
      */
-    public UserModel addUser(UserModel userModel) {
+    public UserModel addUser(UserModel userModel) throws FailureToPersistDataException, IllegalArgumentException {
 
         // data validation
         if(userModel == null || userModel.getUsername() == null || userModel.getPassword() == null) {
@@ -72,6 +74,7 @@ public class UserDAO {
         }
         catch(SQLException err) {
             logger.error("addUser::" + err.getMessage());
+            throw new FailureToPersistDataException(err.getMessage());
         }
 
         return userModel;
@@ -80,9 +83,10 @@ public class UserDAO {
     /**
      * Retrieves a user record by username.
      * @param username The username of the user record you whish to retrieve.
-     * @return The user record if any matched the given username, or null.
+     * @return The user, or null if none matched username.
+     * @throws FailureToQueryDataException On failure querying the data.
      */
-    public UserModel getUserByUsername(String username) {
+    public UserModel getUserByUsername(String username) throws FailureToQueryDataException, IllegalArgumentException {
 
         // data validation
         if(username == null) { throw new IllegalArgumentException("username cannot be null.");}
@@ -113,6 +117,7 @@ public class UserDAO {
         }
         catch(SQLException err) {
             logger.error("getUserByUsername::" + err.getMessage());
+            throw new FailureToQueryDataException(err.getMessage());
         }
 
         return userModel;

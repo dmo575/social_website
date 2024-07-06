@@ -169,7 +169,7 @@ public class SessionService {
         session.setExpirationDateUnix(newExpirationDate.getTime());
 
         // update the database's session
-        session = sessionDao.updateSession(session);
+        session = sessionDao.updateSessionById(session);
 
         // if failure when updating db session's record, throw ex
         if(session == null) throw new FailedSessionUpdateException("Failure when updating session.");

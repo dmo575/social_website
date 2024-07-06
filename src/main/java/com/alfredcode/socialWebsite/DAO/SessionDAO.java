@@ -16,6 +16,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.alfredcode.socialWebsite.DAO.exception.FailureToPersistDataException;
+import com.alfredcode.socialWebsite.DAO.exception.FailureToQueryDataException;
+import com.alfredcode.socialWebsite.DAO.exception.FailureToRemoveDataException;
 import com.alfredcode.socialWebsite.model.SessionModel;
 
  /*
@@ -35,12 +37,12 @@ public class SessionDAO {
     /**
      * Adds a session record to the database.
      * This method also makes sure that any other pre-existing session for the given username is deleted before adding the new one. If a user where to log in, delete cookies and log in again, this would
-     * make it possible for tha user to be able to log in while at the same time ensure that there is only one valid session ID per account.
-     * @param sessionModel The session to add
-     * @return The same given session
-     * @throws FailureToPersistDataException If the session failed to be persisted in the database
+     * make it possible for that user to be able to log in while at the same time ensure that there is only one valid session ID per account.
+     * @param sessionModel The session to add.
+     * @return The session added.
+     * @throws FailureToPersistDataException On failure adding session.
      */
-    public SessionModel addSession(SessionModel sessionModel) {
+    public SessionModel addSession(SessionModel sessionModel) throws FailureToPersistDataException, IllegalArgumentException {
 
         logger.warn("Adding a new session for " + sessionModel.getUsername());
         // data validation
@@ -80,6 +82,7 @@ public class SessionDAO {
         }
         catch(SQLException err) {
             logger.error("addSession::" + err.getMessage());
+            throw new FailureToPersistDataException("Failed to create session record.");
         }
 
         return sessionModel;
@@ -88,9 +91,10 @@ public class SessionDAO {
     /**
      * Retrieves the session for the given sessionId, if any.
      * @param sessionId The sessionId of the session record you want to retrieve.
-     * @return The session record.
+     * @return SessionModel if found, else null.
+     * @throws FailureToQueryDataException On failure querying the data.
      */
-    public SessionModel getSessionById(String sessionId) {
+    public SessionModel getSessionById(String sessionId) throws FailureToQueryDataException, IllegalArgumentException {
         
 
         // data validation
@@ -122,6 +126,7 @@ public class SessionDAO {
         }
         catch(SQLException err) {
             logger.error("getSessionById::" + err.getMessage());
+            throw new FailureToQueryDataException("Failure when querying session.");
         }
 
         return sessionModel;
@@ -130,9 +135,10 @@ public class SessionDAO {
     /**
      * Retrieves the session for the given sessionId,if any.
      * @param username The username associated with the session record you want to retrieve.
-     * @return The session record.
+     * @return SessionModel if found, else null.
+     * @throws FailureToQueryDataException On failure querying the data.
      */
-    public SessionModel getSessionByUsername(String username) {
+    public SessionModel getSessionByUsername(String username) throws FailureToQueryDataException, IllegalArgumentException {
 
         // data validation
         if(username == null) throw new IllegalArgumentException("username must not be null.");
@@ -163,6 +169,7 @@ public class SessionDAO {
         }
         catch(SQLException err) {
             logger.error("getSessionByUsername::" + err.getMessage());
+            throw new FailureToQueryDataException("Failure when querying session.");
         }
 
         return sessionModel;
@@ -171,17 +178,16 @@ public class SessionDAO {
     /**
      * Attempts to update a session with the given data.
      * @param newSessionModel The new session data, including the ID of the session that you whish to update.
-     * @return Same session model on success. Null if no session record was fond for the given ID.
+     * @return SessionModel on success, null if no no matching session for the given sessionId found.
+     * @throws FailureToPersistDataException On failure updating the database.
     */
-    public SessionModel updateSession(SessionModel newSessionModel) {
+    public SessionModel updateSessionById(SessionModel newSessionModel) throws FailureToPersistDataException, IllegalArgumentException {
 
         // data validation
         if(newSessionModel == null || newSessionModel.getId() == null || newSessionModel.getUsername() == null ||
         newSessionModel.getExpirationDateUnix() == null || newSessionModel.getRefreshDateUnix() == null) {
             throw new IllegalArgumentException("SessionModel and its fields must not be null.");
         }
-
-        logger.warn("Updating session for " + newSessionModel.getUsername());
 
         try{
             Connection connection = ds.getConnection();
@@ -205,6 +211,7 @@ public class SessionDAO {
         }
         catch(SQLException err) {
             logger.error("updateSession::" + err.getMessage(), err);
+            throw new FailureToPersistDataException("Failure to update session.");
         }
 
         return newSessionModel;
@@ -213,9 +220,10 @@ public class SessionDAO {
     /**
      * Removes a session by ID, if any.
      * @param sessionId The session Id of the session you whish to remove.
-     * @return True if a session going by the given ID was removed, false if non was found to remove.
+     * @return True if at least a session was removed, False if no sessions were affected.
+     * @throws FailureToRemoveDataException On failure removing the record.
      */
-    public Boolean removeSessionWithId(String sessionId) {
+    public Boolean removeSessionWithId(String sessionId) throws FailureToRemoveDataException, IllegalArgumentException {
 
         // data validation
         if(sessionId == null) throw new IllegalArgumentException("sessionId must not be null.");
@@ -237,6 +245,7 @@ public class SessionDAO {
         }
         catch(SQLException err) {
             logger.error("removeSessionWithId::" + err.getMessage());
+            throw new FailureToRemoveDataException("Failure deleting record.");
         }
         
         return recordsAffected > 0;
