@@ -18,7 +18,7 @@ import jakarta.servlet.http.HttpServletResponse;
 /*
  * Takes care of updating a client's session ID.
  */
-public class SessionInterceptor implements HandlerInterceptor{
+public class SessionInterceptor implements HandlerInterceptor {
 
     private static final Logger logger = LoggerFactory.getLogger(SessionInterceptor.class);
     private SessionService sessionService = null;

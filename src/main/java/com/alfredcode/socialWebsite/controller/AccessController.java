@@ -9,8 +9,12 @@ import org.springframework.http.RequestEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.alfredcode.socialWebsite.DAO.SessionDAO;
+import com.alfredcode.socialWebsite.model.SessionModel;
 import com.alfredcode.socialWebsite.model.UserModel;
 import com.alfredcode.socialWebsite.security.annotation.NoSessionAllowed;
 import com.alfredcode.socialWebsite.service.session.SessionService;
@@ -30,11 +34,29 @@ public class AccessController {
     private static final Logger logger = LoggerFactory.getLogger(AccessController.class);
     private UserService userService = null;
     private SessionService sessionService = null;
+
+    private SessionDAO test_sessionDao = null;
     
     @Autowired
-    public AccessController(UserService userService, SessionService sessionService) {
+    public AccessController(UserService userService, SessionService sessionService, SessionDAO sd) {
         this.userService = userService;
         this.sessionService = sessionService;
+        test_sessionDao = sd;
+    }
+
+
+    @GetMapping("/test")
+    @ResponseBody
+    public String test() {
+
+        //SessionModel sm = test_sessionDao.getSessionByUsername("uuu1");
+
+        test_sessionDao.addSession(new SessionModel("id", "username", 100L, 20L));
+
+        //if(sm != null) logger.info(String.format("TEST::ID: %s, USERNAME: %s, ED: %d, RD: %d, V: %d", sm.getId(), sm.getUsername(), sm.getExpirationDateUnix(), sm.getRefreshDateUnix(), sm.getVersion()));
+        //else logger.info("TEST::NULL");
+
+        return "test sent";
     }
 
 
@@ -90,22 +112,22 @@ public class AccessController {
         UserModel user = req.getBody();
         
         // validate model data
-        if(user == null) throw new IllegalArgumentException("UserModel not provided.");
+        if(user == null) throw new IllegalArgumentException("Missing user data.");
         if(user.getUsername() == null) throw new IllegalArgumentException("Missing username.");
         if(user.getPassword() == null) throw new IllegalArgumentException("Missing password.");
         
         
-        // register user. Throws ex on failure
+        // register user (throws ex on failure)
         // TODO: account for failure during user registration
         userService.registerUser(user);
         
         try{
-            // initiate a new session. Throws ex on failure
+            // initiate a new session (throws ex on failure)
             res.addHeader("Set-Cookie", sessionService.initiateSession(user.getUsername()));
 
         } catch(FailedSessionCreationException ex) {
             // we catched this one to personalize the message for the registration context
-            throw new FailedSessionCreationException("Oops. We couldn't log you into your new account. Try a manual log in.");
+            throw new FailedSessionCreationException("We couldn't log you into your new account. Try a manual log in.");
         }
 
         // return 201 and suggest /
@@ -132,13 +154,13 @@ public class AccessController {
 
         // validate model data
         if(user == null) throw new IllegalArgumentException("User not provided.");
-        if(user.getUsername() == null) throw new IllegalArgumentException("Missing JSON parameter: username");
-        if(user.getPassword() == null) throw new IllegalArgumentException("Missing JSON parameter: password");
+        if(user.getUsername() == null) throw new IllegalArgumentException("Missing username.");
+        if(user.getPassword() == null) throw new IllegalArgumentException("Missing password.");
         
-        // authenticate user. Throws ex on failure
+        // authenticate user (throws ex on failure)
         userService.authenticateUser(user.getUsername(), user.getPassword());
 
-        // initiate a new session. Throws ex on failure
+        // initiate a new session (throws ex on failure)
         res.addHeader("Set-Cookie", sessionService.initiateSession(user.getUsername()));
 
         // return 200 and suggest /

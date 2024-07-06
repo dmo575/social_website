@@ -138,9 +138,9 @@ public class Database {
 
     public boolean removeSession(String sessionId, Integer sessionVersion) {
         
-        if(session.get(sessionId).getVersion() == sessionVersion) {
-            return session.remove(sessionId) != null;
-        }
+        //if(session.get(sessionId).getVersion() == sessionVersion) {
+        //    return session.remove(sessionId) != null;
+        //}
 
         return false;
     }

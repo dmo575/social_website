@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import com.alfredcode.socialWebsite.DAO.exception.FailureToPersistDataException;
 import com.alfredcode.socialWebsite.security.exception.AuthenticationException;
 import com.alfredcode.socialWebsite.security.exception.UnauthorizedActionException;
 import com.alfredcode.socialWebsite.service.session.exception.FailedSessionAuthenticationException;
@@ -47,7 +48,15 @@ public class GlobalExceptionsController {
         return handleAuthenticationException(ex, res, "Forbidden action.", HttpStatus.FORBIDDEN);
     }
 
+    @ExceptionHandler(FailureToPersistDataException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseBody
+    public String failureToPersistDataHandler(FailureToPersistDataException ex, HttpServletResponse res){
+        // log the event as ERROR
+        logger.error(ex.getMessage());
 
+        return "Database kapup, idk man";
+    }
 
     // AUTHENTICATION & AUTHORIZATION EXCEPTION HANDLERS --------------------------------------------
 

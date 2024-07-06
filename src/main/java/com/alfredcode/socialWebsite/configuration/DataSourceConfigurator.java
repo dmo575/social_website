@@ -14,6 +14,9 @@ import org.springframework.context.annotation.Configuration;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
+/*
+ * Configures the DataSource bean
+ */
 @Configuration
 public class DataSourceConfigurator {
     Logger logger = LoggerFactory.getLogger(DataSourceConfigurator.class);
@@ -27,8 +30,9 @@ public class DataSourceConfigurator {
         String databaseName = null;
         String username = null;
         String password = null;
-
+        
         try{
+            // get database info
             protperties.load(new FileInputStream("./sot"));
             databaseIp = protperties.getProperty("database.ip");
             databasePort = protperties.getProperty("database.port");
@@ -42,10 +46,12 @@ public class DataSourceConfigurator {
         
         HikariConfig dsConfig = new HikariConfig();
 
+        // populate HikariConfig with db info
         dsConfig.setJdbcUrl(String.format("jdbc:mysql://%s:%s/%s", databaseIp, databasePort, databaseName));
         dsConfig.setUsername(username);
         dsConfig.setPassword(password);
 
+        // return bean
         return new HikariDataSource(dsConfig);
     }
 }
