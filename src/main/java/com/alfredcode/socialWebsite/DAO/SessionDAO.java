@@ -4,12 +4,15 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Date;
 
 import javax.sql.DataSource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.alfredcode.socialWebsite.DAO.exception.FailureToPersistDataException;
@@ -252,5 +255,31 @@ public class SessionDAO {
         }
         
         return recordsAffected > 0;
+    }
+
+    /*
+     * Every 1h, sends a delete query for all expired sessions.
+     * This will run in its own thread, so race conditions apply.
+     */
+    //@Scheduled(fixedRate = 1000*60*60)// 1h
+    @Scheduled(fixedRate = 1000*10)// 10s
+    private void removeExpiredSessions() {
+
+        try{
+            Connection connection = ds.getConnection();
+
+            PreparedStatement st = connection.prepareStatement("DELETE FROM session WHERE expiration_date_unix<?");
+
+            st.setLong(1, (new Date()).getTime());
+
+            int affectedRows = st.executeUpdate();
+
+            logger.info("Removing expired sessions ("+affectedRows+")");
+
+            st.close();
+        }
+        catch(SQLException err) {
+            logger.error("removeExpiredSessions::" + err.getMessage());
+        }
     }
 }

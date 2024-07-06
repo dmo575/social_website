@@ -7,6 +7,7 @@ import java.util.TimeZone;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.amqp.RabbitProperties.Cache.Connection;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -204,15 +205,6 @@ public class SessionService {
 
         // return new session cookie string
         return generateSessionCookieString(session.getId(), dateToHTTPDate(expirationDate));
-    }
-
-    /*
-     * Every 1h, sends a delete query for all expired sessions.
-     * This will run in its own thread, so race conditions apply.
-     */
-    @Scheduled(fixedRate = 1000*60*60)// 1h
-    private void removeExpiredSessions() {
-
     }
 
 }

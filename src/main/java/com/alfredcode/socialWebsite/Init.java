@@ -1,7 +1,9 @@
 package com.alfredcode.socialWebsite;
 
 import java.sql.Statement;
+import java.util.Date;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import javax.sql.DataSource;
@@ -13,6 +15,10 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
+
+/*
+ * The init method runs after the spring application is up and running. Used to fire some debug methods.
+ */
 @Component
 public class Init {
     private static final Logger logger = LoggerFactory.getLogger(Init.class);
@@ -24,12 +30,14 @@ public class Init {
     }
 
     @EventListener(ApplicationReadyEvent.class)
-    public void clearDatabase() {
+    public void init() {
 
-        boolean doit = false;
+        //clearDatabase();
+        populateSession();
 
-        if(doit) return;
+    }
 
+    private void clearDatabase() {
         try{
 
             Connection connection = ds.getConnection();
@@ -42,7 +50,31 @@ public class Init {
             st.close();
         }
         catch(SQLException err) {
-            logger.error("Init::" + err.getMessage());
+            logger.error("clearDatabase::" + err.getMessage());
+        }
+    }
+
+    private void populateSession() {
+
+        Long now = new Date().getTime();
+
+        try{
+
+            Connection connection = ds.getConnection();
+            PreparedStatement st = connection.prepareStatement("INSERT INTO session(id, username, expiration_date_unix, refresh_date_unix) VALUES(?, ?, ?, ?)");
+
+            for(int i = 0; i < 15; i++) {
+                st.setString(1, Integer.toString(i));
+                st.setString(2, "user_" + Integer.toString(i));
+                st.setLong(3, now + i*1000);
+                st.setLong(4, now + i*1000);
+                st.execute();
+            }
+
+            st.close();
+        }
+        catch(SQLException err) {
+            logger.error("populateSession::" + err.getMessage());
         }
     }
 
