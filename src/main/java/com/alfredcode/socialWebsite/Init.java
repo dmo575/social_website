@@ -33,7 +33,7 @@ public class Init {
     public void init() {
 
         //clearDatabase();
-        populateSession();
+        //populateSession();
 
     }
 

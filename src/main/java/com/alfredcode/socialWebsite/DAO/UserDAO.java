@@ -32,8 +32,10 @@ public class UserDAO {
         this.ds = ds;
     }
 
-    /*
-     * Persists user on the database. Returns user back (with ID)
+    /**
+     * Attempts to add a user record to the database.
+     * @param userModel The user we whish to add to the database.
+     * @return The user record, including its assigned ID.
      */
     public UserModel addUser(UserModel userModel) {
 
@@ -55,6 +57,8 @@ public class UserDAO {
 
             // handle unexpected result case
             if(updateCount != 1) {
+                updateSt.close();
+                connection.close();
                 throw new FailureToPersistDataException("Failed to persist new user");
             }
 
@@ -73,8 +77,10 @@ public class UserDAO {
         return userModel;
     }
 
-    /*
-     * Given a username, returns the user.
+    /**
+     * Retrieves a user record by username.
+     * @param username The username of the user record you whish to retrieve.
+     * @return The user record if any matched the given username, or null.
      */
     public UserModel getUserByUsername(String username) {
 
@@ -94,7 +100,11 @@ public class UserDAO {
             ResultSet rs = selectSt.executeQuery();
 
             // handle unexpected return case
-            if(!rs.next()) return null;
+            if(!rs.next()) {
+                selectSt.close();
+                connection.close();
+                return null;
+            }
 
             userModel = new UserModel(rs.getInt("id"), rs.getString("username"), rs.getString("password"));
 

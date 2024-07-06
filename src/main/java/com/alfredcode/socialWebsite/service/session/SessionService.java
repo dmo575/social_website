@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.amqp.RabbitProperties.Cache.Connection;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -36,6 +38,8 @@ public class SessionService {
     private static final int sessionRefreshTimeMinutes = 15;
     // used by ByCrypt, the higher the more iterations on the hashing computation, which seems to make it more secure but also means it takes more to compute
     private static final int hashingCost = 7;
+
+    private static final Logger logger = LoggerFactory.getLogger(SessionService.class);
 
     @Autowired
     private SessionDAO sessionDao = null;

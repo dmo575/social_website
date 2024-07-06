@@ -49,12 +49,7 @@ public class AccessController {
     @ResponseBody
     public String test() {
 
-        //SessionModel sm = test_sessionDao.getSessionByUsername("uuu1");
-
         test_sessionDao.addSession(new SessionModel("id", "username", 100L, 20L));
-
-        //if(sm != null) logger.info(String.format("TEST::ID: %s, USERNAME: %s, ED: %d, RD: %d, V: %d", sm.getId(), sm.getUsername(), sm.getExpirationDateUnix(), sm.getRefreshDateUnix(), sm.getVersion()));
-        //else logger.info("TEST::NULL");
 
         return "test sent";
     }

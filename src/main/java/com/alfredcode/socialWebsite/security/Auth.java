@@ -90,6 +90,7 @@ public class Auth {
     */
     @Before("@annotation(com.alfredcode.socialWebsite.security.annotation.NoSessionAllowed)")
     private void noSessionAllowed(JoinPoint jp) throws UnauthorizedActionException {
+
         
         String sessionId = null;
 

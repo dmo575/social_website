@@ -33,7 +33,9 @@ Social media blogpost website.
 
 **Tech**:
 - **Database**: MySQL
-- **Backend**: Java + Spring Boot + JPA
+- **Backend**: The plan is to hav etwo branches.
+    - Currently: Java + Spring Boot + Java's JDBC (Meaning no spring-data-jdbc. Manually configuring the DataSource with HikariCP's DataSource implementation. See `DataSourceConfigurator.java`)
+    - Plans for a future branch: Instead of only Java's JDBC, use: Spring JDBC, JPA and Spring JPA.
 - **Frontend**: JS/HTML/CSS + [BULMA](https://bulma.io/)
 - **Build tool**: Maven
 - **Hashing**: bcrypt
@@ -49,7 +51,7 @@ Description types:
 - **Page**: Means the endpoint returns a full page, or the foundations of it where other elements are to be placed.
 - **CRUD**: Means the website does some CRUD operation.
 
-**AccessController**: These provide the registration and login interface.
+**AccessController (MVC)**: These provide the registration and login interface.
 |Endpoint      | Verb |Session?|Response                |Description|SC       |Req. Body |
 |--------------|------|--------|------------------------|-----------|---------|----------|
 |/register     |GET   |✖️      |register.html           |View       |200      |-         |
@@ -67,7 +69,7 @@ Description types:
 |/             | GET   |✖️      |welcome.html            |Page       |200  |-            |
 |/             | GET   |✔️      |portal.html             |Page       |200  |-            |
 
-**PostController**: RESTful endpoints related to posts.
+**PostController (REST)**: RESTful endpoints related to posts.
 |Endpoint                                | Verb  |Response                |Description                      |SC                |Req. body    |
 |----------------------------------------|-------|------------------------|---------------------------------|------------------|-------------|
 |/post/{post_id}                         |GET    |PostModel               |Query post                       |200, 400, 401, 404|-            |
@@ -82,7 +84,7 @@ Description types:
 
 Note: when querying posts, the order of those is from most to least recently created.
 
-**UserController**: RESTful endpoints related to users.
+**UserController (REST)**: RESTful endpoints related to users.
 |Endpoint                                | Verb  |Response                |Description                      |SC                |Req. body    |
 |----------------------------------------|-------|------------------------|---------------------------------|------------------|-------------|
 |/user/{user_id}                         |GET    |UserModel               |Query user                       |200, 400, 401, 404|-            |
@@ -91,7 +93,7 @@ Note: when querying posts, the order of those is from most to least recently cre
 |/user/{user_id}                         |PUT    |UserModel               |Full update on a user            |200, 400, 401, 404|UserModel    |
 |/user/{user_id}                         |PATCH  |UserModel               |Partial update on a user         |200, 400, 401, 404|UserModel    |
 
-**CommentController**: RESTful endpoints related to post's comments.
+**CommentController (REST)**: RESTful endpoints related to post's comments.
 |Endpoint                                | Verb  |Response                |Description                      |SC                |Req. body    |
 |----------------------------------------|-------|------------------------|---------------------------------|------------------|-------------|
 |/comment/{comment_id}                   |GET    |CommentModel            |Query a comment                  |200, 400, 401, 404|-            |
@@ -102,7 +104,7 @@ Note: when querying posts, the order of those is from most to least recently cre
 |/comment/{comment_id}                   |PUT    |CommentModel            |Full update on a comment         |200, 400, 401, 404|CommentModel |
 |/comment/{comment_id}                   |PATCH  |CommentModel            |Partial update on a comment      |200, 400, 401, 404|CommentModel |
 
-**ViewController**: MVC endpoints that provide templates for rendering data.
+**ViewController (MVC)**: MVC endpoints that provide templates for rendering data.
 |Endpoint                                | Verb  |Response                |Description                      |SC       |Req. body    |
 |----------------------------------------|-------|------------------------|---------------------------------|---------|-------------|
 |/views/element/post                     |GET    |post.html               |View                             |200, 401 |-            |
@@ -119,14 +121,14 @@ Note: when querying posts, the order of those is from most to least recently cre
 **Tables**:
 Table name|Column         |Column         |Column         |Column           |Column         |Column         |Column   |
 |---------|---------------|---------------|---------------|-----------------|---------------|---------------|---------|
-|POST     |post_id NUM    |user_id NUM    |title STR      |description STR  |content STR    |views NUM      |date DATE|
-|COMMENT  |comment_id NUM |parent_id NUM  |post_id NUM    |user_id NUM      |content STR    |date DATE      |
-|SESSION  |session_id STR |username NUM   |expires NUM    |refresh DATE     |
-|USER     |user_id NUM    |pass_hash STR  |username STR   |
-|CATEGORY |category STR   |post_id NUM    |
-|HASHTAG  |hashtag STR    |post_id NUM    |
-|LIKES    |post_id NUM    |user_id NUM    |
-|SAVES    |saves_id NUM   |user_id NUM    |
+|post     |post_id **INT**    |user_id **INT**    |title STR      |description STR  |content STR    |views NUM      |date DATE|
+|comment  |comment_id NUM |parent_id NUM  |post_id NUM    |user_id NUM      |content STR    |date DATE      |
+|session  |session_id STR |username NUM   |expires NUM    |refresh DATE     |
+|user     |user_id **INT**    |username **VARCHAR(50)**   |pass_hash **VARCHAR(100)**|
+|category |category STR   |post_id NUM    |
+|hashtag  |hashtag STR    |post_id NUM    |
+|likes    |post_id NUM    |user_id NUM    |
+|saves    |saves_id NUM   |user_id NUM    |
 
 **Indexes**:
 - **Post**:
@@ -160,8 +162,9 @@ These are the features I have implemented that I consider security-themed:
 - **Authentication**: I have a system that handles basic authentication of users and sessions.
 - **Hasing passwords**: I make sure I just store a hash to a password.
 - **Expirable session IDs**: Session IDs have an expiration date, so a client cannot log in once and stay logged in forever.
-- **Re-generating session IDs**: Session IDs have a refresh countdown, meaning even when logged in, the server is always re-generating the session ID every some time. This means that if a client is constantly online, the sessionId will still periodically change, stablishing a limited timeframe for any attacker who want to try to guess the sessionId.
+- **Re-generating session IDs**: Session IDs have a refresh countdown, meaning even when logged in, the server is always re-generating the session ID every some time. This means that if a client is constantly online, the sessionId will still periodically change, stablishing a limited timeframe for any attacker who wants to try to guess the sessionId.
 - **Sanitazing userame/password characters**: I do some basic sanitation before interacting with the DAO in order to look for SQL queries. WIP.
+- **PreparedStatement**: I make sure to always use JDBC's Prepared statements for queries that involve user input. PreparedStatement's interface sanitizes input by design (setInt, setString, ...).
 
 **Sequrity - TODO**:
 - Adding some authorization so I can have admin accounts.
@@ -172,27 +175,12 @@ These are the features I have implemented that I consider security-themed:
 
 
 ### Optmization
-Similar situation as with security.
-
 These are some things implemented that I consider optimization-themed:
-- **Client-side input validation**: Saves time to the server. I do check the same things in the server again because I imagine the client is not to be trusted. But for non bad actors this saves the potential back and forth with the server.
+- **Client-side input validation**: Saves time to the server. I do perform data validation at each layer over at the server because I imagine the client is not to be trusted, but for non bad actors this saves the potential back and forth with the server.
+- **DataSource instead of DriverManager**: By using a DataSource that supports connection pooling (HikariCP) instead of the DriverManager, we make sure to not waste time closing and opening connections every time we want to execute a query.
 
 **Optimization - TODO**:
 - Find a single source of truth for input validation that the client and the backend can relate to. Database probably.
-
-
-
-### Other things:
-- **Concurrency**: For the sessions, the backend run a second thread that scans the table every X time and removes expired keys, so I implement Optimistic locking for the session table (WIP).
-
-
-
-### Backlog:
-- Create tests
-- Database for translation: Have the website text in a database and allow for different languages
-- Card that explains the website features (Auth, languages, etc).
-- Markdown ?
-- Work on concurrency. Do transactions and lock levels.
 
 
 
@@ -234,14 +222,11 @@ Place where you can see and manage users you are subscribed to and posts you hav
 
 ### Exceptions and data transfer between layers - WIP
 
-#### Database:
-TODO
-
 #### DAO:
 DAO layers always return the following:
-- Read: Data model with retrieved record data or `null` if error.
-- Create: Data model with created record data or `null` if error.
-- Update: Data model with updated record data or `null` if error.
+- Read: Data model with retrieved record data or `null` if nothing to read found.
+- Create: Data model with created record data.
+- Update: Data model with updated record data.
 - Delete: `boolean` indicating operation success status.
 - DAO instances throw no exceptions for the time being.
 
@@ -290,3 +275,38 @@ In order to implement an easy Authorization and Authentication system, we will b
 - Separation of concerns: Interceptors are the conventional place for HTTP request/response modifications while AOP are saved for cross-cutting concerns; that is tasks that involve several unrealted instances, each performing some operation.
 - Ease of access: Interceptors make it really easy to access the HTTP req/res because they are intended to modify these things. They are even included in the servlet lifecycle. With AOP you do need to do some workaround to get to the servlets.
 - Readability: Even tho we can do these things in either place, the standard **seems** to be the one already explained, so going against it makes the code harder to understand.
+
+### Managing sessions (AOP, Interceptor handlers and @Schedule)
+
+The authentication process is organized in a way that allows me to have two threads handle the sessions table at the same time without them stepping onto  eachother's feet:
+
+- **Step 1: Client sends HTTP request.**
+- **Step 2: Authentication (Auth's AOP methods)**:
+    - Given the sessionId:
+        - **(A)** If the session exists in the database and it is not expired, allow the request to move to the next step.
+        - **(B)** If the session doesn't exist in the database or it is expired, deny access.
+
+- **Step 3: SessionInterceptor's preHandle method**:
+    - Given the sessionId:
+        - **(C)** If the session exists in the database (whether or not is expired), **attempt** to update it: We allow the request to move to the next step on success, deny access on failure.
+        - **(D)** If the session doesn't exist in the database anymore, deny access.
+
+- **Step 4: The HTTP request gets processed.**
+
+Those steps are carried over on that order in the main thread.
+
+The second thread runs a DELETE query on the session table every X time. A couple of things to notie about that:
+- MySQL may receive orders at the same time but it won't execute them at the same time, at least not orders that modify a specific record. Which means that the DELETE query might run just before or just after any of the main thread queries that modify the record.
+- When we run the DELETE query, that query has a conditional, only expired queries will get deleted.
+
+With that in mind, we consider these cases:
+
+- **Case 1 - session deleted/expired before Step 2**: At step 2, the client contains the sessionId of a record that has been deleted due to it being expired. Auth's AOP method will try to retrieve the session and will fail, denying access.
+ 
+- **Case 2 - session deleted/expired right after Step 2**: The session passes authentication (Step 2), but expires/removed shortly after. The SessionInterceptor's preHandle method (Step 3) then tries to again access the session. It find the session to be expired/deleted, so it denies access.
+
+- **Case 3 - session deleted before updating it**: The SessionInterceptor's preHandle method retrieves the session and it is not expired. It then prepares the new updated values for the session and sends out the update query. However, when running the update query, MySQL finds that the exception no longer exists due to the second thread deleting it just a moment ago. The update fails, and the access is denied. The reason this is possible is because we can check if an update affected any row at all, and conclude based on that.
+
+- **Case 4 - A delete query arrives just after updating the query**: No deletion will happen, because that deletion has a conditional within it that will fail if the session just got updated.
+
+Because we make sure to authenticate and update the session before processing the HTTP request, we can allow ourselves to let a session pass authentication and expire before we get a chance to update the session.

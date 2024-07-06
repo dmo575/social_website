@@ -16,6 +16,8 @@ import com.zaxxer.hikari.HikariDataSource;
 
 /*
  * Configures the DataSource bean
+ * 
+ * We will use Hikari. It is thread-safe, something that we need since we will have two threads executing SQL queries (see SessionDAO.java -> removeExpiredSessions())
  */
 @Configuration
 public class DataSourceConfigurator {
@@ -41,7 +43,7 @@ public class DataSourceConfigurator {
             password = protperties.getProperty("database.password");
 
         }catch(IOException ex) {
-            logger.error("Error while configuring Hikari's DataSource: " + ex.getMessage());
+            logger.error("Error while loading database properties: " + ex.getMessage());
         }
         
         HikariConfig dsConfig = new HikariConfig();
@@ -50,6 +52,8 @@ public class DataSourceConfigurator {
         dsConfig.setJdbcUrl(String.format("jdbc:mysql://%s:%s/%s", databaseIp, databasePort, databaseName));
         dsConfig.setUsername(username);
         dsConfig.setPassword(password);
+
+        // for the pool settings, we will go with the defaults.
 
         // return bean
         return new HikariDataSource(dsConfig);
