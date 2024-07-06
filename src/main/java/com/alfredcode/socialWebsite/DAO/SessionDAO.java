@@ -112,6 +112,7 @@ public class SessionDAO {
             // execute query
             int recordsAffected = createSt.executeUpdate();
 
+            connection.close();
             // handle unexpected result case
             if(recordsAffected != 1) {
                 throw new FailureToPersistDataException("Failed to create session record: " + recordsAffected);
@@ -151,6 +152,7 @@ public class SessionDAO {
             sessionModel = new SessionModel(rs.getString("id"), rs.getString("username"), rs.getLong("expiration_date_unix"), rs.getLong("refresh_date_unix"));
 
             selectSt.close();
+            connection.close();
         }
         catch(SQLException err) {
             logger.error("getSessionById::" + err.getMessage());
@@ -185,6 +187,7 @@ public class SessionDAO {
             sessionModel = new SessionModel(rs.getString("id"), rs.getString("username"), rs.getLong("expiration_date_unix"), rs.getLong("refresh_date_unix"));
 
             selectSt.close();
+            connection.close();
         }
         catch(SQLException err) {
             logger.error("getSessionByUsername::" + err.getMessage());
@@ -222,6 +225,7 @@ public class SessionDAO {
             sessionModel = new SessionModel(rs.getString("id"), rs.getString("username"), rs.getLong("expiration_date_unix"), rs.getLong("refresh_date_unix"));
 
             updateSt.close();
+            connection.close();
         }
         catch(SQLException err) {
             logger.error("updateSession::" + err.getMessage());
@@ -248,7 +252,7 @@ public class SessionDAO {
             recordsAffected = removeSt.executeUpdate();
 
             removeSt.close();
-
+            connection.close();
         }
         catch(SQLException err) {
             logger.error("removeSessionWithId::" + err.getMessage());
@@ -277,6 +281,7 @@ public class SessionDAO {
             logger.info("Removing expired sessions ("+affectedRows+")");
 
             st.close();
+            connection.close();
         }
         catch(SQLException err) {
             logger.error("removeExpiredSessions::" + err.getMessage());

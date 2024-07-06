@@ -64,6 +64,7 @@ public class UserDAO {
             userModel.setId(keys.getInt(1));
 
             updateSt.close();
+            connection.close();
         }
         catch(SQLException err) {
             logger.error("addUser::" + err.getMessage());
@@ -98,6 +99,7 @@ public class UserDAO {
             userModel = new UserModel(rs.getInt("id"), rs.getString("username"), rs.getString("password"));
 
             selectSt.close();
+            connection.close();
         }
         catch(SQLException err) {
             logger.error("getUserByUsername::" + err.getMessage());

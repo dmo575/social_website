@@ -63,11 +63,11 @@ public class Init {
             Connection connection = ds.getConnection();
             PreparedStatement st = connection.prepareStatement("INSERT INTO session(id, username, expiration_date_unix, refresh_date_unix) VALUES(?, ?, ?, ?)");
 
-            for(int i = 0; i < 15; i++) {
+            for(int i = 0; i < 30; i++) {
                 st.setString(1, Integer.toString(i));
                 st.setString(2, "user_" + Integer.toString(i));
-                st.setLong(3, now + i*1000);
-                st.setLong(4, now + i*1000);
+                st.setLong(3, now + 1000*(10+i+1));
+                st.setLong(4, now + 1000*(10+i+1));
                 st.execute();
             }
 
