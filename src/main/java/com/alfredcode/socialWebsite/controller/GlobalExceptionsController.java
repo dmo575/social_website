@@ -4,21 +4,15 @@ package com.alfredcode.socialWebsite.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.alfredcode.socialWebsite.DAO.exception.DAOException;
-import com.alfredcode.socialWebsite.DAO.exception.FailureToPersistDataException;
 import com.alfredcode.socialWebsite.security.exception.AuthenticationException;
-import com.alfredcode.socialWebsite.security.exception.UnauthorizedActionException;
-import com.alfredcode.socialWebsite.service.session.exception.FailedSessionAuthenticationException;
-import com.alfredcode.socialWebsite.service.session.exception.FailedSessionCreationException;
-import com.alfredcode.socialWebsite.service.session.exception.FailedSessionUpdateException;
-import com.alfredcode.socialWebsite.service.user.exception.FailedUserAuthenticationException;
-import com.alfredcode.socialWebsite.service.user.exception.FailedUserRegistrationException;
+import com.alfredcode.socialWebsite.security.exception.AuthorizationException;
+import com.alfredcode.socialWebsite.security.exception.FailedSessionAuthenticationException;
 
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -41,85 +35,39 @@ public class GlobalExceptionsController {
         return ex.getMessage();
     }
 
-    @ExceptionHandler(UnauthorizedActionException.class)
-    public ResponseEntity<String> forbiddenActionHandler(UnauthorizedActionException ex, HttpServletResponse res){
-        // log the event as INFO
-        logger.info(ex.getMessage());
-
-        return handleAuthenticationException(ex, res, "Forbidden action.", HttpStatus.FORBIDDEN);
-    }
-
     /**
-     * This exception handler takes on any kind of DAO level exceptions that are not recoverable:
-     * - SQLExceptions get recasted as DAOExceptions
-     * - Failure persisting data (Adding a record but receiving 0 rows edited, ...)
-     * - Failure querying data (SQLException during the query, ...)
+     * Handles DAOExceptions, which are all errors when deling with the database.
      */
     @ExceptionHandler(DAOException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
     public String failureToPersistDataHandler(DAOException ex, HttpServletResponse res){
-        // log the event as ERROR
-        logger.error(ex.getMessage());
-
-        return "Some user-level error message: Oops something went wrong, try again later.";
+        return "Something unexpected occured on our side. Please try again later.";
     }
 
-    // AUTHENTICATION & AUTHORIZATION EXCEPTION HANDLERS --------------------------------------------
 
-    // user
-    @ExceptionHandler(FailedUserAuthenticationException.class)
-    public ResponseEntity<String> failedUserAuthenticationHandler(FailedUserAuthenticationException ex, HttpServletResponse res) {
-        // log the event as INFO
-        logger.info(ex.getMessage());
-        return handleAuthenticationException(ex, res, "Invalid username/password combination.", HttpStatus.UNAUTHORIZED);
-    }
-    // user
-    @ExceptionHandler(FailedUserRegistrationException.class)
-    public ResponseEntity<String> failedUserRegistrationHandler(FailedUserRegistrationException ex, HttpServletResponse res) {
-        // log the event as ERROR
-        logger.info(ex.getMessage());
-        return handleAuthenticationException(ex, res, "Invalid username/password combination.", HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    // session
-    @ExceptionHandler(FailedSessionAuthenticationException.class)
-    public ResponseEntity<String> failedSessionAuthenticationHandler(FailedSessionAuthenticationException ex, HttpServletResponse res) {
-        // log the event as WARNING
-        logger.warn(ex.getMessage());
-        return handleAuthenticationException(ex, res, "Invalid session.", HttpStatus.UNAUTHORIZED);
-    }
-    // session
-    @ExceptionHandler(FailedSessionCreationException.class)
-    public ResponseEntity<String> failedSessionCreationHandler(FailedSessionCreationException ex, HttpServletResponse res){
-        // log the event as ERROR
-        logger.error(ex.getMessage());
-        return handleAuthenticationException(ex, res, "Failure at creating a session.", HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-    // session
-    @ExceptionHandler(FailedSessionUpdateException.class)
-    public ResponseEntity<String> failedSessionUpdateHandler(FailedSessionUpdateException ex, HttpServletResponse res){
-        // log the event as ERROR
-        logger.error(ex.getMessage());
-        return handleAuthenticationException(ex, res, "Failure at updating the session.", HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-    
     /**
-     * Theturns a ResponseEntity with values defined in the AuthenticationException if any, else it uses the optional values
-     * @param ex The exception
-     * @param res The servlet response
-     * @param clientErrorMsg Error message to be sent to the client
-     * @param defaultStatusCode Default status code to use if the exception does not contain a custom one
-     * @return ResponseEntity according to the AuthenticationException's provided values
+     * Handles an authentication failure. Sends client to /.
      */
-    private ResponseEntity<String> handleAuthenticationException(AuthenticationException ex, HttpServletResponse res, String clientErrorMsg, HttpStatus defaultStatusCode) {
+    @ExceptionHandler(AuthenticationException.class)
+    @ResponseStatus(HttpStatus.SEE_OTHER)
+    @ResponseBody
+    public String authenticationHandler(FailedSessionAuthenticationException ex, HttpServletResponse res) {
 
-        if(ex.getRedirect()!= null) {
-            res.addHeader("Location", ex.getRedirect());
-        }
- 
-        if(ex.getStatusCode() != null) return new ResponseEntity<String>(clientErrorMsg, ex.getStatusCode());
- 
-        return new ResponseEntity<String>(clientErrorMsg, defaultStatusCode);
+        res.setHeader("Location", "/");
+
+        return ex.getMessage();
     }
+
+    /**
+     * Handles an authorization failure. Responds with a 401.
+     */
+    @ExceptionHandler(AuthorizationException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ResponseBody
+    public String authorizationHandler(AuthorizationException ex, HttpServletResponse res) {
+
+        return ex.getMessage();
+    }
+
 }

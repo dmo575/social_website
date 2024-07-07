@@ -61,7 +61,7 @@ public class UserDAO {
             if(updateCount != 1) {
                 updateSt.close();
                 connection.close();
-                throw new FailureToPersistDataException("Failed to persist new user");
+                throw new FailureToPersistDataException("Failed to persist the user on the database.");
             }
 
             // get the id
@@ -72,9 +72,9 @@ public class UserDAO {
             updateSt.close();
             connection.close();
         }
-        catch(SQLException err) {
-            logger.error("addUser::" + err.getMessage());
-            throw new FailureToPersistDataException(err.getMessage());
+        catch(SQLException ex) {
+            logger.error("addUser::" + ex.getMessage());
+            throw new FailureToPersistDataException(ex.getMessage());
         }
 
         return userModel;
@@ -89,7 +89,7 @@ public class UserDAO {
     public UserModel getUserByUsername(String username) throws FailureToQueryDataException, IllegalArgumentException {
 
         // data validation
-        if(username == null) { throw new IllegalArgumentException("username cannot be null.");}
+        if(username == null) throw new IllegalArgumentException("username cannot be null.");
 
         UserModel userModel = null;
 
@@ -115,9 +115,9 @@ public class UserDAO {
             selectSt.close();
             connection.close();
         }
-        catch(SQLException err) {
-            logger.error("getUserByUsername::" + err.getMessage());
-            throw new FailureToQueryDataException(err.getMessage());
+        catch(SQLException ex) {
+            logger.error("getUserByUsername::" + ex.getMessage());
+            throw new FailureToQueryDataException(ex.getMessage());
         }
 
         return userModel;

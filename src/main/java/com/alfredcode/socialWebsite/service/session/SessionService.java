@@ -9,15 +9,12 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.amqp.RabbitProperties.Cache.Connection;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.alfredcode.socialWebsite.DAO.SessionDAO;
 import com.alfredcode.socialWebsite.model.SessionModel;
-import com.alfredcode.socialWebsite.service.session.exception.FailedSessionAuthenticationException;
-import com.alfredcode.socialWebsite.service.session.exception.FailedSessionCreationException;
-import com.alfredcode.socialWebsite.service.session.exception.FailedSessionUpdateException;
+import com.alfredcode.socialWebsite.security.exception.FailedSessionAuthenticationException;
+import com.alfredcode.socialWebsite.security.exception.FailedSessionUpdateException;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
 
@@ -45,9 +42,9 @@ public class SessionService {
     private SessionDAO sessionDao = null;
 
     /**
-     * Given a Date object, returns an HTTP compliant date string
-     * @param date The date to convert to an HTTP date string
-     * @return The date in HTTP format as a string
+     * Given a Date object, returns an HTTP compliant date string.
+     * @param date The date to convert to an HTTP date string.
+     * @return The date in HTTP format as a string.
     */
     private static String dateToHTTPDate(Date date) {
 
@@ -59,11 +56,11 @@ public class SessionService {
 
 
     /**
-     * Given a date, a time offset and a time scale (Calendar.HOUR_OF_DAY for example), returns the offseted Date object
-     * @param date The date to offset
-     * @param timeOffset The time to offset the date by
-     * @param timeScale The time scale of the timeOffset time
-     * @return The newly offseted date
+     * Given a date, a time offset and a time scale (Calendar.HOUR_OF_DAY for example), returns the offseted Date object.
+     * @param date The date to offset.
+     * @param timeOffset The time to offset the date by.
+     * @param timeScale The time scale of the timeOffset time.
+     * @return The newly offseted date.
     */
     private static Date offsetDate(Date date, int timeOffset, int timeScale) {
         
@@ -77,9 +74,9 @@ public class SessionService {
 
 
     /**
-     * Generates a session ID string for the given username
-     * @param username The username we want to produce a session ID for
-     * @return A session ID string for the given username
+     * Generates a session ID string for the given username.
+     * @param username The username we want to produce a session ID for.
+     * @return A session ID string for the given username.
     */
     private String generateSessionIdString(String username) {
 
@@ -98,10 +95,10 @@ public class SessionService {
 
 
     /**
-     * Generates a cookie string for the given session ID
-     * @param sessionId The session ID for the cookie
-     * @param expirationDateHttp The expiration date string for the cookie in HTTP format
-     * @return A string representing a session ID cookie, ready to be added to Set-Cookie
+     * Generates a cookie string for the given session ID.
+     * @param sessionId The session ID for the cookie.
+     * @param expirationDateHttp The expiration date string for the cookie in HTTP format.
+     * @return A string representing a session ID cookie, ready to be added to Set-Cookie.
     */
     private static String generateSessionCookieString(String sessionId, String expirationDateHttp) {
         return "sessionId=" + sessionId + "; expires=" + expirationDateHttp + "; path=/";
@@ -109,12 +106,12 @@ public class SessionService {
 
 
     /**
-     * Checks if sessionId is valid
-     * @param sessionId The ID of the session we want to authenticate
-     * @throws FailedSessionAuthenticationException If a business logic rule is broken, or the DAO fails
-     * @throws IllegalArgumentException If the data given is invalid
+     * Checks if sessionId is valid.
+     * @param sessionId The ID of the session we want to authenticate.
+     * @throws FailedSessionAuthenticationException If a business logic rule is broken.
+     * @throws IllegalArgumentException If data validation fails.
     */
-    public void authenticateSession(String sessionId) throws FailedSessionAuthenticationException, IllegalArgumentException {
+    public void authenticateSession(String sessionId) throws FailedSessionAuthenticationException {
 
         // data validation
         if(sessionId == null || sessionId.isBlank()) throw new IllegalArgumentException("SessionId value is invalid.");
@@ -134,20 +131,23 @@ public class SessionService {
     }
 
     /**
-     * Attempts to update an existing session in the Database
-     * @param sessionId The current session ID of the session
-     * @return A new session cookie string
-     * @throws FailedSessionUpdateException If a business logic rule is broken, or the DAO fails
+     * Attempts to update an existing session in the Database.
+     * @param sessionId The current session ID of the session.
+     * @return A new session cookie string.
+     * @throws FailedSessionUpdateException If a business logic rule is broken.
+     * @throws IllegalArgumentException If data validation fails.
     */
-    public String updateSession(String sessionId) {
+    public String updateSession(String sessionId) throws FailedSessionUpdateException {
+
+        // data validation
+        if(sessionId == null || sessionId.isBlank()) throw new IllegalArgumentException("SessionId value is invalid.");
 
         // get session
         SessionModel session = sessionDao.getSessionById(sessionId);
 
-        // if failure when retrieving db session's data, throw ex
+        // if no session was found, throw ex
         if(session == null) throw new FailedSessionUpdateException("Session not found.");
 
-        
         // get dates (current, session's refresh)
         Date dateNow = new Date();
         Date oldRefreshDate = new Date(session.getExpirationDateUnix());
@@ -171,8 +171,8 @@ public class SessionService {
         // update the database's session
         session = sessionDao.updateSessionById(session);
 
-        // if failure when updating db session's record, throw ex
-        if(session == null) throw new FailedSessionUpdateException("Failure when updating session.");
+        // if the update did not affect any records, throw ex
+        if(session == null) throw new FailedSessionUpdateException("No matching session found, so no update was performed.");
 
         // return the updated sessionId cookie string
         return generateSessionCookieString(session.getId(), dateToHTTPDate(newExpirationDate));
@@ -180,18 +180,11 @@ public class SessionService {
 
 
     /**
-     * Attempts to initiate a session
-     * @param username The username this session is for
-     * @return A new session cookie string
-     * @throws FailedSessionCreationException If a business logic rule is broken, or the DAO fails
+     * Attempts to initiate a session.
+     * @param username The username this session is for.
+     * @return A new session cookie string.
     */
     public String initiateSession(String username) {
-
-        // check if the username already has a session in storage
-        SessionModel session = sessionDao.getSessionByUsername(username);
-
-        // remove it if so
-        if(session != null) sessionDao.removeSessionWithId(session.getId());
 
         // calculate dates
         Date dateNow = new Date();
@@ -199,16 +192,12 @@ public class SessionService {
         Date refreshDate = offsetDate(dateNow, sessionRefreshTimeMinutes, Calendar.MINUTE);
 
         // create session model
-        session = new SessionModel(generateSessionIdString(username),username, expirationDate.getTime(), refreshDate.getTime());
+        SessionModel session = new SessionModel(generateSessionIdString(username),username, expirationDate.getTime(), refreshDate.getTime());
 
-        // attempt to create session record
+        // attempt to create session record, throws ex on failure
         session = sessionDao.addSession(session);
-
-        // if the database failed to record the session, throw ex
-        if(session == null) throw new FailedSessionCreationException("Session could not be persisted.");
 
         // return new session cookie string
         return generateSessionCookieString(session.getId(), dateToHTTPDate(expirationDate));
     }
-
 }

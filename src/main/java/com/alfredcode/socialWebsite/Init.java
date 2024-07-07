@@ -32,7 +32,7 @@ public class Init {
     @EventListener(ApplicationReadyEvent.class)
     public void init() {
 
-        //clearDatabase();
+        clearDatabase();
         //populateSession();
 
     }

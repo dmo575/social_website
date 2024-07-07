@@ -7,9 +7,8 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import com.alfredcode.socialWebsite.security.annotation.SessionRequired;
+import com.alfredcode.socialWebsite.security.exception.FailedSessionUpdateException;
 import com.alfredcode.socialWebsite.service.session.SessionService;
-import com.alfredcode.socialWebsite.service.session.exception.FailedSessionAuthenticationException;
-import com.alfredcode.socialWebsite.service.session.exception.FailedSessionUpdateException;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -41,7 +40,7 @@ public class SessionInterceptor implements HandlerInterceptor {
      * That could potentially log someone out.
      */
     @Override
-    public boolean preHandle(HttpServletRequest req, HttpServletResponse res, Object handler) throws Exception {
+    public boolean preHandle(HttpServletRequest req, HttpServletResponse res, Object handler) throws FailedSessionUpdateException {
 
         // if the handler is not a controller method, return true
         if(!(handler instanceof HandlerMethod)) return true;
@@ -70,15 +69,9 @@ public class SessionInterceptor implements HandlerInterceptor {
             }
         }
 
-        try{
-            // attempt to update the session
-            res.setHeader("sessionId", sessionService.updateSession(sessionId));
-            return true;
-        }
-        catch(FailedSessionUpdateException ex) {
+        // attempt to update the session, throws ex on failure
+        res.setHeader("sessionId", sessionService.updateSession(sessionId));
 
-            // if the update failed, throw ex
-            throw new FailedSessionAuthenticationException("Session expired.");
-        }
+        return true;
     }
 }

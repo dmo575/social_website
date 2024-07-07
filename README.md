@@ -220,22 +220,56 @@ You can also globally search for posts with the following: Category, hashtag and
 Place where you can see and manage users you are subscribed to and posts you have saved.
 
 
-### Exceptions and data transfer between layers - WIP
+### Exceptions - WIP
+The following are three tables that show how the exceptions bubble up.
 
-#### DAO:
-DAO layers always return the following:
-- Read: Data model with retrieved record data or `null` if nothing to read found.
-- Create: Data model with created record data.
-- Update: Data model with updated record data.
-- Delete: `boolean` indicating operation success status.
-- DAO instances throw no exceptions for the time being.
+We have three "heads" if you will: Controller, Auth and SessionInterceptor. We also have GlobalExceptionsController which is a `@ControllerAdvice` that catches anything that might bubble out of any of those heads. The first columns of each table contains the layer name.
 
-#### Service:
-Service layers do throw exceptions:
-- Exceptions to represent a faulty return from a CRUD operation.
-- Exceptions to represent failure at the service layer.
+Just to help you read the table properly, let me walk you trough one of the columns of the Controller table:
+- On the Controller table, at the bottom of the second column we can see the term **SQLException**.
+- Notice that the SQLException belongs to the **Database** layer as noted on the left.
+- This means that the Database can throw `SQLException` exceptions.
+- If we follow that column up, we find the term **DAOException**
+- This new row means that we are at the DAO layer.
+- Since this is the same column, it means that the DAO layer **catches** the SQLException and converts it to a **DAOException**
+- We go up the column once more and we can see a **^^** mark.
+- The ^^ mark means that the **Service** layer, which is the layer we are on now, just lets the exception bubble up.
+- This means that the DAOException (which was previously a SQLException) is allowed to bubble up from the service layer to the Controller layer.
+- Next on the row if we continue going up is the **Controller** layer, which also lets the exception bubble up.
+- Finally we have the GlobalExceptionsController layer. Here is where we deal with the exception, as noted by the "**Handled here**" sentence.
 
-#### Exception hierarchy:
+**IllegalArgumentException** exceptions are ommited in the table as most layers throw them (DAO, Service, Controller) and they all bubble up to the GlobalExceptionsController.
+
+**Controller**:
+|**Layer**                  |Ex               |Ex               |Ex                      |
+|---------------------------|-----------------|-----------------|------------------------|
+|GlobalExceptionsController |**Handled here** |                 |**Handled here**        |
+|Controller                 |^^               |**Handled here** |^^                      |
+|Service                    |^^               |ServiceException |AuthenticationException |
+|DAO                        |DAOException     |
+|Database                   |SQLException     |
+
+**Auth**:
+|**Layer**                  |Ex               |Ex                      |Ex                          |
+|---------------------------|-----------------|------------------------|----------------------------|
+|GlobalExceptionsController |**Handled here** |**Handled here**        |**Handled here**            |
+|Auth                       |^^               |^^                      |AuthorizationException      |
+|Service                    |^^               |AuthenticationException |
+|DAO                        |DAOException     |
+|Database                   |SQLException     |
+
+In the case of Auth. Technically we once bubble up the AuthenticationException and once handle it ourselves, but in that handling case is just because we want to get the exception. It is treated more like a return value than an exception, omit that for the table.
+
+**SessionInterceptor**:
+|**Layer**                  |Ex               |Ex                      |
+|---------------------------|-----------------|------------------------|
+|GlobalExceptionsController |**Handled here** |**Handled here**        |
+|SessionInterceptor         |^^               |^^                      |
+|Service                    |^^               |AuthenticationException |
+|DAO                        |DAOException     |
+|Database                   |SQLException     |
+
+#### Exception hierarchy (outdated, WIP)
 ```
 RuntimeException                                [java.lang]
 ├── AuthenticationException (Abstract)          [com.alfredcode.socialWebsite.security.exception]
@@ -248,11 +282,6 @@ RuntimeException                                [java.lang]
 ├── UnauthorizedActionException                 [com.alfredcode.socialWebsite.security.exception]
 └── IllgalArgumentException                     [java.lang]
 ```
-
-#### Handling exceptions:
-- Exceptions are handled by the `GlobalExceptionsController.java` controller when they are general or authentication/authorization related exceptions.
-- If they are exceptions speciffic to a service, then the controller of that service will have the handlers for it at the bottom of the class.
-
 
 
 ### Authorization and authentication: AOP, Interceptor handlers and controllers

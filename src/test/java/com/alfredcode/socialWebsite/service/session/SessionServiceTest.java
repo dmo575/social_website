@@ -17,8 +17,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.alfredcode.socialWebsite.DAO.SessionDAO;
 import com.alfredcode.socialWebsite.model.SessionModel;
-import com.alfredcode.socialWebsite.service.session.exception.FailedSessionAuthenticationException;
-import com.alfredcode.socialWebsite.service.session.exception.FailedSessionUpdateException;
+import com.alfredcode.socialWebsite.security.exception.FailedSessionAuthenticationException;
+import com.alfredcode.socialWebsite.security.exception.FailedSessionUpdateException;
 
 @ExtendWith(MockitoExtension.class)
 public class SessionServiceTest {

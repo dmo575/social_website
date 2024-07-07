@@ -5,8 +5,7 @@ import org.springframework.stereotype.Service;
 
 import com.alfredcode.socialWebsite.DAO.UserDAO;
 import com.alfredcode.socialWebsite.model.UserModel;
-import com.alfredcode.socialWebsite.service.user.exception.FailedUserAuthenticationException;
-import com.alfredcode.socialWebsite.service.user.exception.FailedUserRegistrationException;
+import com.alfredcode.socialWebsite.security.exception.FailedUserAuthenticationException;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
 import lombok.Setter;
@@ -29,10 +28,9 @@ public class UserService {
      * Attempts to register a user
      * @param userModel The user to register
      * @return The user that was persisted in the database (password will be hashed)
-     * @throws FailedUserRegistrationException If a business logic rule is broken, or the DAO fails
      * @throws IllegalArgumentException If the user data given is invalid
      */
-    public UserModel registerUser(UserModel userModel) throws FailedUserRegistrationException, IllegalArgumentException {
+    public UserModel registerUser(UserModel userModel) {
 
         // validate object
         if(userModel == null) throw new IllegalArgumentException("UserModel cannot be null");
@@ -54,11 +52,9 @@ public class UserService {
         // hash password
         String hashedPassword = BCrypt.withDefaults().hashToString(minPasswordLength, password.toCharArray());
         userModel.setPassword(hashedPassword);
-        
-        // ask DAO to CREATE user.
-        if(userDao.addUser(userModel) == null) throw new FailedUserRegistrationException("User could not be persisted.");
 
-        return userModel;
+        // add user to the database
+        return userDao.addUser(userModel);
     }
 
 
@@ -66,7 +62,7 @@ public class UserService {
      * Attempts to authenticate the give nuser
      * @param username The username
      * @param password The password (non-hashed)
-     * @throws FailedUserAuthenticationException If a business logic rule is broken, or the DAO fails
+     * @throws FailedUserAuthenticationException If a business logic rule is broken.
      * @throws IllegalArgumentException If the user data given is invalid
      */
     public void authenticateUser(String username, String password) throws FailedUserAuthenticationException, IllegalArgumentException{

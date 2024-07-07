@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Date;
 
 import javax.sql.DataSource;
@@ -15,9 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import com.alfredcode.socialWebsite.DAO.exception.DAOException;
 import com.alfredcode.socialWebsite.DAO.exception.FailureToPersistDataException;
 import com.alfredcode.socialWebsite.DAO.exception.FailureToQueryDataException;
 import com.alfredcode.socialWebsite.DAO.exception.FailureToRemoveDataException;
+import com.alfredcode.socialWebsite.DAO.exception.FailureToUpdateDataException;
 import com.alfredcode.socialWebsite.model.SessionModel;
 
  /*
@@ -44,18 +45,16 @@ public class SessionDAO {
      */
     public SessionModel addSession(SessionModel sessionModel) throws FailureToPersistDataException, IllegalArgumentException {
 
-        logger.warn("Adding a new session for " + sessionModel.getUsername());
         // data validation
         if(sessionModel == null || sessionModel.getId() == null || sessionModel.getUsername() == null ||
         sessionModel.getExpirationDateUnix() == null || sessionModel.getRefreshDateUnix() == null) {
             throw new IllegalArgumentException("SessionModel and its fields must not be null.");
         }
 
-
-        // check if there is already a session for this user
-        SessionModel existingSession = getSessionByUsername(sessionModel.getUsername());
-
         try{
+            // check if there is already a session for this user
+            SessionModel existingSession = getSessionByUsername(sessionModel.getUsername());
+
             if(existingSession != null) {
                 removeSessionWithId(existingSession.getId());        
             }
@@ -77,12 +76,13 @@ public class SessionDAO {
 
             // handle unexpected result case
             if(recordsAffected != 1) {
+                // if no records were affected, we failed to add the record somehow.
                 throw new FailureToPersistDataException("Failed to create session record: " + recordsAffected);
             }
         }
-        catch(SQLException err) {
-            logger.error("addSession::" + err.getMessage());
-            throw new FailureToPersistDataException("Failed to create session record.");
+        catch(SQLException | DAOException ex) {
+            logger.error("addSession::" + ex.getMessage());
+            throw new FailureToPersistDataException(ex.getMessage());
         }
 
         return sessionModel;
@@ -124,9 +124,9 @@ public class SessionDAO {
             selectSt.close();
             connection.close();
         }
-        catch(SQLException err) {
-            logger.error("getSessionById::" + err.getMessage());
-            throw new FailureToQueryDataException("Failure when querying session.");
+        catch(SQLException ex) {
+            logger.error("getSessionById::" + ex.getMessage());
+            throw new FailureToQueryDataException(ex.getMessage());
         }
 
         return sessionModel;
@@ -167,9 +167,9 @@ public class SessionDAO {
             selectSt.close();
             connection.close();
         }
-        catch(SQLException err) {
-            logger.error("getSessionByUsername::" + err.getMessage());
-            throw new FailureToQueryDataException("Failure when querying session.");
+        catch(SQLException ex) {
+            logger.error("getSessionByUsername::" + ex.getMessage());
+            throw new FailureToQueryDataException(ex.getMessage());
         }
 
         return sessionModel;
@@ -179,9 +179,9 @@ public class SessionDAO {
      * Attempts to update a session with the given data.
      * @param newSessionModel The new session data, including the ID of the session that you whish to update.
      * @return SessionModel on success, null if no no matching session for the given sessionId found.
-     * @throws FailureToPersistDataException On failure updating the database.
+     * @throws FailureToUpdateDataException On failure updating the database.
     */
-    public SessionModel updateSessionById(SessionModel newSessionModel) throws FailureToPersistDataException, IllegalArgumentException {
+    public SessionModel updateSessionById(SessionModel newSessionModel) throws FailureToUpdateDataException, IllegalArgumentException {
 
         // data validation
         if(newSessionModel == null || newSessionModel.getId() == null || newSessionModel.getUsername() == null ||
@@ -209,9 +209,9 @@ public class SessionDAO {
             // 0 means that there was no previous session under the same id.
             if(rowsAffected == 0) return null;
         }
-        catch(SQLException err) {
-            logger.error("updateSession::" + err.getMessage(), err);
-            throw new FailureToPersistDataException("Failure to update session.");
+        catch(SQLException ex) {
+            logger.error("updateSessionById::" + ex.getMessage(), ex);
+            throw new FailureToUpdateDataException(ex.getMessage());
         }
 
         return newSessionModel;
@@ -243,9 +243,9 @@ public class SessionDAO {
             removeSt.close();
             connection.close();
         }
-        catch(SQLException err) {
-            logger.error("removeSessionWithId::" + err.getMessage());
-            throw new FailureToRemoveDataException("Failure deleting record.");
+        catch(SQLException ex) {
+            logger.error("removeSessionWithId::" + ex.getMessage());
+            throw new FailureToRemoveDataException(ex.getMessage());
         }
         
         return recordsAffected > 0;
@@ -322,8 +322,9 @@ public class SessionDAO {
             st.close();
             connection.close();
         }
-        catch(SQLException err) {
-            logger.error("removeExpiredSessions::" + err.getMessage());
+        catch(SQLException ex) {
+            // in this case we log the error. We won't be handling this at any upper layer so no need to bubble it up.
+            logger.error("removeExpiredSessions::" + ex.getMessage());
         }
     }
 }

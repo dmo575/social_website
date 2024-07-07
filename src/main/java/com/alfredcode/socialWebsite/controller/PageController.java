@@ -38,7 +38,7 @@ public class PageController {
 
             return "forward:/portal.html";
         }
-        catch(Exception ex) {
+        catch(RuntimeException ex) {
             
             // else, 200 welcome
             return "forward:/welcome.html";
