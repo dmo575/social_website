@@ -20,7 +20,7 @@ Social media blogpost website.
 +----------------------------------------------------------------------------------------+
 |                                Service : Business logic                                |
 +----------------------------------------------------------------------------------------+
-|                            DAO : CRUD, concurrency (session)                           |
+|                                       DAO : CRUD                                       |
 +----------------------------------------------------------------------------------------+
           
                                           ⬇⬆
@@ -184,42 +184,6 @@ These are some things implemented that I consider optimization-themed:
 
 
 
-### User stories, ideas:
-
-**Welcome - page**
-- User can read about the website via the Welcome tab
-- User can register via the register tab
-- User can log in via the login tab
-- User can read about contact information via the Contact tab
-
-**Portal - page**
-- User can manage its user profile via the Me tab
-- User can see personal feed via the Private tab
-- User can see the latest going on and search all posts via the Public tab
-- User can manage subscriptions (people whos posts appear on "Private") via the Collection tab
-- User can see and manage saves posts via the Collection tab
-
-#### Me - tab
-You can see:
-- All posts you have created ordered by date
-- Your profile section box
-- Hovering a post will show a gear icon, when licked you will see buttons labeled as: pin, edit, delete.
-- Hovering the profile section box will show a gear button that when clicked takes you to an edit profiel page.
-- A button for creating a new post, takes you to the post creation page.
-
-This is essentially the account page, and the edit options only appear if you are logged in as the user, otherwise this is how checking anyones user will look like (plus a subscribe button to subscribe to that user in particular)
-
-#### Private - tab
-A place where you can see all the posts from users you are subscribed to, ordered by creation time.
-
-#### Public - tab
-A place where you can see the most popular posts at the moment, also most popular tags and topics.
-You can also globally search for posts with the following: Category, hashtag and keywords.
-
-#### Collection - tab
-Place where you can see and manage users you are subscribed to and posts you have saved.
-
-
 ### Exceptions - WIP
 The following are three tables that show how the exceptions bubble up.
 
@@ -258,7 +222,7 @@ Just to help you read the table properly, let me walk you trough one of the colu
 |DAO                        |DAOException     |
 |Database                   |SQLException     |
 
-In the case of Auth. Technically we once bubble up the AuthenticationException and once handle it ourselves, but in that handling case is just because we want to get the exception. It is treated more like a return value than an exception, omit that for the table.
+In the case of Auth. Technically we once bubble up the AuthenticationException and once handle it ourselves, but in that handling case is just because we want to get the exception. It is treated more like a return value than an exception, so we omit that case in the table.
 
 **SessionInterceptor**:
 |**Layer**                  |Ex               |Ex                      |
@@ -284,12 +248,13 @@ RuntimeException                                [java.lang]
 ```
 
 
-### Authorization and authentication: AOP, Interceptor handlers and controllers
+
+### Authorization and authentication: AOP and Interceptor handlers
 In order to implement an easy Authorization and Authentication system, we will be using AOP methods and Interceptor handlers in combination with some custom annotations.
 
 **Annotations**:
 - @SessionRequired: to be used on method handlers (@Controller methods) that require a valid session in order for the client to interact with its endpoints.
-- @NoSessionAllowed: to be used on method handlers (@Controller methods) that require **no** valid session in order for the client to interact with its endpoints (login, register, ...)
+- @NoSessionAllowed: to be used on method handlers (@Controller methods) that require a valid session to **not be present** in order for the client to interact with its endpoints (login, register, ...)
 
 **AOP methods (Auth.java)**:
 - @Before, Auth.sessionRequired(): Authenticates a client's session. Triggered on @SessionRequired annotated methods.
@@ -301,11 +266,13 @@ In order to implement an easy Authorization and Authentication system, we will b
     - If the method handler has a @NoSessionAllowed annotation, does nothing.
 
 #### Why use both AOP and Interceptor handlers, instead of either one:
-- Separation of concerns: Interceptors are the conventional place for HTTP request/response modifications while AOP are saved for cross-cutting concerns; that is tasks that involve several unrealted instances, each performing some operation.
+- Separation of concerns: Interceptors are the conventional place for HTTP request/response modifications while AOP are saved for cross-cutting concerns; that is tasks that involve several unrealted entities, each performing some operation.
 - Ease of access: Interceptors make it really easy to access the HTTP req/res because they are intended to modify these things. They are even included in the servlet lifecycle. With AOP you do need to do some workaround to get to the servlets.
 - Readability: Even tho we can do these things in either place, the standard **seems** to be the one already explained, so going against it makes the code harder to understand.
 
-### Managing sessions (AOP, Interceptor handlers and @Schedule)
+
+
+### Managing sessions with two threads
 
 The authentication process is organized in a way that allows me to have two threads handle the sessions table at the same time without them stepping onto  eachother's feet:
 
@@ -339,3 +306,40 @@ With that in mind, we consider these cases:
 - **Case 4 - A delete query arrives just after updating the query**: No deletion will happen, because that deletion has a conditional within it that will fail if the session just got updated.
 
 Because we make sure to authenticate and update the session before processing the HTTP request, we can allow ourselves to let a session pass authentication and expire before we get a chance to update the session.
+
+
+
+### User stories, ideas:
+
+**Welcome - page**
+- User can read about the website via the Welcome tab
+- User can register via the register tab
+- User can log in via the login tab
+- User can read about contact information via the Contact tab
+
+**Portal - page**
+- User can manage its user profile via the Me tab
+- User can see personal feed via the Private tab
+- User can see the latest going on and search all posts via the Public tab
+- User can manage subscriptions (people whos posts appear on "Private") via the Collection tab
+- User can see and manage saves posts via the Collection tab
+
+#### Me - tab
+You can see:
+- All posts you have created ordered by date
+- Your profile section box
+- Hovering a post will show a gear icon, when licked you will see buttons labeled as: pin, edit, delete.
+- Hovering the profile section box will show a gear button that when clicked takes you to an edit profiel page.
+- A button for creating a new post, takes you to the post creation page.
+
+This is essentially the account page, and the edit options only appear if you are logged in as the user, otherwise this is how checking anyones user will look like (plus a subscribe button to subscribe to that user in particular)
+
+#### Private - tab
+A place where you can see all the posts from users you are subscribed to, ordered by creation time.
+
+#### Public - tab
+A place where you can see the most popular posts at the moment, also most popular tags and topics.
+You can also globally search for posts with the following: Category, hashtag and keywords.
+
+#### Collection - tab
+Place where you can see and manage users you are subscribed to and posts you have saved.
